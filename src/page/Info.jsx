@@ -159,11 +159,6 @@ export default function Info() {
                   desc: "Bookmarks for your servers: no need to retype IPs, just select and connect.",
                 },
                 {
-                  icon: <FaUsers className="text-blue-500" />,
-                  title: "Multiple Bedrock Profiles",
-                  desc: "Switch between different gamertags or family accounts instantly.",
-                },
-                {
                   icon: <FaBolt className="text-blue-500" />,
                   title: "Intelligent Relay & Auto Failover",
                   desc: "Always the fastest relay is used, fallback to EU/US — never get stuck.",
