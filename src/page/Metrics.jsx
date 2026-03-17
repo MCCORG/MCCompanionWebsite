@@ -37,12 +37,18 @@ function MetricsList({ endpoint, region }) {
         {loading ? (
           <div className="py-6 text-blue-600 text-center font-medium">Loading...</div>
         ) : (
-          <table className="min-w-full text-blue-900 rounded-xl overflow-hidden">
+          <table className="w-full min-w-[360px] text-blue-900 rounded-xl overflow-hidden">
             <thead>
               <tr className="text-left text-blue-800 bg-blue-100/40 border-b border-blue-100/20">
-                <th className="p-3 rounded-tl-xl w-12">#</th>
-                <th className="p-3"><FaServer className="inline mb-1 mr-1" />Server IP</th>
-                <th className="p-3 text-right rounded-tr-xl"><FaTrophy className="inline mb-1 mr-1" />Joins</th>
+                <th className="p-2 sm:p-3 rounded-tl-xl w-10 sm:w-12">#</th>
+                <th className="p-2 sm:p-3 max-w-[120px] sm:max-w-none">
+                  <FaServer className="inline mb-1 mr-1" />
+                  <span className="truncate">Server IP</span>
+                </th>
+                <th className="p-2 sm:p-3 text-right rounded-tr-xl">
+                  <FaTrophy className="inline mb-1 mr-1" />
+                  Joins
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -55,13 +61,13 @@ function MetricsList({ endpoint, region }) {
                     ${idx === 0 && "font-extrabold"}
                   `}
                 >
-                  <td className="p-3 font-bold text-center text-lg">
+                  <td className="p-2 sm:p-3 font-bold text-center text-lg">
                     {idx + 1}
                   </td>
-                  <td className="p-3 font-mono text-blue-800">
+                  <td className="p-2 sm:p-3 font-mono text-blue-800 break-all max-w-[120px] sm:max-w-none">
                     {row.ip}
                   </td>
-                  <td className="p-3 text-right font-bold text-blue-900">
+                  <td className="p-2 sm:p-3 text-right font-bold text-blue-900">
                     {row.count}
                   </td>
                 </tr>
@@ -96,9 +102,13 @@ export default function MetricsPage() {
           See which servers are trending! These rankings are based on recent connections (<b>joins</b>) in the NetherLink app.
         </p>
       </div>
-      <div className="w-full max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
-        <MetricsList endpoint={endpoints.EU} region="EU" />
-        <MetricsList endpoint={endpoints.US} region="US" />
+      <div className="w-full max-w-7xl mx-auto flex flex-col md:flex-row gap-8">
+        <div className="flex-1">
+          <MetricsList endpoint={endpoints.EU} region="EU" />
+        </div>
+        <div className="flex-1">
+          <MetricsList endpoint={endpoints.US} region="US" />
+        </div>
       </div>
     </div>
   );
