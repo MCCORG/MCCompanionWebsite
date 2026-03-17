@@ -1,8 +1,20 @@
 import { useEffect, useState } from "react";
-import { FaTrophy, FaServer, FaGlobeEurope, FaGlobeAmericas, FaSync } from "react-icons/fa";
+import { FaTrophy, FaServer, FaGlobeEurope, FaGlobeAmericas, FaSync, FaUsers } from "react-icons/fa";
+
+function MetricBadge({ icon, value, label, color }) {
+  return (
+    <div className={`flex items-center gap-2 px-3 py-2 rounded-xl bg-${color}-100 text-${color}-900 font-semibold shadow-sm`}>
+      {icon}
+      <span className="text-lg">{value}</span>
+      <span className="text-xs">{label}</span>
+    </div>
+  );
+}
 
 function MetricsList({ endpoint, region }) {
-  const [data, setData] = useState([]);
+  const [topServers, setTopServers] = useState([]);
+  const [totalServers, setTotalServers] = useState(0);
+  const [totalJoins, setTotalJoins] = useState(0);
   const [loading, setLoading] = useState(true);
   const [refetchIndex, setRefetchIndex] = useState(0);
 
@@ -10,18 +22,30 @@ function MetricsList({ endpoint, region }) {
     setLoading(true);
     fetch(endpoint)
       .then((r) => r.json())
-      .then(setData)
-      .catch(() => setData([]))
+      .then((data) => {
+        setTopServers(data.topServers || []);
+        setTotalServers(data.totalServers || 0);
+        setTotalJoins(data.totalCount || 0);
+      })
+      .catch(() => {
+        setTopServers([]);
+        setTotalServers(0);
+        setTotalJoins(0);
+      })
       .finally(() => setLoading(false));
   }, [endpoint, refetchIndex]);
 
   return (
     <div className="bg-white/40 glass-tile shadow-lg border border-white/20 rounded-2xl p-6 sm:p-8 transition">
-      <div className="flex items-center justify-between mb-5">
+      <div className="flex items-center justify-between mb-5 gap-4 flex-wrap">
         <h2 className="text-xl sm:text-2xl font-bold text-blue-900 flex items-center gap-3">
           {region === "EU" ? <FaGlobeEurope /> : <FaGlobeAmericas />}
           Top servers ({region})
         </h2>
+        <div className="flex gap-2">
+          <MetricBadge icon={<FaServer />} value={totalServers} label="servers" color="blue" />
+          <MetricBadge icon={<FaUsers />} value={totalJoins} label="joins" color="cyan" />
+        </div>
         <button
           className="ml-auto text-blue-700 hover:text-blue-900 bg-white/60 border border-blue-200 rounded-full px-3 py-1 flex items-center gap-2 text-sm shadow hover:bg-blue-100 transition"
           onClick={() => setRefetchIndex((i) => i + 1)}
@@ -37,43 +61,44 @@ function MetricsList({ endpoint, region }) {
         {loading ? (
           <div className="py-6 text-blue-600 text-center font-medium">Loading...</div>
         ) : (
-          <table className="w-full min-w-[360px] text-blue-900 rounded-xl overflow-hidden">
-            <thead>
-              <tr className="text-left text-blue-800 bg-blue-100/40 border-b border-blue-100/20">
-                <th className="p-2 sm:p-3 rounded-tl-xl w-10 sm:w-12">#</th>
-                <th className="p-2 sm:p-3 max-w-[120px] sm:max-w-none">
-                  <FaServer className="inline mb-1 mr-1" />
-                  <span className="truncate">Server IP</span>
-                </th>
-                <th className="p-2 sm:p-3 text-right rounded-tr-xl">
-                  <FaTrophy className="inline mb-1 mr-1" />
-                  Joins
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((row, idx) => (
-                <tr
-                  key={row.ip}
-                  className={`
-                    border-b border-white/20
-                    ${idx < 3 ? "bg-yellow-200/30" : "hover:bg-cyan-200/20"} 
-                    ${idx === 0 && "font-extrabold"}
-                  `}
-                >
-                  <td className="p-2 sm:p-3 font-bold text-center text-lg">
-                    {idx + 1}
-                  </td>
-                  <td className="p-2 sm:p-3 font-mono text-blue-800 break-all max-w-[120px] sm:max-w-none">
-                    {row.ip}
-                  </td>
-                  <td className="p-2 sm:p-3 text-right font-bold text-blue-900">
-                    {row.count}
-                  </td>
+          topServers.length === 0 ? (
+            <div className="py-6 text-gray-400 text-center font-medium">No data yet.</div>
+          ) : (
+            <table className="w-full min-w-[360px] text-blue-900 rounded-xl overflow-hidden">
+              <thead>
+                <tr className="text-left text-blue-800 bg-blue-100/40 border-b border-blue-100/20">
+                  <th className="p-2 sm:p-3 rounded-tl-xl w-10 sm:w-12">#</th>
+                  <th className="p-2 sm:p-3 max-w-[120px] sm:max-w-none">
+                    <FaServer className="inline mb-1 mr-1" />
+                    <span className="truncate">Server IP</span>
+                  </th>
+                  <th className="p-2 sm:p-3 text-right rounded-tr-xl"><FaTrophy className="inline mb-1 mr-1" /> Joins</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {topServers.map((row, idx) => (
+                  <tr
+                    key={row.ip}
+                    className={`
+                      border-b border-white/20
+                      ${idx < 3 ? "bg-yellow-200/30" : "hover:bg-cyan-200/20"}
+                      ${idx === 0 ? "font-extrabold" : ""}
+                    `}
+                  >
+                    <td className="p-2 sm:p-3 font-bold text-center text-lg">
+                      {idx + 1}
+                    </td>
+                    <td className="p-2 sm:p-3 font-mono text-blue-800 break-all max-w-[120px] sm:max-w-none">
+                      {row.ip}
+                    </td>
+                    <td className="p-2 sm:p-3 text-right font-bold text-blue-900">
+                      {row.count}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )
         )}
       </div>
       <style jsx="true">{`
@@ -88,8 +113,8 @@ function MetricsList({ endpoint, region }) {
 
 export default function MetricsPage() {
   const endpoints = {
-    EU: "https://eumetrics.netherlink.net/api/top",
-    US: "https://usmetrics.netherlink.net/api/top"
+    EU: "https://eumetrics.netherlink.net/api/metrics",
+    US: "https://usmetrics.netherlink.net/api/metrics"
   };
 
   return (
