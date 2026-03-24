@@ -31,8 +31,22 @@ export default function Privacy() {
               { title: "4. Data Security", content: "Since all data is stored locally on your device, you maintain full control over your information. We recommend securing your device with a password or biometric authentication to protect your saved servers and profiles." },
               { title: "5. Third-Party Services", content: "NetherLink does not integrate third-party analytics, advertising, or tracking services. App Store and Google Play may collect standard installation and usage metrics according to their own privacy policies." },
               { title: "6. Children's Privacy", content: "NetherLink does not knowingly collect any personal information from children. All data remains on the user's device and is never transmitted to external servers." },
-              { title: "7. Data Removal", content: "You can delete all saved data at any time by uninstalling the app or clearing app data through your device settings. Since no data is stored on our servers, uninstalling the app completely removes all information." },
-              { title: "8. Changes to This Policy", content: "We may update this privacy policy from time to time. Any changes will be posted on this page with an updated revision date." }
+              { title: "7. Data Removal", content: "You can delete all saved data at any time by uninstalling the app or clearing app data through your device settings. Since no data is stored on our servers by default, uninstalling the app completely removes all local information." },
+              { title: "8. Changes to This Policy", content: "We may update this privacy policy from time to time. Any changes will be posted on this page with an updated revision date." },
+              {
+                title: "9. Server Metrics and Aggregated Usage Statistics",
+                content: "NetherLink collects aggregate, server-level metrics to help improve the service and monitor reliability. These metrics do not contain personal user data.",
+                list: [
+                  "What we collect: server address (IP/hostname), server port, server name or ID (if available), connection timestamps, and aggregated counts such as total connections and connections per server.",
+                  "How we use it: to detect connection issues, improve featured server lists, capacity planning, and general service analytics.",
+                  "No PII: metrics are not tied to individual users or devices and do not contain personally identifiable information.",
+                  "Storage and retention: metrics may be stored on our backend and are retained by default for up to 12 months. Aggregated reports may be kept longer; individual connection logs are deleted after the retention period.",
+                  "Security: we protect metrics with appropriate technical and organizational measures and restrict access to authorized personnel only.",
+                  "Backend collection and disabling: metrics collection is performed at our backend infrastructure level and cannot be disabled by users from the app. This is why there is no in-app toggle to stop collection.",
+                  "Requests and remediation: if you are the owner of a server and require removal or redaction of metrics related to your server, contact us via Discord or email and we will review and process valid requests on a case-by-case basis.",
+                  "Third parties: we do not provide raw metrics that link server addresses to individual users to third parties. If we share aggregated data with third parties (e.g., for research), it is shared without PII and only in aggregated form."
+                ]
+              }
             ].map((section, i) => (
               <section key={i}>
                 <h2 className="text-xl font-bold mb-3 border-l-4 border-cyan-400 pl-4 bg-transparent">
@@ -56,7 +70,7 @@ export default function Privacy() {
           </div>
 
           <p className="mt-10 text-sm text-blue-600 text-right font-medium">
-            Last updated: January 2026
+            Last updated: March 24, 2026
           </p>
 
           <div className="mt-10 text-center">

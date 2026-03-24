@@ -87,6 +87,18 @@ export default function Terms() {
                   "All agreements and custom arrangements are discussed personally via Discord (jens.co) or email (see contact page).",
                   "**Pricing Changes:** NetherLink reserves the right to change the price for Featured Server Slots. Price changes will be announced in advance, and new pricing will apply from your next billing period."
                 ]
+              },
+              {
+                title: "12. Server Metrics and Monitoring",
+                content: "NetherLink collects aggregate server-level metrics to improve service quality and reliability. These metrics relate to the Minecraft servers that users connect to and do not include personal user identifiers.",
+                list: [
+                  "What we collect: server address (IP/hostname), server port, a server ID or name (if available), connection timestamps, and aggregated counts such as total connections and connections per server.",
+                  "Purpose: service monitoring, troubleshooting, improving featured server lists, security analysis, and general usage statistics.",
+                  "No personal data: the collected metrics are not tied to individual users or devices and do not contain PII (personally identifiable information).",
+                  "Storage and retention: metrics may be stored on our backend for analytics and are retained for up to 12 months unless otherwise specified.",
+                  "Backend-level collection: metrics collection occurs on our backend infrastructure and cannot be disabled by users via the app.",
+                  "Contact for concerns: if you have concerns about metrics related to a server you own, contact us and we will review deletion or mitigation requests on a case-by-case basis."
+                ]
               }
             ].map((section, i) => (
               <section key={i}>
@@ -106,7 +118,7 @@ export default function Terms() {
           </div>
 
           <p className="mt-10 text-sm text-blue-600 text-right font-medium">
-            Last updated: March 2026
+            Last updated: March 24, 2026
           </p>
 
           <div className="mt-10 text-center">
