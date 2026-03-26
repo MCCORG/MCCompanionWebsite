@@ -1,3 +1,33 @@
+# Run Locally
+1. Download the code.
+2. Open a terminal and navigate to the code directory:
+   ```bash
+   cd path/to/code
+   ```
+3. Install dependencies:
+   ```bash
+   npm install
+   ```
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+# Compile into HTML & JS
+1. Download the code.
+2. Open a terminal and navigate to the code directory:
+   ```bash
+   cd path/to/code
+   ```
+3. Install dependencies:
+   ```bash
+   npm install
+   ```
+4. Build the project:
+   ```bash
+   npm run build
+   ```
+
 # React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
