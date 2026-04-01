@@ -4,7 +4,6 @@ import Home from './page/Home';
 import Terms from './page/Terms';
 import Privacy from './page/Privacy';
 import Contact from "./page/Contact";
-import Info from "./page/Info"; 
 import FeaturedSlot from "./page/FeaturedSlot";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
@@ -27,7 +26,6 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
-        <Route path="/info" element={<Info />} /> 
         <Route path="/contact" element={<Contact />} />
         <Route path="/slot" element={<FeaturedSlot />} />
         <Route path="/metrics" element={<Metrics />} />

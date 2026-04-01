@@ -1,138 +1,198 @@
+import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import {
+  FaEnvelope, FaMapMarkerAlt, FaDiscord,
+  FaArrowLeft, FaBuilding, FaIdCard,
+} from "react-icons/fa";
 
-import { FaEnvelope, FaMapMarkerAlt, FaDiscord, FaArrowLeft, FaBuilding, FaIdCard } from "react-icons/fa";
+const cardStyle = {
+  background: "linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(0,229,255,0.03) 100%)",
+  border: "1px solid rgba(0,229,255,0.1)",
+  boxShadow: "0 8px 32px rgba(0,0,0,0.35)",
+  backdropFilter: "blur(16px)",
+  WebkitBackdropFilter: "blur(16px)",
+};
+
+const accentBar = {
+  position: "absolute",
+  top: 0, left: 0, right: 0,
+  height: "2px",
+  background: "linear-gradient(90deg, #00e5ff66, #6366f166, transparent)",
+};
+
+const sectionHeadingStyle = {
+  borderLeft: "3px solid #00e5ff",
+  paddingLeft: "12px",
+  color: "#e2e8f0",
+  marginBottom: "16px",
+};
+
+const innerCardStyle = {
+  background: "rgba(0,229,255,0.03)",
+  border: "1px solid rgba(0,229,255,0.08)",
+  borderRadius: "12px",
+  padding: "20px",
+};
+
+const iconBoxStyle = {
+  width: "44px", height: "44px",
+  background: "rgba(0,229,255,0.08)",
+  border: "1px solid rgba(0,229,255,0.15)",
+  borderRadius: "12px",
+  display: "flex", alignItems: "center", justifyContent: "center",
+  flexShrink: 0,
+  color: "#00e5ff",
+};
+
+const contactDetails = [
+  { icon: <FaBuilding />, label: "Company Name", value: "Jens-Co" },
+  {
+    icon: <FaMapMarkerAlt />, label: "Address",
+    value: <>Statiestraat 26<br />1570 Tollembeek<br />Belgium</>,
+  },
+  {
+    icon: <FaEnvelope />, label: "Email",
+    value: <a href="mailto:jenscollaert@icloud.com" style={{ color: "#00e5ff", textDecoration: "none" }}
+      onMouseEnter={e => e.currentTarget.style.textDecoration = "underline"}
+      onMouseLeave={e => e.currentTarget.style.textDecoration = "none"}
+    >jenscollaert@icloud.com</a>,
+  },
+  {
+    icon: <FaDiscord />, label: "Discord",
+    value: <a href="https://discord.gg/xvaNzE35Rs" target="_blank" rel="noopener noreferrer"
+      style={{ color: "#00e5ff", textDecoration: "none" }}
+      onMouseEnter={e => e.currentTarget.style.textDecoration = "underline"}
+      onMouseLeave={e => e.currentTarget.style.textDecoration = "none"}
+    >Join our community</a>,
+  },
+  { icon: <FaIdCard />, label: "KBO Number", value: <span style={{ fontFamily: "monospace", color: "#94a3b8" }}>1025.363.838</span> },
+];
+
+const quickContacts = [
+  {
+    icon: <FaEnvelope />,
+    label: "Email Support",
+    value: "jenscollaert@icloud.com",
+    href: "mailto:jenscollaert@icloud.com",
+  },
+  {
+    icon: <FaDiscord />,
+    label: "Community Discord",
+    value: "discord.gg/xvaNzE35Rs",
+    href: "https://discord.gg/xvaNzE35Rs",
+    external: true,
+  },
+];
 
 export default function Contact() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-200/40 via-white/80 to-cyan-200/60 text-blue-900 font-sans">
-
+    <div
+      className="min-h-screen font-sans"
+      style={{
+        background:
+          "radial-gradient(ellipse 70% 40% at 50% 0%, rgba(0,229,255,0.06) 0%, transparent 60%), #0a0a0f",
+      }}
+    >
       <div className="max-w-4xl mx-auto px-3 py-12">
-        <div className="relative glass-tile-nav p-8 rounded-2xl shadow-2xl border border-white/20 overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400/70 via-cyan-400/70 to-blue-300/40 rounded-t-2xl" />
+        <motion.div
+          className="relative rounded-2xl p-8 overflow-hidden"
+          style={cardStyle}
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div style={accentBar} />
+
           <div className="flex justify-center mb-8">
             <div className="relative">
-              <div className="absolute inset-0 bg-cyan-300/20 rounded-full blur-xl" />
-              <div className="relative rounded-full bg-white/30 p-5 border border-white/30 backdrop-blur-xl">
-                <FaEnvelope className="w-12 h-12 text-blue-400 drop-shadow" />
+              <div
+                style={{
+                  position: "absolute", inset: 0,
+                  background: "rgba(0,229,255,0.1)",
+                  borderRadius: "50%", filter: "blur(16px)",
+                }}
+              />
+              <div
+                className="relative p-5 rounded-full"
+                style={{
+                  background: "rgba(0,229,255,0.07)",
+                  border: "1px solid rgba(0,229,255,0.2)",
+                }}
+              >
+                <FaEnvelope size={40} style={{ color: "#00e5ff" }} />
               </div>
             </div>
           </div>
-          <h1 className="text-4xl font-bold mb-6 text-center bg-gradient-to-r from-blue-700 via-sky-400 to-cyan-400 bg-clip-text text-transparent">
+
+          <h1
+            className="text-4xl font-bold mb-5 text-center"
+            style={{
+              background: "linear-gradient(135deg, #e2e8f0, #00e5ff 50%, #6366f1)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              filter: "drop-shadow(0 0 20px rgba(0,229,255,0.2))",
+            }}
+          >
             Contact Us
           </h1>
-
-          <p className="mb-10 text-blue-800 text-lg text-center max-w-2xl mx-auto leading-relaxed">
-            Need help or want to get in touch with <span className="font-semibold">NetherLink</span>? 
-            We're happy to assist you with support, business inquiries, or feedback!
+          <p className="mb-10 text-slate-400 text-base text-center max-w-2xl mx-auto leading-relaxed">
+            Need help or want to get in touch with{" "}
+            <span className="text-slate-200 font-semibold">NetherLink</span>?
+            We're happy to assist with support, business inquiries, or feedback!
           </p>
 
           <div className="space-y-8">
             <section>
-              <h2 className="text-xl font-bold mb-5 border-l-4 border-cyan-400 pl-4">
-                Company Details
-              </h2>
-              <div className="bg-white/40 backdrop-blur rounded-xl p-6 border border-white/20">
+              <h2 className="text-lg font-bold" style={sectionHeadingStyle}>Company Details</h2>
+              <div style={innerCardStyle}>
                 <div className="grid gap-5">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-white/30 rounded-xl flex items-center justify-center flex-shrink-0 border border-white/30">
-                      <FaBuilding className="text-blue-400 text-xl" />
-                    </div>
-                    <div>
-                      <div className="font-bold mb-1">Company Name</div>
-                      <div className="text-blue-700">Jens-Co</div>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-white/30 rounded-xl flex items-center justify-center flex-shrink-0 border border-white/30">
-                      <FaMapMarkerAlt className="text-blue-400 text-xl" />
-                    </div>
-                    <div>
-                      <div className="font-bold mb-1">Address</div>
-                      <div className="text-blue-700">
-                        Statiestraat 26<br />
-                        1570 Tollembeek<br />
-                        Belgium
+                  {contactDetails.map(({ icon, label, value }) => (
+                    <div key={label} className="flex items-start gap-4">
+                      <div style={iconBoxStyle}>{icon}</div>
+                      <div>
+                        <div className="font-semibold text-sm text-slate-400 mb-0.5">{label}</div>
+                        <div className="text-slate-200 text-sm">{value}</div>
                       </div>
                     </div>
-                  </div>
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-white/30 rounded-xl flex items-center justify-center flex-shrink-0 border border-white/30">
-                      <FaEnvelope className="text-blue-400 text-xl" />
-                    </div>
-                    <div>
-                      <div className="font-bold mb-1">Email</div>
-                      <a
-                        href="mailto:jenscollaert@icloud.com"
-                        className="text-blue-800 hover:text-blue-600 transition-colors"
-                      >
-                        jenscollaert@icloud.com
-                      </a>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-white/30 rounded-xl flex items-center justify-center flex-shrink-0 border border-white/30">
-                      <FaDiscord className="text-blue-400 text-xl" />
-                    </div>
-                    <div>
-                      <div className="font-bold mb-1">Discord</div>
-                      <a
-                        href="https://discord.gg/xvaNzE35Rs"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-800 hover:text-blue-600 transition-colors"
-                      >
-                        Join our community
-                      </a>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-white/30 rounded-xl flex items-center justify-center flex-shrink-0 border border-white/30">
-                      <FaIdCard className="text-blue-400 text-xl" />
-                    </div>
-                    <div>
-                      <div className="font-bold mb-1">KBO Number</div>
-                      <div className="text-blue-700 font-mono">1025.363.838</div>
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </div>
             </section>
 
             <section>
-              <h2 className="text-xl font-bold mb-5 border-l-4 border-cyan-400 pl-4">
-                Support & Quick Contact
-              </h2>
-              <div className="bg-white/40 backdrop-blur rounded-xl p-6 border border-white/20">
-                <p className="text-blue-900 leading-relaxed mb-4">
-                  The quickest way to get help is via our Discord community. For business or privacy matters, please email us directly.
+              <h2 className="text-lg font-bold" style={sectionHeadingStyle}>Support & Quick Contact</h2>
+              <div style={innerCardStyle}>
+                <p className="text-slate-400 text-sm leading-relaxed mb-4">
+                  The quickest way to get help is via our Discord community.
+                  For business or privacy matters, please email us directly.
                 </p>
                 <div className="space-y-3">
-                  <div className="flex items-center gap-3 p-4 glass-tile-nav border border-white/15">
-                    <FaEnvelope className="text-blue-400 text-lg flex-shrink-0" />
-                    <div>
-                      <div className="text-sm text-blue-700 mb-1">Email Support</div>
-                      <a
-                        href="mailto:jenscollaert@icloud.com"
-                        className="text-blue-900 hover:text-blue-600 transition-colors font-medium"
-                      >
-                        jenscollaert@icloud.com
-                      </a>
+                  {quickContacts.map(({ icon, label, value, href, external }) => (
+                    <div
+                      key={label}
+                      className="flex items-center gap-3 rounded-xl p-4 transition-all duration-200"
+                      style={{
+                        background: "rgba(0,229,255,0.03)",
+                        border: "1px solid rgba(0,229,255,0.08)",
+                      }}
+                    >
+                      <span style={{ color: "#00e5ff", fontSize: "16px", flexShrink: 0 }}>{icon}</span>
+                      <div>
+                        <div className="text-xs text-slate-500 mb-0.5">{label}</div>
+                        <a
+                          href={href}
+                          target={external ? "_blank" : undefined}
+                          rel={external ? "noopener noreferrer" : undefined}
+                          className="text-sm font-medium transition-colors duration-200"
+                          style={{ color: "#00e5ff", textDecoration: "none" }}
+                          onMouseEnter={e => e.currentTarget.style.textDecoration = "underline"}
+                          onMouseLeave={e => e.currentTarget.style.textDecoration = "none"}
+                        >
+                          {value}
+                        </a>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-3 p-4 glass-tile-nav border border-white/15">
-                    <FaDiscord className="text-blue-400 text-lg flex-shrink-0" />
-                    <div>
-                      <div className="text-sm text-blue-700 mb-1">Community Discord</div>
-                      <a
-                        href="https://discord.gg/xvaNzE35Rs"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-900 hover:text-blue-600 transition-colors font-medium"
-                      >
-                        discord.gg/xvaNzE35Rs
-                      </a>
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </div>
             </section>
@@ -141,24 +201,29 @@ export default function Contact() {
           <div className="mt-10 text-center">
             <Link
               to="/"
-              className="inline-flex items-center gap-2 px-8 py-4 glass-tile-nav text-blue-900 font-bold rounded-xl border border-white/20 transition-all duration-300 hover:scale-105 shadow-lg"
+              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl font-bold text-sm transition-all duration-200"
+              style={{
+                background: "rgba(0,229,255,0.07)",
+                border: "1px solid rgba(0,229,255,0.15)",
+                color: "#e2e8f0",
+                textDecoration: "none",
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = "rgba(0,229,255,0.12)";
+                e.currentTarget.style.boxShadow = "0 0 20px rgba(0,229,255,0.15)";
+                e.currentTarget.style.transform = "translateY(-2px)";
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = "rgba(0,229,255,0.07)";
+                e.currentTarget.style.boxShadow = "none";
+                e.currentTarget.style.transform = "translateY(0)";
+              }}
             >
-              <FaArrowLeft /> Back to Home
+              <FaArrowLeft size={13} /> Back to Home
             </Link>
           </div>
-          <div className="absolute bottom-0 right-0 w-20 h-20 border-r-2 border-b-2 border-white/20 rounded-br-2xl pointer-events-none"></div>
-          <div className="absolute top-0 left-0 w-20 h-20 border-l-2 border-t-2 border-white/20 rounded-tl-2xl pointer-events-none"></div>
-        </div>
+        </motion.div>
       </div>
-
-      <style jsx="true">{`
-        .glass-tile-nav {
-          background: linear-gradient(115deg,rgba(255,255,255,0.54),rgba(158,235,255,0.13) 100%);
-          box-shadow: 0 1.5px 14px 0 rgba(50,100,255,0.11);
-          backdrop-filter: blur(15px);
-          -webkit-backdrop-filter: blur(15px);
-        }
-      `}</style>
     </div>
   );
 }
