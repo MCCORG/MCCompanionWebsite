@@ -1,18 +1,7 @@
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { FaDiscord, FaGithub } from "react-icons/fa";
 
 export default function Footer() {
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  const scrollToInfo = () => {
-    if (location.pathname === "/") {
-      const el = document.getElementById("how-it-works");
-      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-    } else {
-      navigate("/", { state: { scrollTo: "how-it-works" } });
-    }
-  };
 
   return (
     <footer
@@ -84,13 +73,6 @@ export default function Footer() {
         </div>
 
         <nav className="flex flex-wrap gap-6 justify-center">
-          <button
-            onClick={scrollToInfo}
-            className="text-slate-400 hover:text-cyan-400 font-medium transition-colors duration-200 text-sm"
-            style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}
-          >
-            Info
-          </button>
 
           {[
             { to: "/privacy", label: "Privacy" },
