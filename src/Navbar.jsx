@@ -73,24 +73,6 @@ export default function Navbar() {
 
         <nav className="hidden md:flex items-center gap-3">
           <button
-            onClick={scrollToInfo}
-            className="px-4 py-2 rounded-full font-medium transition-all duration-200 text-slate-300 hover:text-cyan-400"
-            style={{
-              background: "rgba(255,255,255,0.04)",
-              border: "1px solid rgba(255,255,255,0.08)",
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.background = "rgba(0,229,255,0.08)";
-              e.currentTarget.style.border = "1px solid rgba(0,229,255,0.2)";
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.background = "rgba(255,255,255,0.04)";
-              e.currentTarget.style.border = "1px solid rgba(255,255,255,0.08)";
-            }}
-          >
-            Info
-          </button>
-          <button
             onClick={() => navigate("/slot")}
             className="px-4 py-2 rounded-full font-bold transition-all duration-200 text-slate-200 hover:text-cyan-300"
             style={{

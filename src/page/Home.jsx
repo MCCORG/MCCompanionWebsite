@@ -10,15 +10,6 @@ const platforms = [
   { icon: <FaApple size={30} />, label: "iOS", url: "https://apps.apple.com/be/app/netherlink/id6747323142?l=en", color: "#a8a8a8" },
 ];
 
-const features = [
-  "One-Tap to Any Bedrock Server",
-  "Works with PlayStation, Xbox, Switch & mobile",
-  "No port forwarding needed",
-  "Instant LAN discovery on console",
-  "Zero added latency (UDP tunneling)",
-  "All data private: nothing ever uploaded",
-];
-
 const fadeUp = {
   hidden: { opacity: 0, y: 28 },
   visible: (i = 0) => ({
@@ -100,6 +91,22 @@ export default function Home() {
       <main className="flex-1 w-full flex flex-col items-center px-4 sm:px-6 pt-28 sm:pt-36">
 
         <section className="max-w-2xl pb-10 mx-auto text-center flex flex-col gap-6 items-center w-full">
+          <motion.section
+            className="w-full max-w-2xl mb-10"
+            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.1, duration: 0.45 }}
+          >
+            <div className="rounded-2xl px-6 py-5 text-sm"
+              style={{
+                background: "linear-gradient(135deg, rgba(0,229,255,0.05) 0%, rgba(99,102,241,0.05) 100%)",
+                border: "1px solid rgba(0,229,255,0.12)",
+                color: "#94a3b8",
+              }}
+            >
+              <b className="text-cyan-400">Update soon:</b>{" "}
+              Java Mode, allowing bedrock players to play java only servers.
+            </div>
+          </motion.section>
           <motion.h1
             className="text-[2.2rem] sm:text-5xl font-extrabold leading-tight"
             style={{
@@ -110,16 +117,7 @@ export default function Home() {
             }}
             initial="hidden" animate="visible" variants={fadeUp} custom={0}
           >
-            Turn Any Minecraft Server Into Local Play
-          </motion.h1>
-
-          <motion.p
-            className="text-slate-400 text-lg font-medium leading-relaxed"
-            initial="hidden" animate="visible" variants={fadeUp} custom={1}
-          >
-            Connect your console to any Bedrock server—see it instantly in your LAN/Friends list.
-            Simple config, zero hassle. Just play.
-          </motion.p>
+            NetherLink          </motion.h1>
 
           <motion.div
             className="flex gap-4 justify-center flex-wrap"
@@ -185,47 +183,6 @@ export default function Home() {
         </motion.div>
 
         <motion.section
-          className="w-full max-w-2xl mb-6 mt-1"
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.65, duration: 0.5 }}
-        >
-          <div className="rounded-2xl p-7" style={cardStyle}>
-            <ul className="grid sm:grid-cols-2 gap-3">
-              {features.map((f, i) => (
-                <motion.li
-                  key={f}
-                  className="flex items-center gap-3 text-slate-300 font-medium text-sm"
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.7 + i * 0.07, duration: 0.35 }}
-                >
-                  <span className="inline-block w-2 h-2 rounded-full flex-shrink-0"
-                    style={{ background: "#00e5ff", boxShadow: "0 0 8px rgba(0,229,255,0.6)" }} />
-                  {f}
-                </motion.li>
-              ))}
-            </ul>
-          </div>
-        </motion.section>
-
-        <motion.section
-          className="w-full max-w-2xl mb-10"
-          initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.1, duration: 0.45 }}
-        >
-          <div className="rounded-2xl px-6 py-5 text-sm"
-            style={{
-              background: "linear-gradient(135deg, rgba(0,229,255,0.05) 0%, rgba(99,102,241,0.05) 100%)",
-              border: "1px solid rgba(0,229,255,0.12)",
-              color: "#94a3b8",
-            }}
-          >
-            <b className="text-cyan-400">What's New:</b>{" "}
-            Friends Mode, language support (nl, tr, en), support and how to use menu added.
-          </div>
-        </motion.section>
-
-        <motion.section
           className="w-full max-w-4xl mb-24"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -234,9 +191,9 @@ export default function Home() {
         >
           <div className="grid sm:grid-cols-3 gap-4">
             {[
-              { icon: <FaCheckCircle />, title: "Simple Setup", desc: "No port forwarding. Works out-of-the-box on any Bedrock server." },
-              { icon: <FaSave />, title: "Saveable Server List", desc: "Bookmarks for your servers: no need to retype IPs, just select and connect." },
-              { icon: <FaBolt />, title: "Intelligent Relay & Auto Failover", desc: "Always the fastest relay is used, fallback to EU/US — never get stuck." },
+              { icon: <FaCheckCircle />, title: "Simple Setup", desc: "Install the app, choose which mode you need and press start" },
+              { icon: <FaSave />, title: "Saveable Server List", desc: "no need to retype IPs, just select and connect." },
+              { icon: <FaBolt />, title: "Intelligent Relay & Auto Failover", desc: "Always the fastest relay is used, fallback to EU/USR" },
             ].map((f, i) => (
               <motion.div
                 key={i}
@@ -257,125 +214,6 @@ export default function Home() {
             ))}
           </div>
         </motion.section>
-
-        <div id="how-it-works" className="w-full max-w-4xl mb-16 flex items-center gap-4 scroll-mt-20">
-          <div className="flex-1 h-px" style={{ background: "linear-gradient(90deg, transparent, rgba(0,229,255,0.2))" }} />
-          <span className="text-xs font-semibold tracking-widest uppercase" style={{ color: "rgba(0,229,255,0.5)" }}>
-            How it works
-          </span>
-          <div className="flex-1 h-px" style={{ background: "linear-gradient(90deg, rgba(0,229,255,0.2), transparent)" }} />
-        </div>
-
-        <div className="w-full max-w-4xl flex flex-col gap-8 mb-16">
-
-          <SectionCard icon={<FaBroadcastTower />} title="How NetherLink Works">
-            <div className="space-y-4 text-slate-400 leading-relaxed text-sm">
-              <p>
-                <span className="text-slate-200 font-semibold">NetherLink</span> makes any external Minecraft Bedrock
-                server appear as a local LAN game on your console (PlayStation, Xbox). No port forwarding,
-                just LAN broadcasting magic.
-              </p>
-              <ul className="space-y-2 mt-3">
-                {[
-                  ["One-Tap Connection", "Instantly join any Bedrock server via your LAN list."],
-                  ["Smart Relays", "Auto-failover between EU/US, minimum latency always."],
-                  ["Battery Efficient", "Broadcasting stops once you're connected."],
-                  ["No Data Sent", "Servers & profiles stay private on your device."],
-                ].map(([title, desc]) => (
-                  <li key={title} className="flex items-start gap-2">
-                    <span className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0"
-                      style={{ background: "#00e5ff", boxShadow: "0 0 6px rgba(0,229,255,0.5)" }} />
-                    <span>
-                      <span className="text-slate-200 font-semibold">{title}:</span> {desc}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </SectionCard>
-
-          <SectionCard icon={<FaSitemap />} title="Nintendo Switch — DNS Setup">
-            <ol className="space-y-4 text-slate-400 text-sm">
-              {[
-                ["Same network", "Make sure your phone/tablet and console are on the same Wi‑Fi (avoid Guest networks)."],
-                ["Open NetherLink", "Launch the app on your phone or tablet."],
-                ["Enter server details", <>Enter the IP/domain &amp; port (default: <span className="font-mono text-cyan-400">19132</span>) or select a saved server.</>],
-                ["Toggle DNS mode", "Tap the server and toggle Nintendo Switch (DNS mode)."],
-                ["Send DNS Config", "Tap \"Send DNS Config\" — NetherLink pushes the config to its servers."],
-                ["Set console DNS", "Enter the provided IP as primary DNS on your Switch. Leave secondary blank."],
-                ["Join in Minecraft", "Go to Servers on your console. Look for MOTD \"NetherLink RelayServer\" and join!"],
-              ].map(([title, desc], i) => (
-                <li key={i} className="flex gap-4">
-                  <span className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold"
-                    style={{ background: "rgba(0,229,255,0.1)", border: "1px solid rgba(0,229,255,0.25)", color: "#00e5ff" }}>
-                    {i + 1}
-                  </span>
-                  <span>
-                    <span className="text-slate-200 font-semibold">{title}</span>
-                    <br />
-                    <span>{desc}</span>
-                  </span>
-                </li>
-              ))}
-            </ol>
-          </SectionCard>
-
-          <SectionCard icon={<FaWrench />} title="Can't Connect? Troubleshooting">
-            <div className="grid sm:grid-cols-2 gap-6 text-slate-400 text-sm">
-              {[
-                {
-                  label: "✅ Basic Checks",
-                  items: [
-                    "Same WiFi: phone/tablet and console MUST be on the same network",
-                    "Correct IP & port (default: 19132)",
-                    "NetherLink must show \"Broadcasting\" status",
-                  ],
-                },
-                {
-                  label: "🔄 Quick Fixes",
-                  items: [
-                    "Restart the app: stop broadcast, close, reopen",
-                    "Restart your console",
-                    "Check Friends/LAN tab (not the server list)",
-                    "Wait 10–15 sec after starting broadcast",
-                    "Disable VPN — blocks LAN broadcasting",
-                  ],
-                },
-                {
-                  label: "⚠️ Common Errors",
-                  items: [
-                    "No route found — same Wi‑Fi required, avoid Guest networks",
-                    "Unable to connect to relay — check internet connection",
-                    "Server visible but won't connect — target server may be offline",
-                  ],
-                },
-                {
-                  label: "📱 Still Stuck?",
-                  items: [
-                    "Enable Debug Mode for detailed logs",
-                    "Disable low power mode (stops background tasks)",
-                    "Try a different server to isolate the issue",
-                  ],
-                },
-              ].map(({ label, items }) => (
-                <div key={label}>
-                  <h3 className="font-semibold text-slate-300 mb-2 text-sm">{label}</h3>
-                  <ul className="space-y-1.5">
-                    {items.map(item => (
-                      <li key={item} className="flex items-start gap-2">
-                        <span className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0"
-                          style={{ background: "rgba(0,229,255,0.5)" }} />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-          </SectionCard>
-
-        </div>
-        <div className="h-16" />
       </main>
     </div>
   );

@@ -7,7 +7,6 @@ import Contact from "./page/Contact";
 import FeaturedSlot from "./page/FeaturedSlot";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
-import Metrics from "./page/Metrics";
 
 export function ScrollToTop() {
   const { pathname } = useLocation();
@@ -28,7 +27,6 @@ export default function App() {
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/slot" element={<FeaturedSlot />} />
-        <Route path="/metrics" element={<Metrics />} />
       </Routes>
       <Footer />
     </Router>
