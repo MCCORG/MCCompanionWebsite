@@ -20,7 +20,7 @@ Available on **Windows**, **macOS**, **Android**, and **iOS**.
 
 | Platform | Mode | Guide |
 |---|---|---|
-| 🎮 PlayStation & Xbox | DNS Mode | [How to use →](./howto/playstation-xbox-howto) |
+| 🎮 PlayStation & Xbox | Broadcast Mode | [How to use →](./howto/playstation-xbox-howto) |
 | 🎮 Nintendo Switch | DNS Mode | [How to use →](./howto/nintendo-howto) |
 | 👥 Any console | Friends Mode | [How to use →](./howto/friend-howto) |
 | ☕ Bedrock → Java | Java Mode | [How to use →](./howto/java-howto) |
