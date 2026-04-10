@@ -14,14 +14,28 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      - name: Install dependencies and build
+      - name: Install & build React site
         run: |
           npm install
           npm run build
 
-      - name: Deploy to GitHub Pages
+      - name: Install & build Docusaurus
+        run: |
+          npm install
+          npm run build
+        working-directory: docs
+
+      - name: Deploy React site
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: dist
+          clean: false
+
+      - name: Deploy Docs
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: docs/build
+          target-folder: docs
+          clean: false
