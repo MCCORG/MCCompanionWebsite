@@ -52,8 +52,8 @@ export default function FeaturedServersCarousel() {
         <div
           className="rounded-2xl px-7 py-8 flex justify-center items-center min-h-[160px]"
           style={{
-            background: "linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(0,229,255,0.03) 100%)",
-            border: "1px solid rgba(0,229,255,0.1)",
+            background: "linear-gradient(135deg, rgba(65,32,120,0.08) 0%, rgba(110,60,155,0.08) 100%)",
+            border: "1px solid rgba(120,64,200,0.13)",
           }}
         >
           <span className="text-slate-500 font-semibold animate-pulse">Loading featured servers...</span>
@@ -69,26 +69,26 @@ export default function FeaturedServersCarousel() {
       <div
         className="rounded-2xl py-6 px-4 relative overflow-hidden min-h-[200px] flex flex-col items-center"
         style={{
-          background: "linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(0,229,255,0.04) 100%)",
-          border: "1px solid rgba(0,229,255,0.12)",
-          boxShadow: "0 8px 40px rgba(0,0,0,0.35), 0 0 0 1px rgba(0,229,255,0.05)",
+          background: "linear-gradient(135deg, rgba(81,51,150,0.10) 0%, rgba(161,132,250,0.11) 100%)",
+          border: "1px solid rgba(120,64,200,0.15)",
+          boxShadow: "0 8px 40px rgba(40,20,60,0.32), 0 0 0 1px rgba(120,64,200,0.09)",
           backdropFilter: "blur(16px)",
         }}
       >
         <button
           onClick={prev}
-          className="absolute left-3 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full transition-all duration-200 text-slate-300 hover:text-cyan-400"
+          className="absolute left-3 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full transition-all duration-200 text-slate-300 hover:text-violet-300"
           style={{
-            background: "rgba(255,255,255,0.05)",
-            border: "1px solid rgba(255,255,255,0.08)",
+            background: "rgba(161,132,250,0.11)",
+            border: "1px solid rgba(120,64,200,0.15)",
           }}
           onMouseEnter={e => {
-            e.currentTarget.style.background = "rgba(0,229,255,0.1)";
-            e.currentTarget.style.border = "1px solid rgba(0,229,255,0.25)";
+            e.currentTarget.style.background = "rgba(161,132,250,0.19)";
+            e.currentTarget.style.border = "1px solid #a184fa";
           }}
           onMouseLeave={e => {
-            e.currentTarget.style.background = "rgba(255,255,255,0.05)";
-            e.currentTarget.style.border = "1px solid rgba(255,255,255,0.08)";
+            e.currentTarget.style.background = "rgba(161,132,250,0.11)";
+            e.currentTarget.style.border = "1px solid rgba(120,64,200,0.15)";
           }}
           aria-label="Previous server"
         >
@@ -97,18 +97,18 @@ export default function FeaturedServersCarousel() {
 
         <button
           onClick={next}
-          className="absolute right-3 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full transition-all duration-200 text-slate-300 hover:text-cyan-400"
+          className="absolute right-3 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full transition-all duration-200 text-slate-300 hover:text-violet-300"
           style={{
-            background: "rgba(255,255,255,0.05)",
-            border: "1px solid rgba(255,255,255,0.08)",
+            background: "rgba(161,132,250,0.11)",
+            border: "1px solid rgba(120,64,200,0.15)",
           }}
           onMouseEnter={e => {
-            e.currentTarget.style.background = "rgba(0,229,255,0.1)";
-            e.currentTarget.style.border = "1px solid rgba(0,229,255,0.25)";
+            e.currentTarget.style.background = "rgba(161,132,250,0.19)";
+            e.currentTarget.style.border = "1px solid #a184fa";
           }}
           onMouseLeave={e => {
-            e.currentTarget.style.background = "rgba(255,255,255,0.05)";
-            e.currentTarget.style.border = "1px solid rgba(255,255,255,0.08)";
+            e.currentTarget.style.background = "rgba(161,132,250,0.11)";
+            e.currentTarget.style.border = "1px solid rgba(120,64,200,0.15)";
           }}
           aria-label="Next server"
         >
@@ -131,9 +131,9 @@ export default function FeaturedServersCarousel() {
                 alt={current.name + " icon"}
                 className="w-16 h-16 rounded-xl mb-3 object-cover"
                 style={{
-                  border: "1px solid rgba(0,229,255,0.2)",
-                  boxShadow: "0 0 20px rgba(0,229,255,0.1)",
-                  background: "rgba(255,255,255,0.05)",
+                  border: "1px solid #a184fa44",
+                  boxShadow: "0 0 20px #a184fa22",
+                  background: "rgba(120,64,200,0.08)",
                 }}
               />
             )}
@@ -143,32 +143,34 @@ export default function FeaturedServersCarousel() {
             >
               {current.name}
             </h3>
-            <div className="text-cyan-400 text-xs font-mono mb-1">
+            <div className="text-violet-300 text-m font-mono mb-1">
               {current.address}:{current.port}
             </div>
-            <div className="text-slate-400 text-xs mb-4">{current.description}</div>
-            <a
-              href={current.websiteUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-1.5 rounded-full transition-all duration-200"
-              style={{
-                color: "#00e5ff",
-                background: "rgba(0,229,255,0.08)",
-                border: "1px solid rgba(0,229,255,0.2)",
-                textDecoration: "none",
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.background = "rgba(0,229,255,0.15)";
-                e.currentTarget.style.boxShadow = "0 0 16px rgba(0,229,255,0.2)";
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.background = "rgba(0,229,255,0.08)";
-                e.currentTarget.style.boxShadow = "none";
-              }}
-            >
-              Visit website <FaExternalLinkAlt size={11} />
-            </a>
+            <div className="text-slate-350 text-xs mb-4">{current.description}</div>
+            {current.websiteUrl && (
+              <a
+                href={current.websiteUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-1.5 rounded-full transition-all duration-200"
+                style={{
+                  color: "#dedbe7",
+                  background: "rgba(120,64,200,0.12)",
+                  border: "1px solid #a184fa44",
+                  textDecoration: "none",
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.background = "rgba(161,132,250,0.23)";
+                  e.currentTarget.style.boxShadow = "0 0 16px #a184fa77";
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = "rgba(120,64,200,0.12)";
+                  e.currentTarget.style.boxShadow = "none";
+                }}
+              >
+                Visit website <FaExternalLinkAlt size={11} />
+              </a>
+            )}
           </motion.div>
         </AnimatePresence>
 
@@ -181,8 +183,8 @@ export default function FeaturedServersCarousel() {
               style={{
                 width: i === active ? "20px" : "8px",
                 height: "8px",
-                background: i === active ? "#00e5ff" : "rgba(255,255,255,0.15)",
-                boxShadow: i === active ? "0 0 8px rgba(0,229,255,0.6)" : "none",
+                background: i === active ? "#a184fa" : "rgba(161,132,250,0.25)",
+                boxShadow: i === active ? "0 0 8px #a184fa77" : "none",
                 border: "none",
                 cursor: "pointer",
               }}

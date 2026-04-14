@@ -1,0 +1,93 @@
+@import "tailwindcss";
+body {
+  position: relative;
+  min-height: 100vh;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  width: 100vw;
+  height: 100vh;
+background: linear-gradient(135deg, #0c0a13 0%, #1c1330 40%, #2d1f4d 70%, #141020 100%);  pointer-events: none;
+}
+
+header#navbar .flex a,
+header#navbar .flex a:visited,
+header#navbar .flex a:focus,
+header#navbar .flex a:active,
+header#navbar .flex a:hover {
+  color: #e5e7eb !important;
+  text-decoration: none !important;
+}
+
+.navbar a, 
+.navbar a:visited, 
+.navbar a:focus, 
+.navbar a:hover, 
+.navbar a:active {
+  color: #e5e7eb !important;
+  text-decoration: none !important;
+}
+.navbar a:hover {
+  color: #c084fc !important;
+  text-decoration: none !important;
+}
+
+header#navbar .flex a:hover,
+header#navbar .flex a:active {
+  color: #c084fc !important;
+  text-decoration: none !important;
+}
+
+footer a,
+footer a:visited {
+  color: #ffffff !important;
+  text-decoration: none !important;
+}
+
+footer a:hover,
+footer a:focus {
+  color: #c084fc !important;
+  text-decoration: none !important;
+}
+
+footer .text-slate-200,
+footer .text-slate-200 a,
+footer .text-slate-200 a:visited {
+  color: #e5e7eb !important;
+}
+
+:root {
+  --nl-navbar-height: 25px;
+}
+
+#__docusaurus, .main-wrapper, main, .container  {
+  padding-top: var(--nl-navbar-height) !important;
+}
+
+.theme-doc-sidebar-container,
+nav.theme-doc-sidebar-menu {
+  padding-top: var(--nl-navbar-height) !important;
+}
+
+@keyframes slidein {
+  0% { transform: translateX(120%); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+.animate-slidein { animation: slidein 0.28s cubic-bezier(.69,0,.55,1.01); }
+
+.hide-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  background: transparent;
+}
+.hide-scrollbar::-webkit-scrollbar-thumb {
+  background: #30204b;
+  border-radius: 4px;
+}
+.hide-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #30204b transparent;
+}
