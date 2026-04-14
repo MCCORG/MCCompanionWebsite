@@ -12,7 +12,6 @@ const config = {
 
   future: { 
     v4: true,
-    faster: false,
   },
 
   url: 'https://netherdevmc.github.io',

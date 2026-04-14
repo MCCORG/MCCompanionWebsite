@@ -15,8 +15,11 @@
   },
   "dependencies": {
     "@docusaurus/core": "3.10.0",
+    "@docusaurus/faster": "^3.10.0",
     "@docusaurus/preset-classic": "3.10.0",
     "@mdx-js/react": "^3.0.0",
+    "@rspack/binding": "^1.7.11",
+    "@rspack/core": "^1.7.11",
     "@tailwindcss/postcss": "^4.2.2",
     "autoprefixer": "^10.5.0",
     "clsx": "^2.0.0",
