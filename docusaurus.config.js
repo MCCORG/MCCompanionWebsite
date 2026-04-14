@@ -10,7 +10,10 @@ const config = {
 
   plugins: ["./src/plugins/tailwind-config.js"],
 
-  future: { v4: true },
+  future: { 
+    v4: true,
+    faster: false,
+  },
 
   url: 'https://netherdevmc.github.io',
   baseUrl: '/',
