@@ -12,8 +12,8 @@ const config = {
 
   future: { v4: true },
 
-  url: 'https://netherdevmc.github.io',    // ← Base repo URL voor GitHub Pages
-  baseUrl: '/',                       // ← Subpath van je GitHub Pages (laat zo als je hierop publiceert)
+  url: 'https://netherdevmc.github.io',
+  baseUrl: '/',
 
   organizationName: 'NetherDevMc',
   projectName: 'NetherLinkWebsite',
@@ -31,7 +31,7 @@ const config = {
       ({
         docs: {
           sidebarPath: './sidebars.js',
-          routeBasePath: 'docs',  // ← HIER! Docs staan nu op /docs/
+          routeBasePath: 'docs',
           editUrl: 'https://github.com/NetherDevMc/NetherLinkWebsite/tree/main/docs/',
         },
         blog: false,

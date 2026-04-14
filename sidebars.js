@@ -5,8 +5,8 @@ const sidebars = {
   tutorialSidebar: [
     {
       type: 'doc',
-      id: 'overview',   // <-- Verwijst naar docs/overview.md(x)
-      label: 'Overview' // <-- Hoe het in de sidebar (en Wiki dropdown) heet
+      id: 'overview',
+      label: 'Overview'
     },
     {
       type: 'category',
