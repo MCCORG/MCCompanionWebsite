@@ -7,7 +7,7 @@ export default function Footer() {
       className="mt-16 pt-10 pb-8 px-4"
       style={{
         borderTop: "1px solid rgba(120,64,200,0.10)",
-        background: "linear-gradient(135deg, #10091b 0%, #1c0932 75%, #150a28 100%)",
+        background: "#1b1d24",
       }}
     >
       <div className="max-w-5xl mx-auto flex flex-col items-center gap-5">
@@ -23,7 +23,7 @@ export default function Footer() {
           >
             NL
           </span>
-          <span className="font-bold text-slate-200 text-lg">NetherLink</span>
+          <span className="font-bold text-slate-100 text-lg">NetherLink</span>
         </div>
 
         <div className="flex gap-3">
@@ -53,7 +53,7 @@ export default function Footer() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="GitHub"
-            className="p-3 rounded-full transition-all duration-200 text-slate-300 hover:text-white"
+            className="p-3 rounded-full transition-all duration-200 text-slate-100 hover:text-white"
             style={{
               background: "rgba(160,128,250,0.13)",
               border: "1px solid rgba(120,64,200,0.17)",
@@ -80,7 +80,7 @@ export default function Footer() {
             <Link
               key={to}
               to={to}
-              className="text-slate-400 hover:text-violet-300 font-medium transition-colors duration-200 text-sm"
+              className="text-slate-100 hover:text-white-300 font-medium transition-colors duration-200 text-sm"
               style={{ textDecoration: "none" }}
             >
               {label}

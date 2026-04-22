@@ -9,51 +9,63 @@ export default function FeaturedServersCarousel() {
   const [servers, setServers] = useState([]);
   const [active, setActive] = useState(0);
   const [direction, setDirection] = useState(1);
-  const timer = useRef();
+  const [paused, setPaused] = useState(false);
+  const intervalRef = useRef(null);
 
   useEffect(() => {
     fetch(DATA_URL)
-      .then(r => r.json())
-      .then(data => {
-        setServers(data);
-        if (data.length) setActive(Math.floor(Math.random() * data.length));
+      .then((r) => r.json())
+      .then((data) => {
+        setServers(data || []);
+        if (data && data.length) setActive(Math.floor(Math.random() * data.length));
       })
       .catch(() => setServers([]));
   }, []);
 
   useEffect(() => {
-    if (!servers.length) return;
-    clearTimeout(timer.current);
-    timer.current = setTimeout(() => {
+    if (!servers.length || paused) return;
+    clearInterval(intervalRef.current);
+    intervalRef.current = setInterval(() => {
       setDirection(1);
-      setActive(a => (a === servers.length - 1 ? 0 : a + 1));
-    }, 4500);
-    return () => clearTimeout(timer.current);
-  }, [active, servers.length]);
+      setActive((a) => (a === servers.length - 1 ? 0 : a + 1));
+    }, 5000);
+    return () => clearInterval(intervalRef.current);
+  }, [servers.length, paused]);
+
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "ArrowLeft") prev();
+      if (e.key === "ArrowRight") next();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [servers.length, active]);
 
   const prev = () => {
     setDirection(-1);
-    setActive(a => (a === 0 ? servers.length - 1 : a - 1));
+    setActive((a) => (a === 0 ? servers.length - 1 : a - 1));
   };
   const next = () => {
     setDirection(1);
-    setActive(a => (a === servers.length - 1 ? 0 : a + 1));
+    setActive((a) => (a === servers.length - 1 ? 0 : a + 1));
   };
 
   const slideVariants = {
-    enter: d => ({ opacity: 0, x: d > 0 ? 40 : -40 }),
-    center: { opacity: 1, x: 0, transition: { duration: 0.35, ease: "easeOut" } },
-    exit: d => ({ opacity: 0, x: d > 0 ? -40 : 40, transition: { duration: 0.25 } }),
+    enter: (d) => ({ opacity: 0, x: d > 0 ? 40 : -40, scale: 0.99 }),
+    center: { opacity: 1, x: 0, scale: 1, transition: { duration: 0.45, ease: "easeOut" } },
+    exit: (d) => ({ opacity: 0, x: d > 0 ? -40 : 40, transition: { duration: 0.3 } }),
   };
 
   if (!servers.length) {
     return (
-      <section className="w-full max-w-xl mx-auto mb-12">
+      <section className="w-full max-w-3xl mx-auto mb-12 px-2">
         <div
           className="rounded-2xl px-7 py-8 flex justify-center items-center min-h-[160px]"
           style={{
-            background: "linear-gradient(135deg, rgba(65,32,120,0.08) 0%, rgba(110,60,155,0.08) 100%)",
-            border: "1px solid rgba(120,64,200,0.13)",
+            background: "linear-gradient(180deg, rgba(26,34,46,0.88), rgba(23,30,40,0.86))",
+            border: "1px solid rgba(80,180,255,0.06)",
+            boxShadow: "0 6px 24px rgba(20,30,40,0.25)",
+            backdropFilter: "blur(6px)",
           }}
         >
           <span className="text-slate-500 font-semibold animate-pulse">Loading featured servers...</span>
@@ -62,55 +74,90 @@ export default function FeaturedServersCarousel() {
     );
   }
 
-  const current = servers[active];
+  const current = servers[active] || {};
 
   return (
-    <section className="w-full max-w-xl mx-auto mb-12 px-2">
+    <section className="w-full max-w-3xl mx-auto mb-12 px-2">
       <div
-        className="rounded-2xl py-6 px-4 relative overflow-hidden min-h-[200px] flex flex-col items-center"
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+        className="rounded-2xl py-7 px-6 relative overflow-hidden min-h-[230px] flex flex-col items-center"
         style={{
-          background: "linear-gradient(135deg, rgba(81,51,150,0.10) 0%, rgba(161,132,250,0.11) 100%)",
-          border: "1px solid rgba(120,64,200,0.15)",
-          boxShadow: "0 8px 40px rgba(40,20,60,0.32), 0 0 0 1px rgba(120,64,200,0.09)",
-          backdropFilter: "blur(16px)",
+          border: "1px solid rgba(80,180,255,0.08)",
+          boxShadow: "0 8px 36px rgba(20,30,50,0.20)",
+          backdropFilter: "blur(8px)",
         }}
+        aria-roledescription="carousel"
       >
+        {/* BLURRED BACKGROUND IMAGE (fills the card) */}
+        {current.iconUrl && (
+          <img
+            src={current.iconUrl}
+            alt="" /* decorative background - keep empty alt */
+            aria-hidden="true"
+            loading="lazy"
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{
+              filter: "blur(14px) saturate(1.05)",
+              transform: "scale(1.08)",
+              opacity: 0.42,
+              zIndex: 0,
+            }}
+          />
+        )}
+
+        {/* DARKENING GRADIENT LAYER so text is always readable */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(180deg, rgba(6,12,18,0.55) 0%, rgba(8,12,18,0.65) 65%, rgba(6,8,12,0.8) 100%)",
+            zIndex: 1,
+            pointerEvents: "none",
+          }}
+        />
+
+        {/* LEFT ARROW */}
         <button
           onClick={prev}
-          className="absolute left-3 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full transition-all duration-200 text-slate-300 hover:text-violet-300"
-          style={{
-            background: "rgba(161,132,250,0.11)",
-            border: "1px solid rgba(120,64,200,0.15)",
-          }}
-          onMouseEnter={e => {
-            e.currentTarget.style.background = "rgba(161,132,250,0.19)";
-            e.currentTarget.style.border = "1px solid #a184fa";
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.background = "rgba(161,132,250,0.11)";
-            e.currentTarget.style.border = "1px solid rgba(120,64,200,0.15)";
-          }}
           aria-label="Previous server"
+          className="absolute left-4 top-1/2 -translate-y-1/2 z-20 p-2.5 rounded-full transition-colors text-slate-200"
+          style={{
+            background: "rgba(20,26,34,0.45)",
+            border: "1px solid rgba(255,255,255,0.03)",
+            backdropFilter: "blur(6px)",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = "rgba(34,150,220,0.13)";
+            e.currentTarget.style.boxShadow = "0 6px 18px rgba(34,150,220,0.07)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "rgba(20,26,34,0.45)";
+            e.currentTarget.style.boxShadow = "none";
+          }}
         >
           <FaChevronLeft size={18} />
         </button>
 
+        {/* RIGHT ARROW */}
         <button
           onClick={next}
-          className="absolute right-3 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full transition-all duration-200 text-slate-300 hover:text-violet-300"
-          style={{
-            background: "rgba(161,132,250,0.11)",
-            border: "1px solid rgba(120,64,200,0.15)",
-          }}
-          onMouseEnter={e => {
-            e.currentTarget.style.background = "rgba(161,132,250,0.19)";
-            e.currentTarget.style.border = "1px solid #a184fa";
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.background = "rgba(161,132,250,0.11)";
-            e.currentTarget.style.border = "1px solid rgba(120,64,200,0.15)";
-          }}
           aria-label="Next server"
+          className="absolute right-4 top-1/2 -translate-y-1/2 z-20 p-2.5 rounded-full transition-colors text-slate-200"
+          style={{
+            background: "rgba(20,26,34,0.45)",
+            border: "1px solid rgba(255,255,255,0.03)",
+            backdropFilter: "blur(6px)",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = "rgba(34,150,220,0.13)";
+            e.currentTarget.style.boxShadow = "0 6px 18px rgba(34,150,220,0.07)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "rgba(20,26,34,0.45)";
+            e.currentTarget.style.boxShadow = "none";
+          }}
         >
           <FaChevronRight size={18} />
         </button>
@@ -123,74 +170,121 @@ export default function FeaturedServersCarousel() {
             initial="enter"
             animate="center"
             exit="exit"
-            className="flex flex-col items-center text-center px-10 w-full"
+            className="flex flex-col items-center text-center px-6 w-full max-w-xl"
+            style={{ zIndex: 2 }} /* content above background & gradient */
+            role="group"
+            aria-label={`Slide ${active + 1} of ${servers.length}`}
           >
-            {current.iconUrl && (
+            {/* SHARP ICON / THUMBNAIL */}
+            {current.iconUrl ? (
               <img
                 src={current.iconUrl}
-                alt={current.name + " icon"}
-                className="w-16 h-16 rounded-xl mb-3 object-cover"
+                alt={`${current.name} icon`}
+                className="w-20 h-20 rounded-xl mb-4 object-cover"
                 style={{
-                  border: "1px solid #a184fa44",
-                  boxShadow: "0 0 20px #a184fa22",
-                  background: "rgba(120,64,200,0.08)",
+                  border: "2px solid rgba(85,234,252,0.14)",
+                  background: "rgba(80,180,255,0.04)",
+                  boxShadow: "0 6px 18px rgba(34,150,220,0.06)",
                 }}
+                loading="lazy"
               />
-            )}
-            <h3
-              className="text-lg font-bold mb-1"
-              style={{ color: "#e2e8f0" }}
-            >
-              {current.name}
-            </h3>
-            <div className="text-violet-300 text-m font-mono mb-1">
-              {current.address}:{current.port}
-            </div>
-            <div className="text-slate-350 text-xs mb-4">{current.description}</div>
-            {current.websiteUrl && (
-              <a
-                href={current.websiteUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-1.5 rounded-full transition-all duration-200"
+            ) : (
+              <div
+                className="w-20 h-20 rounded-xl mb-4 flex items-center justify-center text-slate-300"
                 style={{
-                  color: "#dedbe7",
-                  background: "rgba(120,64,200,0.12)",
-                  border: "1px solid #a184fa44",
-                  textDecoration: "none",
-                }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.background = "rgba(161,132,250,0.23)";
-                  e.currentTarget.style.boxShadow = "0 0 16px #a184fa77";
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.background = "rgba(120,64,200,0.12)";
-                  e.currentTarget.style.boxShadow = "none";
+                  background: "linear-gradient(180deg, rgba(30,40,48,0.6), rgba(24,30,36,0.6))",
+                  border: "1px solid rgba(255,255,255,0.02)",
                 }}
               >
-                Visit website <FaExternalLinkAlt size={11} />
-              </a>
+                🎮
+              </div>
             )}
+
+            <h3 className="text-xl font-extrabold mb-1" style={{ color: "#e7f6ff" }}>
+              {current.name}
+            </h3>
+
+            <div className="text-blue-300 font-mono mb-2 select-all">
+              {current.address}:{current.port}
+            </div>
+
+            <p className="text-slate-300 text-sm mb-4 max-w-[68%]">
+              {current.description}
+            </p>
+
+            <div className="flex gap-3 items-center">
+              {current.websiteUrl && (
+                <a
+                  href={current.websiteUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-full transition-all"
+                  style={{
+                    color: "#05202a",
+                    background: "linear-gradient(180deg,#55eafc,#22c6fb)",
+                    boxShadow: "0 6px 24px rgba(34,198,251,0.14)",
+                    textDecoration: "none",
+                    border: "1px solid rgba(255,255,255,0.06)",
+                  }}
+                >
+                  Visit website <FaExternalLinkAlt size={12} />
+                </a>
+              )}
+
+              <button
+                onClick={() => {
+                  if (current.address && current.port) {
+                    navigator.clipboard?.writeText(`${current.address}:${current.port}`);
+                    alert("Server address copied to clipboard");
+                  }
+                }}
+                className="px-3 py-1.5 rounded-md text-xs font-medium bg-transparent border border-slate-700 text-slate-200"
+                style={{
+                  background: "rgba(255,255,255,0.02)",
+                }}
+                aria-label="Copy server address"
+              >
+                Copy address
+              </button>
+            </div>
           </motion.div>
         </AnimatePresence>
 
-        <div className="flex gap-1.5 justify-center mt-5">
-          {servers.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => { setDirection(i > active ? 1 : -1); setActive(i); }}
-              className="rounded-full transition-all duration-300"
-              style={{
-                width: i === active ? "20px" : "8px",
-                height: "8px",
-                background: i === active ? "#a184fa" : "rgba(161,132,250,0.25)",
-                boxShadow: i === active ? "0 0 8px #a184fa77" : "none",
-                border: "none",
-                cursor: "pointer",
-              }}
-              aria-label={`Go to server ${i + 1}`}
-            />
-          ))}
+        {/* INDICATORS */}
+        <div className="flex gap-2 justify-center mt-6" style={{ zIndex: 2 }}>
+          {servers.map((_, i) => {
+            const activeStyle =
+              i === active
+                ? {
+                  width: "22px",
+                  height: "8px",
+                  background: "linear-gradient(90deg,#55eafc,#22c6fb)",
+                  boxShadow: "0 6px 18px rgba(34,198,251,0.12)",
+                  borderRadius: "12px",
+                  border: "none",
+                  cursor: "pointer",
+                }
+                : {
+                  width: "8px",
+                  height: "8px",
+                  background: "rgba(255,255,255,0.06)",
+                  borderRadius: "8px",
+                  border: "none",
+                  cursor: "pointer",
+                };
+
+            return (
+              <button
+                key={i}
+                aria-label={`Go to slide ${i + 1}`}
+                onClick={() => {
+                  setDirection(i > active ? 1 : -1);
+                  setActive(i);
+                }}
+                style={activeStyle}
+              />
+            );
+          })}
         </div>
       </div>
     </section>

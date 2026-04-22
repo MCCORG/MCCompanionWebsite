@@ -1,5 +1,6 @@
+import { useState, useEffect } from "react";
 import { FaWindows, FaApple, FaAndroid, FaSave, FaBolt, FaCheckCircle, FaServer, FaUsers } from "react-icons/fa";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import FeaturedServersCarousel from "../components/FeaturedServersCarousel";
 import { useCombinedMetrics } from "../hooks/useMetrics";
 import Layout from '@theme/Layout';
@@ -20,11 +21,45 @@ const fadeUp = {
 };
 
 const cardStyle = {
-  background: "linear-gradient(135deg, rgba(34, 17, 60, 0.16) 0%, rgba(32,18,77,0.11) 100%)",
-  border: "1px solid rgba(81,51,150,0.16)",
-  boxShadow: "0 8px 32px rgba(32,18,77,0.28)",
-  backdropFilter: "blur(16px)",
-  WebkitBackdropFilter: "blur(16px)",
+  background: "linear-gradient(135deg, #242f3a 0%, #1b232b 100%)",
+  border: "1.5px solid rgba(47,66,90,0.18)",
+  boxShadow: "0 6px 36px rgba(30,46,85,0.14)",
+  backdropFilter: "blur(10px)",
+  WebkitBackdropFilter: "blur(10px)",
+};
+
+function RotatingWords({
+  prefix = "No bullshit. Just",
+  words = ["add your server", "start mode", "connect", "play"],
+  interval = 2200,
+  accentColor = "#55eafc",
+}) {
+  const [idx, setIdx] = useState(0);
+
+  useEffect(() => {
+    const t = setInterval(() => setIdx((i) => (i + 1) % words.length), interval);
+    return () => clearInterval(t);
+  }, [words.length, interval]);
+
+  const display = words[idx].charAt(0).toUpperCase() + words[idx].slice(1);
+
+  return (
+    <span style={{ display: "inline-block", marginLeft: 6 }}>
+      <span style={{ color: "inherit", fontWeight: 600 }}>{prefix} </span>
+      <AnimatePresence mode="wait">
+        <motion.span
+          key={idx}
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -6 }}
+          transition={{ duration: 0.36, ease: "easeOut" }}
+          style={{ display: "inline-block", color: accentColor, fontWeight: 800 }}
+        >
+          {display}
+        </motion.span>
+      </AnimatePresence>
+    </span>
+  );
 };
 
 function StatPill({ icon, value, label, loading }) {
@@ -32,21 +67,22 @@ function StatPill({ icon, value, label, loading }) {
     <div
       className="flex items-center gap-3 px-5 py-3 rounded-2xl"
       style={{
-        background: "rgba(100,80,160,0.09)",
-        border: "1px solid rgba(120,96,200,0.16)",
-        backdropFilter: "blur(12px)",
+        background: "rgba(44,56,72,0.13)",
+        border: "1px solid rgba(47,66,90,0.21)",
+        boxShadow: "0 2px 10px rgba(30,46,85,0.10)",
+        backdropFilter: "blur(7px)",
       }}
     >
-      <span style={{ color: "#a184fa", fontSize: "18px" }}>{icon}</span>
+      <span style={{ color: "#49caff", fontSize: "18px" }}>{icon}</span>
       <div className="flex flex-col leading-tight">
         {loading ? (
-          <span className="w-12 h-5 rounded animate-pulse" style={{ background: "rgba(120,96,200,0.13)" }} />
+          <span className="w-12 h-5 rounded animate-pulse" style={{ background: "#315174" }} />
         ) : (
           <span className="text-xl font-black text-slate-100" style={{ fontVariantNumeric: "tabular-nums" }}>
             {value.toLocaleString()}
           </span>
         )}
-        <span className="text-xs text-slate-500 font-medium">{label}</span>
+        <span className="text-xs text-slate-400 font-medium">{label}</span>
       </div>
     </div>
   );
@@ -57,8 +93,7 @@ export default function Home() {
 
   return (
     <Layout>
-      <div
-        className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col">
         <main className="flex-1 w-full flex flex-col items-center px-4 sm:px-6 pt-28 sm:pt-36">
 
           <section className="max-w-2xl pb-10 mx-auto text-center flex flex-col gap-6 items-center w-full">
@@ -67,29 +102,29 @@ export default function Home() {
               initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.1, duration: 0.45 }}
             >
-              <div className="rounded-2xl px-6 py-5 text-sm"
+              <div className="rounded-2xl px-6 py-5 text-sm shadow-lg"
                 style={{
-                  background: "linear-gradient(135deg, rgba(54, 28, 120, 0.07) 0%, rgba(92, 52, 160, 0.08) 100%)",
-                  border: "1px solid rgba(81,51,150,0.16)",
-                  color: "#b5aaf0",
+                  background: "linear-gradient(135deg, #273746 0%, #212932 100%)",
+                  border: "1.5px solid rgba(47,66,90,0.21)",
+                  color: "#bde9f7",
                 }}
               >
-                <b className="text-violet-300">Update soon:</b>{" "}
-                Java Mode, allowing bedrock players to play java only servers.
+                <b style={{ color: "#41cdfc" }}>Update soon:</b>{" "}
+                Backend servers rewritten, better performance, more stability and a new website layout.{" "}
               </div>
             </motion.section>
 
             <motion.p
-              className="mt-2 mb-4 text-base sm:text-lg text-slate-300 font-medium max-w-xl mx-auto"
+              className="mt-2 mb-4 text-base sm:text-lg text-slate-200 font-medium max-w-xl mx-auto"
               initial="hidden"
               animate="visible"
               variants={fadeUp}
               custom={1}
               style={{
-                textShadow: "0 2px 10px rgba(70,40,160,0.12)",
+                textShadow: "0 2px 10px rgba(30,45,60,0.10)",
               }}
             >
-              Play on any server from any platform Xbox, PlayStation 4-5, or Nindendo Switch. Simple, seamless, and together.
+              <RotatingWords words={["add your server", "start mode", "connect", "play"]} interval={2200} />
             </motion.p>
 
             <motion.div
@@ -123,25 +158,26 @@ export default function Home() {
                   animate="visible"
                   whileHover={{ scale: 1.06, y: -4 }}
                   whileTap={{ scale: 0.97 }}
-                  className="rounded-2xl flex flex-col items-center justify-center h-32 w-full cursor-pointer"
+                  className="rounded-2xl flex flex-col items-center justify-center h-32 w-full cursor-pointer transition-all"
                   style={{
-                    background: "linear-gradient(135deg, rgba(66,51,150,0.14) 0%, rgba(26,8,40,0.09) 100%)",
-                    border: "1px solid rgba(81,51,150,0.19)",
-                    boxShadow: "0 4px 24px rgba(38,22,53,0.14)",
-                    backdropFilter: "blur(12px)",
+                    background: "linear-gradient(135deg, #232f3c 0%, #263741 100%)",
+                    border: "1.5px solid rgba(47,66,90,0.18)",
+                    boxShadow: "0 4px 28px rgba(30,46,85,0.12)",
+                    backdropFilter: "blur(7px)",
                     textDecoration: "none",
+                    color: "#eaf6fd",
                   }}
                   onMouseEnter={e => {
-                    e.currentTarget.style.border = `1px solid ${p.color}44`;
-                    e.currentTarget.style.boxShadow = `0 8px 32px rgba(80,64,110,0.17), 0 0 20px ${p.color}30`;
+                    e.currentTarget.style.background = "linear-gradient(135deg, #25384a 0%, #355470 100%)";
+                    e.currentTarget.style.border = `1.5px solid ${p.color}`;
                   }}
                   onMouseLeave={e => {
-                    e.currentTarget.style.border = "1px solid rgba(81,51,150,0.19)";
-                    e.currentTarget.style.boxShadow = "0 4px 24px rgba(38,22,53,0.14)";
+                    e.currentTarget.style.background = "linear-gradient(135deg, #232f3c 0%, #263741 100%)";
+                    e.currentTarget.style.border = "1.5px solid rgba(47,66,90,0.18)";
                   }}
                 >
                   <span className="mb-2" style={{ color: p.color }}>{p.icon}</span>
-                  <span className="font-semibold text-slate-200 text-sm">{p.label}</span>
+                  <span className="font-semibold text-slate-100 text-sm">{p.label}</span>
                 </motion.a>
               ))}
             </div>
@@ -154,39 +190,6 @@ export default function Home() {
           >
             <FeaturedServersCarousel />
           </motion.div>
-
-          <motion.section
-            className="w-full max-w-4xl mb-24"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-60px" }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="grid sm:grid-cols-3 gap-4">
-              {[
-                { icon: <FaCheckCircle />, title: "Simple Setup", desc: "Install the app, choose which mode you need and press start" },
-                { icon: <FaSave />, title: "Saveable Server List", desc: "no need to retype IPs, just select and connect." },
-                { icon: <FaBolt />, title: "Intelligent Relay & Auto Failover", desc: "Always the fastest relay is used, fallback to EU/USR" },
-              ].map((f, i) => (
-                <motion.div
-                  key={i}
-                  className="flex flex-col gap-3 rounded-2xl px-5 py-6"
-                  style={cardStyle}
-                  initial={{ opacity: 0, y: 16 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1, duration: 0.4 }}
-                >
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center"
-                    style={{ background: "rgba(81,51,150,0.12)", color: "#a184fa", fontSize: "16px" }}>
-                    {f.icon}
-                  </div>
-                  <h4 className="font-bold text-slate-100">{f.title}</h4>
-                  <p className="text-slate-400 text-sm">{f.desc}</p>
-                </motion.div>
-              ))}
-            </div>
-          </motion.section>
         </main>
       </div>
     </Layout>

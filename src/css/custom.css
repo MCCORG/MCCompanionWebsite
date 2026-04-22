@@ -2,6 +2,7 @@
 body {
   position: relative;
   min-height: 100vh;
+  color: #f2eee6;
 }
 
 body::before {
@@ -11,53 +12,44 @@ body::before {
   z-index: -1;
   width: 100vw;
   height: 100vh;
-background: linear-gradient(135deg, #0c0a13 0%, #1c1330 40%, #2d1f4d 70%, #141020 100%);  pointer-events: none;
+  background-color: #1f2833;
 }
 
 header#navbar .flex a,
 header#navbar .flex a:visited,
 header#navbar .flex a:focus,
 header#navbar .flex a:active,
-header#navbar .flex a:hover {
-  color: #e5e7eb !important;
-  text-decoration: none !important;
-}
-
+header#navbar .flex a:hover,
 .navbar a, 
 .navbar a:visited, 
 .navbar a:focus, 
 .navbar a:hover, 
 .navbar a:active {
-  color: #e5e7eb !important;
-  text-decoration: none !important;
-}
-.navbar a:hover {
-  color: #c084fc !important;
+  color: white !important;
   text-decoration: none !important;
 }
 
+.navbar a:hover,
 header#navbar .flex a:hover,
 header#navbar .flex a:active {
-  color: #c084fc !important;
-  text-decoration: none !important;
+  color: white !important;
 }
 
 footer a,
 footer a:visited {
-  color: #ffffff !important;
+  color: white !important;
   text-decoration: none !important;
 }
 
 footer a:hover,
 footer a:focus {
-  color: #c084fc !important;
-  text-decoration: none !important;
+  color: white !important;
 }
 
 footer .text-slate-200,
 footer .text-slate-200 a,
 footer .text-slate-200 a:visited {
-  color: #e5e7eb !important;
+  color: white !important;
 }
 
 :root {
@@ -77,17 +69,22 @@ nav.theme-doc-sidebar-menu {
   0% { transform: translateX(120%); opacity: 0; }
   100% { transform: translateX(0); opacity: 1; }
 }
-.animate-slidein { animation: slidein 0.28s cubic-bezier(.69,0,.55,1.01); }
+
+.animate-slidein { 
+  animation: slidein 0.28s cubic-bezier(.69,0,.55,1.01); 
+}
 
 .hide-scrollbar::-webkit-scrollbar {
   width: 6px;
   background: transparent;
 }
+
 .hide-scrollbar::-webkit-scrollbar-thumb {
-  background: #30204b;
+  background: #1b1d24;
   border-radius: 4px;
 }
+
 .hide-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: #30204b transparent;
+  scrollbar-color: #1b1d24 transparent;
 }
