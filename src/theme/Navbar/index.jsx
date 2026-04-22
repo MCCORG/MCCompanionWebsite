@@ -72,7 +72,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [wikiDrop, setWikiDrop] = useState(false);
   const [wikiDropMobile, setWikiDropMobile] = useState(false);
-  const [user, setUser] = useState(null); // <-- auth state
+  const [user, setUser] = useState(null); 
   const menuRef = useRef();
   const wikiRef = useRef();
   const history = useHistory();
@@ -102,7 +102,6 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Observe firebase auth state (guarded for SSR: auth may be null)
   useEffect(() => {
     if (!auth) return;
     const unsub = onAuthStateChanged(auth, (u) => {
@@ -166,7 +165,6 @@ export default function Navbar() {
 
           <button onClick={() => navigate("/slot")} className="flex items-center gap-2 text-slate-200 hover:text-slate-300 font-semibold px-2 py-1 rounded"><FaStar size={18} /> Featured Slot</button>
 
-          {/* Dashboard button visible only when signed in */}
           {user && (
             <button onClick={() => navigate("/dashboard")} className="flex items-center gap-2 text-slate-200 hover:text-slate-300 font-semibold px-2 py-1 rounded bg-slate-900/20">
               Dashboard
@@ -218,7 +216,7 @@ export default function Navbar() {
             zIndex: 10001,
             background: "none",
             border: "none",
-            color: "#5c534d",
+            color: "#1b1d24",
             fontSize: 27,
             cursor: "pointer",
             padding: 5,
@@ -234,7 +232,7 @@ export default function Navbar() {
             <FaChevronDown className={`ml-auto transition-transform ${wikiDropMobile ? "rotate-180" : ""}`} size={16} />
           </button>
           {wikiDropMobile && DOC_SIDEBAR.length > 0 && (
-            <div className="pl-3 pt-1 fadein" style={{ borderLeft: "2px solid #26221f", backgroundColor: "#2c2824" }}>
+            <div className="pl-3 pt-1 fadein" style={{ borderLeft: "2px solid #26221f", backgroundColor: "#1b1d24" }}>
               <SidebarDropdown items={DOC_SIDEBAR} navigate={navigate} />
             </div>
           )}
