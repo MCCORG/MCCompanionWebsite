@@ -127,8 +127,8 @@ function MetricsList({ region, topServers = [], totalServers = 0, totalJoins = 0
 }
 
 const REGION_BASES = {
-    EU: "https://euapi.netherlink.net",
-    US: "https://usapi.netherlink.net",
+    EU: "https://eubackend.netherlink.net",
+    US: "https://usbackend.netherlink.net",
 };
 
 export default function MetricsPage() {

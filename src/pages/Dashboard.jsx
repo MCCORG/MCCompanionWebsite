@@ -6,8 +6,8 @@ import { fetchIdToken } from "../firebaseAuthHelpers";
 import Layout from '@theme/Layout';
 
 const REGION_BASES = {
-    EU: "https://euapi.netherlink.net",
-    US: "https://usapi.netherlink.net"
+    EU: "https://eubackend.netherlink.net",
+    US: "https://usbackend.netherlink.net"
 };
 const EVENTS_CAP = 1500;
 

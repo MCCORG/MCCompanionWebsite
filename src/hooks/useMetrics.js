@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 
 const ENDPOINTS = {
-  EU: "https://eumetrics.netherlink.net/api/metrics",
-  US: "https://usmetrics.netherlink.net/api/metrics",
+  EU: "https://eubackend.netherlink.net/api/metrics",
+  US: "https://usbackend.netherlink.net/api/metrics",
 };
 
 async function fetchMetrics(endpoint) {
