@@ -12,50 +12,199 @@ const REGION_BASES = {
 const EVENTS_CAP = 1500;
 
 function IconCopy() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="inline-block" xmlns="http://www.w3.org/2000/svg"><path d="M9 9H5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/><rect x="9" y="3" width="11" height="11" rx="2" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
-  );
+  return <svg width="13" height="13" viewBox="0 0 24 24" fill="none" className="inline-block" xmlns="http://www.w3.org/2000/svg"><path d="M9 9H5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><rect x="9" y="3" width="11" height="11" rx="2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>;
 }
+function IconRefresh() {
+  return <svg width="13" height="13" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 4v6h6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /><path d="M3.51 15a9 9 0 1 0 .49-4.95" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>;
+}
+function IconSignOut() {
+  return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /><polyline points="16 17 21 12 16 7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /><line x1="21" y1="12" x2="9" y2="12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>;
+}
+function IconBan() {
+  return <svg width="13" height="13" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.6" /><line x1="4.93" y1="4.93" x2="19.07" y2="19.07" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>;
+}
+function IconGlobe() {
+  return <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.6" /><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>;
+}
+
 function Badge({ children, color = "slate" }) {
   const cls = {
-    slate: "bg-slate-700 text-slate-100",
-    green: "bg-emerald-600 text-white",
-    red: "bg-rose-600 text-white",
-    yellow: "bg-amber-500 text-black",
-    violet: "bg-violet-600 text-white"
-  }[color] || "bg-slate-700 text-slate-100";
-  return <span className={`text-xs px-2 py-1 rounded-full ${cls}`}>{children}</span>;
+    slate: "bg-slate-700/60 text-slate-300 border border-slate-600/40",
+    green: "bg-emerald-500/15 text-emerald-400 border border-emerald-500/25",
+    red: "bg-rose-500/15 text-rose-400 border border-rose-500/25",
+    yellow: "bg-amber-500/15 text-amber-400 border border-amber-500/25",
+    violet: "bg-violet-500/15 text-violet-400 border border-violet-500/25",
+    blue: "bg-blue-500/15 text-blue-400 border border-blue-500/25",
+  }[color] || "bg-slate-700/60 text-slate-300";
+  return <span className={`inline-flex items-center text-xs px-2 py-0.5 rounded-full font-medium ${cls}`}>{children}</span>;
 }
-function Button({ children, onClick, variant = "primary", className = "", disabled, title }) {
-  const base = "inline-flex items-center gap-2 px-3 py-2 rounded-md font-semibold transition";
+
+function Button({ children, onClick, variant = "primary", size = "md", className = "", disabled, title }) {
+  const base = "inline-flex items-center gap-1.5 font-semibold transition-all rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500/50";
+  const sizes = { sm: "px-2.5 py-1.5 text-xs", md: "px-3.5 py-2 text-sm" };
   const variants = {
-    primary: "bg-violet-600 text-white hover:bg-violet-500",
-    secondary: "bg-gray-700 text-white hover:bg-gray-600",
-    danger: "bg-rose-600 text-white hover:bg-rose-500",
-    ghost: "bg-transparent text-slate-200 hover:bg-white/5 border border-white/6"
+    primary: "bg-violet-600 text-white hover:bg-violet-500 active:bg-violet-700",
+    secondary: "bg-white/8 text-slate-200 hover:bg-white/12 border border-white/8",
+    danger: "bg-rose-600/90 text-white hover:bg-rose-500 active:bg-rose-700",
+    ghost: "bg-transparent text-slate-300 hover:bg-white/6 border border-white/8",
   };
   return (
     <button title={title} onClick={onClick} disabled={disabled}
-      className={`${base} ${variants[variant]} ${className} ${disabled ? "opacity-60 cursor-not-allowed" : ""}`}>
+      className={`${base} ${sizes[size]} ${variants[variant]} ${className} ${disabled ? "opacity-40 cursor-not-allowed pointer-events-none" : ""}`}>
       {children}
     </button>
   );
 }
 
-function Card({ title, children, compact = false }) {
+function Card({ title, subtitle, children, className = "", action }) {
   return (
-    <section className={`bg-[rgba(8,6,10,0.55)] backdrop-blur-md rounded-xl p-${compact ? "3" : "6"} shadow border border-white/8`}>
-      {title && <h3 className="text-lg font-semibold mb-3 text-slate-100">{title}</h3>}
-      {children}
+    <section className={`bg-[rgba(12,9,18,0.7)] backdrop-blur-xl rounded-2xl border border-white/6 shadow-xl overflow-hidden flex flex-col ${className}`}>
+      {(title || action) && (
+        <div className="flex items-center justify-between px-5 py-4 border-b border-white/5 shrink-0">
+          <div>
+            <h3 className="text-sm font-semibold text-slate-100">{title}</h3>
+            {subtitle && <p className="text-xs text-slate-500 mt-0.5">{subtitle}</p>}
+          </div>
+          {action && <div>{action}</div>}
+        </div>
+      )}
+      <div className="p-5 flex flex-col flex-1">{children}</div>
     </section>
   );
 }
 
-function EventType({ type }) {
-  if (type === "set") return <Badge color="green">SET</Badge>;
-  if (type === "del") return <Badge color="red">DEL</Badge>;
-  if (type === "clear") return <Badge color="yellow">CLEAR</Badge>;
-  return <Badge color="violet">{type?.toUpperCase?.() || "?"}</Badge>;
+function RegionResultBadge({ results }) {
+  if (!results) return null;
+  return (
+    <div className="flex gap-1.5 mt-2">
+      {Object.entries(results).map(([r, ok]) => (
+        <span key={r} className={`text-xs px-2 py-0.5 rounded-full font-medium ${ok ? "bg-emerald-500/15 text-emerald-400" : "bg-rose-500/15 text-rose-400"}`}>
+          {r} {ok ? "✓" : "✗"}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+function StatusDot({ status }) {
+  const colors = {
+    open: "bg-emerald-400 shadow-[0_0_6px_2px_rgba(52,211,153,0.4)]",
+    connecting: "bg-amber-400 shadow-[0_0_6px_2px_rgba(251,191,36,0.4)] animate-pulse",
+    error: "bg-rose-400 shadow-[0_0_6px_2px_rgba(251,113,133,0.4)]",
+    closed: "bg-slate-500",
+  };
+  return <span className={`inline-block w-2 h-2 rounded-full ${colors[status] || colors.closed}`} />;
+}
+
+function Spinner({ size = 16 }) {
+  return (
+    <svg className="animate-spin" width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3V0a12 12 0 100 24v-4l-3 3 3 3v4a12 12 0 01-12-12z" />
+    </svg>
+  );
+}
+
+function SyncToggle({ value, onChange }) {
+  return (
+    <button onClick={() => onChange(!value)}
+      title={value ? "Sending to all regions" : "Sending to active region only"}
+      className={`inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg border font-semibold transition-all ${value ? "bg-violet-600/20 border-violet-500/40 text-violet-300" : "bg-white/4 border-white/8 text-slate-500 hover:text-slate-300"
+        }`}>
+      <IconGlobe />
+      {value ? "All regions" : "This region"}
+    </button>
+  );
+}
+
+const EVENT_META = {
+  set: { color: "border-emerald-500/50 bg-emerald-500/4", dot: "bg-emerald-400", label: "SET", badge: "green" },
+  del: { color: "border-rose-500/50 bg-rose-500/4", dot: "bg-rose-400", label: "DEL", badge: "red" },
+  clear: { color: "border-amber-500/50 bg-amber-500/4", dot: "bg-amber-400", label: "CLEAR", badge: "yellow" },
+  snapshot: { color: "border-blue-500/50 bg-blue-500/4", dot: "bg-blue-400", label: "SNAPSHOT", badge: "blue" },
+};
+
+function FeedEventRow({ ev, onBan, isBanned }) {
+  const [expanded, setExpanded] = useState(false);
+  const meta = EVENT_META[ev.type] || EVENT_META.set;
+  const v = ev.value || {};
+  const publicIp = v.publicIp || v.publicIP || v.public || ev.key || "";
+  const player = v.playerName || "";
+  const remoteIp = v.remoteServerIp || v.remoteServerIP || v.remote || "";
+  const remotePort = v.remoteServerPort || v.remotePort || v.port || "";
+  const time = ev.time ? new Date(ev.time).toLocaleTimeString() : "";
+
+  if (ev.type === "snapshot") {
+    return (
+      <div className={`rounded-xl border-l-2 ${meta.color} px-3 py-2.5 border border-blue-500/20`}>
+        <div className="flex items-center gap-2">
+          <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${meta.dot}`} />
+          <Badge color="blue">SNAPSHOT</Badge>
+          <span className="text-xs text-slate-400">{ev.count} entries loaded</span>
+          <span className="ml-auto text-xs text-slate-600">{time}</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (ev.type === "clear") {
+    return (
+      <div className={`rounded-xl border-l-2 ${meta.color} px-3 py-2.5 border border-amber-500/20`}>
+        <div className="flex items-center gap-2">
+          <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${meta.dot}`} />
+          <Badge color="yellow">CLEAR</Badge>
+          <span className="text-xs text-slate-400">{ev.entries?.length ?? 0} entries cleared</span>
+          <span className="ml-auto text-xs text-slate-600">{time}</span>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={`rounded-xl border-l-2 ${meta.color} border border-white/4 px-3 py-2.5 transition-all`}>
+      <div className="flex items-center gap-2 min-w-0">
+        <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${meta.dot}`} />
+        <Badge color={meta.badge}>{meta.label}</Badge>
+        <span className="font-mono text-slate-200 text-xs truncate max-w-[130px]" title={publicIp}>
+          {publicIp || "—"}
+        </span>
+        {player && (
+          <>
+            <span className="text-slate-600 text-xs">·</span>
+            <span className="text-xs text-slate-300 truncate max-w-[100px]" title={player}>{player}</span>
+          </>
+        )}
+        {remoteIp && (
+          <>
+            <span className="text-slate-600 text-xs hidden sm:inline">→</span>
+            <span className="font-mono text-xs text-slate-500 truncate hidden sm:inline max-w-[120px]">
+              {remoteIp}{remotePort ? `:${remotePort}` : ""}
+            </span>
+          </>
+        )}
+        <div className="ml-auto flex items-center gap-1.5 shrink-0">
+          <span className="text-xs text-slate-600 hidden sm:inline">{time}</span>
+          {ev.type === "set" && publicIp && !isBanned && (
+            <button onClick={() => onBan(publicIp)}
+              className="p-1 rounded text-slate-600 hover:text-rose-400 hover:bg-rose-500/10 transition" title="Ban IP">
+              <IconBan />
+            </button>
+          )}
+          <button onClick={() => setExpanded(x => !x)}
+            className="p-1 rounded text-slate-600 hover:text-slate-300 transition text-xs">
+            {expanded ? "▲" : "▼"}
+          </button>
+        </div>
+      </div>
+      {expanded && (
+        <div className="mt-2 pt-2 border-t border-white/5">
+          <pre className="text-xs text-slate-400 bg-black/30 rounded-lg p-2.5 overflow-auto max-h-40">
+            {JSON.stringify(ev.type === "set" || ev.type === "del" ? v : ev, null, 2)}
+          </pre>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default function DashboardPage() {
@@ -63,7 +212,6 @@ export default function DashboardPage() {
 
   const [region, setRegion] = useState("EU");
   const apiBase = REGION_BASES[region];
-
   const [user, setUser] = useState(null);
   const [checking, setChecking] = useState(true);
 
@@ -71,32 +219,42 @@ export default function DashboardPage() {
   const [editing, setEditing] = useState("");
   const [isDirty, setIsDirty] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [notifAllRegions, setNotifAllRegions] = useState(true);
+  const [notifResults, setNotifResults] = useState(null);
+
+  const [currentVersion, setCurrentVersion] = useState("");
+  const [versionUpdatedAt, setVersionUpdatedAt] = useState("");
+  const [editingVersion, setEditingVersion] = useState("");
+  const [isVersionDirty, setIsVersionDirty] = useState(false);
+  const [savingVersion, setSavingVersion] = useState(false);
+  const [versionError, setVersionError] = useState(null);
+  const [versionAllRegions, setVersionAllRegions] = useState(true);
+  const [versionResults, setVersionResults] = useState(null);
 
   const [eventsFeed, setEventsFeed] = useState([]);
   const [sseStatus, setSseStatus] = useState("closed");
   const esRef = useRef(null);
-
+  const feedContainerRef = useRef(null);
   const [currentMap, setCurrentMap] = useState({});
-
   const [rawFilter, setRawFilter] = useState("");
   const [filter, setFilter] = useState("");
   const filterTimer = useRef(null);
-
   const [showOnly, setShowOnly] = useState("all");
   const [autoStart, setAutoStart] = useState(false);
+  const [autoScroll, setAutoScroll] = useState(true);
 
   const [bans, setBans] = useState([]);
   const [bansLoading, setBansLoading] = useState(false);
   const [banIpInput, setBanIpInput] = useState("");
   const [banReasonInput, setBanReasonInput] = useState("");
   const [banError, setBanError] = useState(null);
+  const [banAllRegions, setBanAllRegions] = useState(true);
 
   useEffect(() => {
     if (!auth) { setChecking(false); return; }
     const unsub = onAuthStateChanged(auth, (u) => { setUser(u); setChecking(false); });
     return () => unsub();
   }, []);
-
   useEffect(() => {
     if (!checking && !user) history.replace("/login");
   }, [checking, user, history]);
@@ -109,16 +267,27 @@ export default function DashboardPage() {
       if (!res.ok) return;
       const json = await res.json();
       const msg = json?.message || "";
-      setCurrentNotification(msg);
-      setEditing(msg);
-      setIsDirty(false);
-    } catch (err) {
-      console.warn("loadCurrentNotification error", err);
-    }
+      setCurrentNotification(msg); setEditing(msg); setIsDirty(false);
+    } catch (err) { console.warn("loadCurrentNotification error", err); }
   }
+
+  async function loadCurrentVersion() {
+    setVersionError(null);
+    try {
+      const token = await fetchIdToken();
+      if (!token) return;
+      const res = await fetch(`${apiBase}/api/version`, { headers: { Authorization: `Bearer ${token}` } });
+      if (res.status === 404) { setCurrentVersion(""); setEditingVersion(""); setVersionUpdatedAt(""); return; }
+      if (!res.ok) throw new Error(`Failed to load version: ${res.status}`);
+      const json = await res.json();
+      const v = json?.version || "";
+      setCurrentVersion(v); setEditingVersion(v);
+      setVersionUpdatedAt(json?.updated_at || ""); setIsVersionDirty(false);
+    } catch (err) { console.warn("loadCurrentVersion error", err); setVersionError(String(err)); }
+  }
+
   async function loadBans() {
-    setBansLoading(true);
-    setBanError(null);
+    setBansLoading(true); setBanError(null);
     try {
       const token = await fetchIdToken();
       if (!token) throw new Error("Not authenticated");
@@ -126,16 +295,12 @@ export default function DashboardPage() {
       if (!res.ok) throw new Error(`Failed to load bans: ${res.status}`);
       const json = await res.json();
       setBans(Array.isArray(json.bans) ? json.bans : []);
-    } catch (err) {
-      console.error("loadBans error", err);
-      setBanError(String(err));
-      setBans([]);
-    } finally {
-      setBansLoading(false);
-    }
+    } catch (err) { console.error("loadBans error", err); setBanError(String(err)); setBans([]); }
+    finally { setBansLoading(false); }
   }
+
   useEffect(() => {
-    if (user) { loadBans(); loadCurrentNotification(); }
+    if (user) { loadBans(); loadCurrentNotification(); loadCurrentVersion(); }
   }, [user, apiBase]);
 
   useEffect(() => {
@@ -144,6 +309,12 @@ export default function DashboardPage() {
     return () => { if (filterTimer.current) clearTimeout(filterTimer.current); };
   }, [rawFilter]);
 
+  useEffect(() => {
+    if (autoScroll && feedContainerRef.current) {
+      feedContainerRef.current.scrollTop = 0;
+    }
+  }, [eventsFeed, autoScroll]);
+
   const startStream = useCallback(async () => {
     if (esRef.current) return;
     setSseStatus("connecting");
@@ -151,8 +322,7 @@ export default function DashboardPage() {
       const token = await fetchIdToken();
       if (!token) throw new Error("Not authenticated");
       const r = await fetch(`${apiBase}/cache/admin/cache/stream-token`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` }
+        method: "POST", headers: { Authorization: `Bearer ${token}` }
       });
       if (!r.ok) throw new Error("stream-token failed");
       const { streamToken } = await r.json();
@@ -161,289 +331,412 @@ export default function DashboardPage() {
       es.onopen = () => setSseStatus("open");
       es.onerror = () => setSseStatus("error");
 
+      es.addEventListener("snapshot", (e) => {
+        try {
+          const d = JSON.parse(e.data || "{}");
+          const entries = Array.isArray(d.entries) ? d.entries : [];
+          const map = {};
+          for (const { key, value } of entries) {
+            if (key && value) map[key] = value;
+          }
+          setCurrentMap(map);
+          setEventsFeed(prev => [
+            ...prev,
+            { type: "snapshot", count: entries.length, time: d.time || Date.now() }
+          ].slice(-EVENTS_CAP));
+        } catch (_) { }
+      });
+
       es.addEventListener("set", (e) => {
         try {
           const d = JSON.parse(e.data || "{}");
-          const ev = { type: "set", key: d.key, value: d.value, time: d.time || Date.now() };
-          setEventsFeed(prev => [ev, ...prev].slice(0, EVENTS_CAP));
+          setEventsFeed(prev => [...prev, { type: "set", key: d.key, value: d.value, time: d.time || Date.now() }].slice(-EVENTS_CAP));
           if (d.key) setCurrentMap(prev => ({ ...prev, [d.key]: d.value || {} }));
-        } catch (_) {}
+        } catch (_) { }
       });
       es.addEventListener("del", (e) => {
         try {
           const d = JSON.parse(e.data || "{}");
-          const ev = { type: "del", key: d.key, value: d.value, existed: d.existed, time: d.time || Date.now() };
-          setEventsFeed(prev => [ev, ...prev].slice(0, EVENTS_CAP));
-          if (d.key) setCurrentMap(prev => { const next = { ...prev }; delete next[d.key]; return next; });
-        } catch (_) {}
+          setEventsFeed(prev => [...prev, { type: "del", key: d.key, value: d.value, existed: d.existed, time: d.time || Date.now() }].slice(-EVENTS_CAP));
+          if (d.key) setCurrentMap(prev => { const n = { ...prev }; delete n[d.key]; return n; });
+        } catch (_) { }
       });
       es.addEventListener("clear", (e) => {
         try {
           const d = JSON.parse(e.data || "{}");
-          const ev = { type: "clear", entries: d.entries || [], time: d.time || Date.now() };
-          setEventsFeed(prev => [ev, ...prev].slice(0, EVENTS_CAP));
+          setEventsFeed(prev => [...prev, { type: "clear", entries: d.entries || [], time: d.time || Date.now() }].slice(-EVENTS_CAP));
           setCurrentMap({});
-        } catch (_) {}
+        } catch (_) { }
       });
-    } catch (err) {
-      setSseStatus("closed");
-      console.warn(err);
-    }
+    } catch (err) { setSseStatus("closed"); console.warn(err); }
   }, [apiBase]);
 
   const stopStream = useCallback(() => {
-    if (esRef.current) {
-      try { esRef.current.close(); } catch (_) {}
-      esRef.current = null;
-    }
+    if (esRef.current) { try { esRef.current.close(); } catch (_) { } esRef.current = null; }
     setSseStatus("closed");
   }, []);
 
   useEffect(() => () => stopStream(), [stopStream]);
   useEffect(() => { if (esRef.current) stopStream(); }, [region, stopStream]);
+  useEffect(() => { if (autoStart && sseStatus === "closed" && user) startStream(); }, [autoStart, user]);
 
   async function handleUpsert(e) {
-    e?.preventDefault();
-    setSaving(true);
+    e?.preventDefault(); setSaving(true); setNotifResults(null);
     try {
       const token = await fetchIdToken();
       if (!token) throw new Error("Not authenticated");
-      const res = await fetch(`${apiBase}/notification`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ message: editing || "" })
-      });
-      if (res.ok) {
-        const json = await res.json();
-        setCurrentNotification(json.message || "");
-        setIsDirty(false);
-      } else {
-        console.warn("notification upsert failed", res.status);
+      const targets = notifAllRegions ? Object.entries(REGION_BASES) : [[region, apiBase]];
+      const results = await Promise.allSettled(
+        targets.map(([, base]) =>
+          fetch(`${base}/notification`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ message: editing || "" })
+          }).then(r => ({ ok: r.ok, base }))
+        )
+      );
+      const mapped = {};
+      results.forEach((r, i) => { mapped[targets[i][0]] = r.status === "fulfilled" && r.value.ok; });
+      setNotifResults(mapped);
+      const activeResult = results.find((_, i) => targets[i][1] === apiBase);
+      if (activeResult?.status === "fulfilled" && activeResult.value.ok) {
+        setCurrentNotification(editing); setIsDirty(false);
       }
     } catch (err) { console.warn(err); } finally { setSaving(false); }
   }
+
   async function handleClearNotification() {
     if (!confirm("Clear notification?")) return;
-    setSaving(true);
+    setSaving(true); setNotifResults(null);
     try {
       const token = await fetchIdToken();
       if (!token) throw new Error("Not authenticated");
-      const res = await fetch(`${apiBase}/notification`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
-      if (res.ok) { setCurrentNotification(""); setEditing(""); setIsDirty(false); }
+      const targets = notifAllRegions ? Object.entries(REGION_BASES) : [[region, apiBase]];
+      const results = await Promise.allSettled(
+        targets.map(([, base]) =>
+          fetch(`${base}/notification`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } })
+            .then(r => ({ ok: r.ok }))
+        )
+      );
+      const mapped = {};
+      results.forEach((r, i) => { mapped[targets[i][0]] = r.status === "fulfilled" && r.value.ok; });
+      setNotifResults(mapped);
+      if (Object.values(mapped).some(Boolean)) { setCurrentNotification(""); setEditing(""); setIsDirty(false); }
     } catch (err) { console.warn(err); } finally { setSaving(false); }
   }
+
+  async function handleSaveVersion(e) {
+    e?.preventDefault(); setVersionError(null); setSavingVersion(true); setVersionResults(null);
+    try {
+      const token = await fetchIdToken();
+      if (!token) throw new Error("Not authenticated");
+      const semverRegex = /^\d+\.\d+\.\d+(\+\d+)?$/;
+      if (!semverRegex.test(editingVersion.trim())) { setVersionError("Format must be 1.0.0 or 1.0.0+1"); return; }
+      const targets = versionAllRegions ? Object.entries(REGION_BASES) : [[region, apiBase]];
+      const results = await Promise.allSettled(
+        targets.map(([, base]) =>
+          fetch(`${base}/api/version`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ version: editingVersion.trim() })
+          }).then(async r => ({ ok: r.ok, json: r.ok ? await r.json() : null }))
+        )
+      );
+      const mapped = {};
+      results.forEach((r, i) => { mapped[targets[i][0]] = r.status === "fulfilled" && r.value.ok; });
+      setVersionResults(mapped);
+      const activeIdx = targets.findIndex(([, b]) => b === apiBase);
+      const activeResult = results[activeIdx];
+      if (activeResult?.status === "fulfilled" && activeResult.value.ok) {
+        setCurrentVersion(activeResult.value.json?.version || "");
+        setVersionUpdatedAt(activeResult.value.json?.updated_at || "");
+        setIsVersionDirty(false);
+      }
+    } catch (err) { console.error(err); setVersionError(String(err)); }
+    finally { setSavingVersion(false); }
+  }
+
   async function handleBan(ip, reason = "") {
     setBanError(null);
     if (!ip || typeof ip !== "string") { setBanError("Invalid IP"); return; }
-    if (!confirm(`Ban ${ip}?`)) return;
+    if (!confirm(`Ban ${ip}${banAllRegions ? " in ALL regions" : ""}?`)) return;
     try {
       const token = await fetchIdToken();
       if (!token) throw new Error("Not authenticated");
-      const res = await fetch(`${apiBase}/api/admin/bans`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ ip, reason })
-      });
-      if (!res.ok) {
-        const txt = await res.text().catch(() => "");
-        throw new Error(`Ban failed: ${res.status} ${txt}`);
+      const targets = banAllRegions ? Object.values(REGION_BASES) : [apiBase];
+      const results = await Promise.allSettled(
+        targets.map(base =>
+          fetch(`${base}/api/admin/bans`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ ip, reason })
+          }).then(r => ({ ok: r.ok }))
+        )
+      );
+      const anyFailed = results.some(r => r.status !== "fulfilled" || !r.value.ok);
+      if (anyFailed) {
+        const failedRegions = Object.keys(REGION_BASES).filter((_, i) => {
+          const r = results[i]; return !r || r.status !== "fulfilled" || !r.value.ok;
+        });
+        setBanError(`Failed for: ${failedRegions.join(", ")}`);
       }
       await loadBans();
-      setCurrentMap(prev => { const next = { ...prev }; delete next[ip]; return next; });
+      setCurrentMap(prev => { const n = { ...prev }; delete n[ip]; return n; });
       setBanIpInput(""); setBanReasonInput("");
-    } catch (err) { console.error("handleBan error", err); setBanError(String(err)); }
+    } catch (err) { console.error(err); setBanError(String(err)); }
   }
+
   async function handleUnban(ip) {
-    if (!ip) return;
-    if (!confirm(`Unban ${ip}?`)) return;
+    if (!ip || !confirm(`Unban ${ip}${banAllRegions ? " in ALL regions" : ""}?`)) return;
     setBanError(null);
     try {
       const token = await fetchIdToken();
       if (!token) throw new Error("Not authenticated");
-      const res = await fetch(`${apiBase}/api/admin/bans/${encodeURIComponent(ip)}`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
-      if (!res.ok) {
-        const txt = await res.text().catch(() => "");
-        throw new Error(`Unban failed: ${res.status} ${txt}`);
-      }
+      const targets = banAllRegions ? Object.values(REGION_BASES) : [apiBase];
+      await Promise.allSettled(
+        targets.map(base =>
+          fetch(`${base}/api/admin/bans/${encodeURIComponent(ip)}`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } })
+        )
+      );
       await loadBans();
-    } catch (err) { console.error("handleUnban error", err); setBanError(String(err)); }
+    } catch (err) { console.error(err); setBanError(String(err)); }
   }
 
   const filtered = useMemo(() => {
-    return eventsFeed.filter(ev => {
+    return [...eventsFeed].reverse().filter(ev => {
       if (showOnly !== "all" && ev.type !== showOnly) return false;
       if (!filter) return true;
       const s = filter.toLowerCase();
       const v = ev.value || {};
-      const publicIp = (v.publicIp || v.publicIP || v.public || "").toLowerCase();
-      const remoteIp = (v.remoteServerIp || v.remoteServerIP || v.remote || "").toLowerCase();
-      const port = String(v.remoteServerPort || v.remotePort || v.port || "");
-      const playerName = (v.playerName || "").toLowerCase();
-      return publicIp.includes(s) || remoteIp.includes(s) || port.includes(s) || playerName.includes(s) || (ev.key || "").toLowerCase().includes(s);
+      return [
+        v.publicIp, v.publicIP, v.public,
+        v.remoteServerIp, v.remoteServerIP, v.remote,
+        String(v.remoteServerPort || v.remotePort || v.port || ""),
+        v.playerName, ev.key
+      ].some(x => (x || "").toLowerCase().includes(s));
     });
   }, [eventsFeed, filter, showOnly]);
 
   function isIpLocallyBanned(ip) {
-    if (!ip) return false;
-    return bans.some(b => String(b.ip).toLowerCase() === String(ip).toLowerCase());
+    return ip ? bans.some(b => String(b.ip).toLowerCase() === String(ip).toLowerCase()) : false;
   }
-
-  function copyToClipboard(text) {
-    try { navigator.clipboard?.writeText(text || ""); } catch (e) { /* ignore */ }
-  }
+  function copyToClipboard(text) { try { navigator.clipboard?.writeText(text || ""); } catch (_) { } }
   function fmtTime(t) { return t ? new Date(t).toLocaleString() : ""; }
 
   return (
     <Layout>
       <div className="min-h-screen py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
-          <header className="mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div>
-              <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-100">Admin Dashboard</h1>
-              <div className="text-sm text-slate-300 mt-1">Signed in as <span className="font-medium text-slate-100">{user?.email}</span></div>
-            </div>
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
 
-            <div className="flex items-center gap-3 w-full sm:w-auto">
-              <div className="flex items-center gap-2">
-                <label className="text-sm text-slate-300 mr-1">Region</label>
-                <select value={region} onChange={e => setRegion(e.target.value)}
-                  className="p-2 rounded bg-[rgba(117,90,90,0.02)] text-slate-400 border border-white/6">
-                  <option value="EU">EU</option>
-                  <option value="US">US</option>
-                </select>
+          {/* ── Header ── */}
+          <header className="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-violet-600/20 border border-violet-500/30 flex items-center justify-center shrink-0">
+                <span className="text-violet-400 text-lg">⚡</span>
               </div>
-              <div className="ml-auto sm:ml-0 flex items-center gap-2">
-                <Button onClick={async () => { try { await signOut(auth); } catch (e) { console.error(e); } }} variant="ghost">Sign out</Button>
+              <div>
+                <h1 className="text-xl font-bold text-white leading-none">NetherLink Admin</h1>
+                <p className="text-xs text-slate-500 mt-0.5">{user?.email}</p>
               </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="flex rounded-lg overflow-hidden border border-white/8">
+                {Object.keys(REGION_BASES).map(r => (
+                  <button key={r} onClick={() => setRegion(r)}
+                    className={`px-4 py-2 text-xs font-semibold transition ${region === r ? "bg-violet-600 text-white" : "text-slate-400 hover:text-white hover:bg-white/5"}`}>
+                    {r}
+                  </button>
+                ))}
+              </div>
+              <Button onClick={async () => { try { await signOut(auth); } catch (e) { console.error(e); } }} variant="ghost" size="sm">
+                <IconSignOut /> Sign out
+              </Button>
             </div>
           </header>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <main className="lg:col-span-2 space-y-6">
-              <Card title="Notification">
-                <div className="flex flex-col md:flex-row gap-4">
-                  <div className="flex-1">
-                    <textarea
-                      value={editing}
-                      onChange={e => { setEditing(e.target.value); setIsDirty(e.target.value !== currentNotification); }}
-                      rows={3}
-                      className="w-full p-3 rounded-md border border-white/6 bg-[rgba(255,255,255,0.02)] text-slate-100"
-                      placeholder="Short notification text..."
-                    />
-                    <div className="mt-3 flex items-center gap-2">
-                      <Button onClick={handleUpsert} variant="primary" disabled={!isDirty || saving}>{saving ? "Saving..." : "Save"}</Button>
-                      <Button onClick={handleClearNotification} variant="danger" disabled={saving || !currentNotification}>Clear</Button>
-                      <div className="ml-auto text-sm text-slate-300">Loaded: <span className="font-medium text-slate-100 ml-1">{currentNotification ? "Yes" : "No"}</span></div>
-                    </div>
-                  </div>
-                </div>
-              </Card>
+          {/* ── Stats ── */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+            {[
+              { label: "Region", value: region, sub: "Active" },
+              { label: "Live players", value: Object.keys(currentMap).length, sub: "In cache" },
+              { label: "Active bans", value: bans.length, sub: "This region" },
+              { label: "Feed events", value: eventsFeed.length, sub: `Cap ${EVENTS_CAP}` },
+            ].map(s => (
+              <div key={s.label} className="bg-[rgba(12,9,18,0.7)] rounded-xl border border-white/6 px-4 py-3">
+                <p className="text-xs text-slate-500 mb-1">{s.label}</p>
+                <p className="text-2xl font-bold text-white leading-none">{s.value}</p>
+                <p className="text-xs text-slate-600 mt-1">{s.sub}</p>
+              </div>
+            ))}
+          </div>
 
-              <Card title={`Live feed (${filtered.length})`}>
-                <div className="mb-4 flex flex-col md:flex-row gap-3 items-center">
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
+            <div className="xl:col-span-2 space-y-5">
+
+              {/* Notification + Version */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5" style={{ alignItems: "stretch" }}>
+                <Card title="Notification" subtitle="Shown in the app to all users">
+                  <textarea
+                    value={editing}
+                    onChange={e => { setEditing(e.target.value); setIsDirty(e.target.value !== currentNotification); setNotifResults(null); }}
+                    className="w-full p-3 rounded-xl border border-white/6 bg-white/3 text-slate-100 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-violet-500/40 placeholder:text-slate-600 flex-1 min-h-[80px]"
+                    placeholder="Short notification text..."
+                  />
+                  <div className="mt-3 flex flex-wrap items-center gap-2 shrink-0">
+                    <Button onClick={handleUpsert} disabled={!isDirty || saving} size="sm">
+                      {saving ? <><Spinner size={12} /> Saving…</> : "Save"}
+                    </Button>
+                    <Button onClick={handleClearNotification} variant="danger" size="sm" disabled={saving || !currentNotification}>Clear</Button>
+                    <SyncToggle value={notifAllRegions} onChange={setNotifAllRegions} />
+                    <span className={`ml-auto text-xs px-2 py-1 rounded-full ${currentNotification ? "bg-emerald-500/15 text-emerald-400" : "bg-slate-700/50 text-slate-500"}`}>
+                      {currentNotification ? "Active" : "Empty"}
+                    </span>
+                  </div>
+                  <RegionResultBadge results={notifResults} />
+                </Card>
+
+                <Card title="App Version" subtitle="Flutter app update check">
+                  <div className="flex gap-2 shrink-0">
+                    <input
+                      value={editingVersion}
+                      onChange={e => { setEditingVersion(e.target.value); setIsVersionDirty(e.target.value !== currentVersion); setVersionError(null); setVersionResults(null); }}
+                      placeholder="e.g. 1.0.2"
+                      className="flex-1 p-3 rounded-xl border border-white/6 bg-white/3 text-slate-100 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/40 placeholder:text-slate-600"
+                    />
+                    <Button onClick={handleSaveVersion} disabled={!isVersionDirty || savingVersion} size="sm">
+                      {savingVersion ? <Spinner size={12} /> : "Publish"}
+                    </Button>
+                    <Button onClick={loadCurrentVersion} variant="ghost" size="sm" title="Reload from API">
+                      <IconRefresh />
+                    </Button>
+                  </div>
+                  <div className="mt-2 shrink-0">
+                    <SyncToggle value={versionAllRegions} onChange={setVersionAllRegions} />
+                  </div>
+                  {versionError && <p className="text-xs text-rose-400 mt-2 shrink-0">{versionError}</p>}
+                  <RegionResultBadge results={versionResults} />
+                  <div className="flex-1" />
+                  <div className="shrink-0">
+                    <div className="flex items-end justify-between">
+                      <div>
+                        <p className="text-xs text-slate-500 mb-0.5">Current version</p>
+                        <p className="text-3xl font-bold font-mono text-white">{currentVersion || "—"}</p>
+                      </div>
+                      {versionUpdatedAt && (
+                        <div className="text-right">
+                          <p className="text-xs text-slate-500">Last published</p>
+                          <p className="text-xs text-slate-400">{fmtTime(versionUpdatedAt)}</p>
+                        </div>
+                      )}
+                    </div>
+                    <p className="text-xs text-slate-600 mt-2">
+                      Format: <code className="text-slate-500">1.0.0</code> or <code className="text-slate-500">1.0.0+1</code>
+                    </p>
+                  </div>
+                </Card>
+              </div>
+
+              {/* ── Live Feed ── */}
+              <Card
+                title="Live cache feed"
+                subtitle={`${filtered.length} events`}
+                action={
+                  <div className="flex items-center gap-2">
+                    <StatusDot status={sseStatus} />
+                    <span className="text-xs text-slate-500">{sseStatus}</span>
+                    {sseStatus !== "open" && sseStatus !== "connecting"
+                      ? <Button onClick={startStream} size="sm" variant="primary">Start</Button>
+                      : <Button onClick={stopStream} size="sm" variant="secondary">Stop</Button>
+                    }
+                  </div>
+                }
+              >
+                <div className="flex flex-col sm:flex-row gap-2 mb-3 shrink-0">
                   <input
-                    placeholder="Filter by IP / port / key / player..."
+                    placeholder="Filter by IP / player / remote…"
                     value={rawFilter}
                     onChange={e => setRawFilter(e.target.value)}
-                    className="flex-1 p-3 rounded-md border border-white/6 bg-[rgba(255,255,255,0.02)] text-slate-100"
+                    className="flex-1 px-3 py-2 rounded-xl border border-white/6 bg-white/3 text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/40 placeholder:text-slate-600"
                   />
-                  <select value={showOnly} onChange={e => setShowOnly(e.target.value)}
-                    className="p-3 rounded-md border border-white/6 bg-[rgba(255,255,255,0.02)] text-slate-100">
-                    <option value="all">All</option>
-                    <option value="set">Set</option>
-                    <option value="del">Del</option>
-                    <option value="clear">Clear</option>
-                  </select>
-                  <label className="flex items-center gap-2 text-sm text-slate-300">
-                    <input type="checkbox" checked={autoStart} onChange={e => setAutoStart(e.target.checked)} className="accent-violet-500" />
+                  <div className="flex gap-1">
+                    {["all", "set", "del", "clear", "snapshot"].map(v => (
+                      <button key={v} onClick={() => setShowOnly(v)}
+                        className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition ${showOnly === v ? "bg-violet-600 border-violet-500 text-white" : "border-white/6 text-slate-400 hover:text-white hover:bg-white/5"}`}>
+                        {v === "all" ? "All" : v.charAt(0).toUpperCase() + v.slice(1)}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 mb-3 shrink-0">
+                  <label className="flex items-center gap-2 text-xs text-slate-400">
+                    <input type="checkbox" checked={autoStart} onChange={e => setAutoStart(e.target.checked)} className="accent-violet-500 rounded" />
                     Auto-start
                   </label>
-                </div>
-
-                <div className="overflow-auto rounded-md border border-white/6">
-                  <table className="w-full text-sm table-auto">
-                    <thead className="text-slate-300 bg-[rgba(255,255,255,0.02)] sticky top-0">
-                      <tr>
-                        <th className="text-left p-3">Type</th>
-                        <th className="text-left p-3">Key / IP</th>
-                        <th className="text-left p-3">Player</th>
-                        <th className="text-left p-3">Remote</th>
-                        <th className="text-left p-3">Port</th>
-                        <th className="text-left p-3">Time</th>
-                        <th className="text-left p-3">JSON</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filtered.length === 0 ? (
-                        <tr><td colSpan={7} className="p-6 text-center text-slate-400">No events. Click Start to connect the feed.</td></tr>
-                      ) : filtered.map((ev, i) => {
-                        const v = ev.value || {};
-                        const publicIp = v.publicIp || v.publicIP || v.public || "";
-                        const player = v.playerName || "";
-                        const remoteIp = v.remoteServerIp || v.remoteServerIP || v.remote || "";
-                        const remotePort = v.remoteServerPort || v.remotePort || v.port || "";
-                        return (
-                          <tr key={i} className={i % 2 === 0 ? "bg-[rgba(255,255,255,0.01)]" : ""}>
-                            <td className="p-3"><EventType type={ev.type} /></td>
-                            <td className="p-3 truncate max-w-[18ch]">{publicIp || ev.key || "—"}</td>
-                            <td className="p-3 truncate max-w-[18ch]">{player || "—"}</td>
-                            <td className="p-3 truncate max-w-[18ch]">{remoteIp || "—"}</td>
-                            <td className="p-3">{remotePort || "—"}</td>
-                            <td className="p-3 text-xs text-slate-300">{fmtTime(ev.time)}</td>
-                            <td className="p-3">
-                              <details className="text-xs text-slate-200">
-                                <summary className="cursor-pointer">view</summary>
-                                <pre className="mt-2 p-2 text-xs bg-[rgba(255,255,255,0.02)] rounded-md overflow-auto max-h-48">{JSON.stringify(ev, null, 2)}</pre>
-                              </details>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-
-                <div className="mt-3 flex gap-2 items-center">
-                  <Button onClick={() => setEventsFeed(prev => prev.slice(0, 50))} variant="secondary">Trim to 50</Button>
-                  <Button onClick={() => setEventsFeed([])} variant="ghost">Clear locally</Button>
-
-                  <div className="flex gap-2">
-                    <Button onClick={startStream} variant="primary" disabled={sseStatus === "open" || sseStatus === "connecting"}>Start</Button>
-                    <Button onClick={stopStream} variant="secondary" disabled={sseStatus === "closed"}>Stop</Button>
+                  <label className="flex items-center gap-2 text-xs text-slate-400">
+                    <input type="checkbox" checked={autoScroll} onChange={e => setAutoScroll(e.target.checked)} className="accent-violet-500 rounded" />
+                    Auto-scroll
+                  </label>
+                  <div className="ml-auto flex gap-2">
+                    <Button onClick={() => setEventsFeed(p => p.slice(-50))} variant="secondary" size="sm">Trim to 50</Button>
+                    <Button onClick={() => { setEventsFeed([]); setCurrentMap({}); }} variant="ghost" size="sm">Clear</Button>
                   </div>
+                </div>
 
-                  <div className="ml-auto text-sm text-slate-300">Feed: <span className="font-medium text-slate-100 ml-1">{sseStatus}</span></div>
+                {/* ── Feed container — ref hier, scroll naar top ── */}
+                <div
+                  ref={feedContainerRef}
+                  className="flex-1 overflow-auto rounded-xl border border-white/5 bg-black/20 min-h-[300px] max-h-[500px] p-2 space-y-1.5"
+                >
+                  {filtered.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center h-full py-12 text-slate-500">
+                      <div className="text-3xl mb-2">📡</div>
+                      <p className="text-sm">
+                        {sseStatus === "open" ? "Waiting for events…" : "Start the feed to begin streaming."}
+                      </p>
+                    </div>
+                  ) : filtered.map((ev, i) => (
+                    <FeedEventRow
+                      key={i}
+                      ev={ev}
+                      isBanned={isIpLocallyBanned(ev.key || ev.value?.publicIp)}
+                      onBan={(ip) => handleBan(ip, `Banned from live feed by ${user?.email || 'admin'}`)}
+                    />
+                  ))}
                 </div>
               </Card>
-            </main>
+            </div>
 
-            <aside className="lg:col-span-1 space-y-6">
-              <Card title="Current players" compact>
-                <div className="space-y-2 text-sm text-slate-100 max-h-60 overflow-auto">
+            {/* ── Right col ── */}
+            <div className="space-y-5">
+
+              <Card title="Live players" subtitle={`${Object.keys(currentMap).length} in cache`}>
+                <div className="space-y-2 max-h-64 overflow-auto pr-1">
                   {Object.keys(currentMap).length === 0 ? (
-                    <div className="text-slate-400">No players connected</div>
+                    <p className="text-sm text-slate-500 py-4 text-center">No players in cache</p>
                   ) : Object.entries(currentMap).map(([key, val]) => {
                     const player = val?.playerName || "—";
                     const remote = val?.remoteServerIp || val?.remote || "—";
                     const port = val?.remoteServerPort || val?.remotePort || val?.port || "";
                     const banned = isIpLocallyBanned(key);
                     return (
-                      <div key={key} className="flex items-center justify-between gap-2 p-2 bg-[rgba(255,255,255,0.01)] rounded">
-                        <div className="min-w-0">
-                          <div className="font-medium truncate">{player}</div>
-                          <div className="text-xs text-slate-400 truncate">{key} → {remote}{port ? `:${port}` : ""}</div>
+                      <div key={key} className="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-white/3 border border-white/4 hover:bg-white/5 transition-colors">
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-slate-100 truncate">{player}</p>
+                          <p className="text-xs text-slate-500 font-mono truncate mt-0.5">{key} → {remote}{port ? `:${port}` : ""}</p>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <button className="text-xs text-slate-300 hover:underline" onClick={() => {
-                            setEventsFeed(prev => [{ type: 'inspect', key, value: val, time: Date.now() }, ...prev].slice(0, EVENTS_CAP));
-                          }}>Inspect</button>
-                          <button className="text-xs px-2 py-1 rounded bg-slate-700 text-white hover:bg-slate-600" onClick={() => copyToClipboard(key)} title="Copy IP/key">
-                            <IconCopy /> <span className="sr-only">Copy</span>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <button onClick={() => copyToClipboard(key)} title="Copy IP"
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/8 transition">
+                            <IconCopy />
                           </button>
                           {banned ? (
-                            <span className="text-xs px-2 py-1 rounded bg-rose-600/20 text-rose-300">Banned</span>
+                            <span className="text-xs px-2 py-1 rounded-lg bg-rose-500/15 text-rose-400 border border-rose-500/20">Banned</span>
                           ) : (
-                            <button className="text-xs px-2 py-1 rounded bg-rose-600 text-white hover:bg-rose-500" onClick={() => handleBan(key, `Banned from dashboard by ${user?.email || 'admin'}`)}>Ban</button>
+                            <button onClick={() => handleBan(key, `Banned from dashboard by ${user?.email || 'admin'}`)}
+                              className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition" title="Ban">
+                              <IconBan />
+                            </button>
                           )}
                         </div>
                       </div>
@@ -452,49 +745,78 @@ export default function DashboardPage() {
                 </div>
               </Card>
 
-              <Card title="Ban management" compact>
+              <Card title="Ban IP" subtitle="Manually ban an IP address">
                 <div className="space-y-2">
-                  <input placeholder="IP to ban" value={banIpInput} onChange={e => setBanIpInput(e.target.value)}
-                    className="w-full p-2 rounded-md border border-white/6 bg-[rgba(255,255,255,0.02)] text-slate-100" />
-                  <input placeholder="Reason (optional)" value={banReasonInput} onChange={e => setBanReasonInput(e.target.value)}
-                    className="w-full p-2 rounded-md border border-white/6 bg-[rgba(255,255,255,0.02)] text-slate-100" />
-                  <button className="w-full px-4 py-2 rounded-md bg-rose-600 text-white hover:bg-rose-500" onClick={() => handleBan(banIpInput.trim(), banReasonInput.trim())}>Ban</button>
-                  {banError && <div className="text-sm text-rose-400">{banError}</div>}
+                  <input
+                    placeholder="IP address"
+                    value={banIpInput}
+                    onChange={e => setBanIpInput(e.target.value)}
+                    onKeyDown={e => e.key === "Enter" && handleBan(banIpInput.trim(), banReasonInput.trim())}
+                    className="w-full px-3 py-2.5 rounded-xl border border-white/6 bg-white/3 text-slate-100 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-rose-500/40 placeholder:text-slate-600"
+                  />
+                  <input
+                    placeholder="Reason (optional)"
+                    value={banReasonInput}
+                    onChange={e => setBanReasonInput(e.target.value)}
+                    onKeyDown={e => e.key === "Enter" && handleBan(banIpInput.trim(), banReasonInput.trim())}
+                    className="w-full px-3 py-2.5 rounded-xl border border-white/6 bg-white/3 text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500/40 placeholder:text-slate-600"
+                  />
+                  <div className="flex items-center gap-2">
+                    <Button onClick={() => handleBan(banIpInput.trim(), banReasonInput.trim())} variant="danger" className="flex-1 justify-center" disabled={!banIpInput.trim()}>
+                      <IconBan /> Ban IP
+                    </Button>
+                    <SyncToggle value={banAllRegions} onChange={setBanAllRegions} />
+                  </div>
+                  {banError && <p className="text-xs text-rose-400 pt-1">{banError}</p>}
                 </div>
               </Card>
 
-              <Card title="Active bans" compact>
-                <div className="space-y-2 text-sm">
-                  {bansLoading ? (
-                    <div className="text-slate-400">Loading bans…</div>
-                  ) : bans.length === 0 ? (
-                    <div className="text-slate-400">No active bans for this region.</div>
-                  ) : (
-                    <div className="space-y-2 max-h-48 overflow-auto pr-1">
-                      {bans.map(b => (
-                        <div key={b.ip} className="flex items-center justify-between gap-2 p-2 bg-[rgba(255,255,255,0.01)] rounded">
-                          <div className="min-w-0">
-                            <div className="font-medium truncate">{b.ip}</div>
-                            <div className="text-xs text-slate-400 truncate">{b.reason || "—"}</div>
-                            <div className="text-xs text-slate-500 mt-1">{b.created_at}</div>
-                          </div>
-                          <div>
-                            <button onClick={() => handleUnban(b.ip)} className="px-3 py-1 rounded bg-gray-700 text-white hover:bg-gray-600 text-xs">Unban</button>
-                          </div>
+              <Card
+                title="Active bans"
+                subtitle={`${bans.length} in ${region}`}
+                action={
+                  <button onClick={loadBans} className="text-slate-500 hover:text-slate-300 transition p-1 rounded-lg hover:bg-white/5" title="Refresh">
+                    <IconRefresh />
+                  </button>
+                }
+              >
+                {bansLoading ? (
+                  <div className="flex items-center gap-2 text-slate-500 text-sm py-4 justify-center"><Spinner size={14} /> Loading…</div>
+                ) : bans.length === 0 ? (
+                  <p className="text-sm text-slate-500 text-center py-4">No active bans</p>
+                ) : (
+                  <div className="space-y-2 max-h-52 overflow-auto pr-1">
+                    {bans.map(b => (
+                      <div key={b.ip} className="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-rose-500/5 border border-rose-500/10">
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-mono font-medium text-slate-200 truncate">{b.ip}</p>
+                          <p className="text-xs text-slate-500 truncate mt-0.5">{b.reason || "No reason"}</p>
+                          <p className="text-xs text-slate-600 mt-0.5">{b.created_at}</p>
                         </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                        <button onClick={() => handleUnban(b.ip)}
+                          className="text-xs px-2.5 py-1.5 rounded-lg bg-white/6 text-slate-300 hover:bg-white/10 hover:text-white transition shrink-0">
+                          Unban
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </Card>
 
-              <Card title="Quick actions" compact>
-                <div className="flex flex-col gap-3">
-                  <button onClick={() => window.open('/metrics', '_blank')} className="w-full px-4 py-2 rounded bg-slate-700 text-white hover:bg-slate-600">Open metrics</button>
-                  <button onClick={() => window.open('https://panel.netherlink.net', '_blank')} className="w-full px-4 py-2 rounded bg-slate-700 text-white hover:bg-slate-600">Open Panel</button>
+              <Card title="Quick actions">
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { label: "Metrics", action: () => window.open('/metrics', '_blank') },
+                    { label: "Panel", action: () => window.open('https://panel.netherlink.net', '_blank') },
+                  ].map(a => (
+                    <button key={a.label} onClick={a.action}
+                      className="px-3 py-2.5 rounded-xl bg-white/4 border border-white/6 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition text-center">
+                      {a.label} ↗
+                    </button>
+                  ))}
                 </div>
               </Card>
-            </aside>
+            </div>
           </div>
         </div>
       </div>
