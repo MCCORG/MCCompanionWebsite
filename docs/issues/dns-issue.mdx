@@ -9,18 +9,20 @@ If the DNS setup isn't working on your Switch, run through these checks.
 ---
 
 ## Checklist
-
-**1. Did you send the DNS config from the app?**
-In NetherLink, make sure you actually hit **"Start Nintendo"**.
-
-**2. Is the NetherLink IP entered correctly on the Switch?**
-Go back to **System Settings → Internet → your network → Change Settings → DNS** and double check the Primary DNS matches exactly what the app showed you. One wrong digit breaks it.
-
-**3. Is NetherLink online?**
-Try switching between EU and US to see if one is more responsive. If both seem unresponsive, there may be a temporary outage.
-
-**4. Is your network blocking custom DNS?**
-Some networks especially school or public wifi with captive portals don't allow custom DNS settings. If that's the case, try on a different network like your mobile hotspot.
+- Your phone/tablet and console MUST be on the same WiFi while sending the DNS config
+- Make sure your console DNS settings are correct
+- Xbox requires an online multiplayer subscription, PlayStation requires PlayStation Plus, and Nintendo Switch requires Nintendo Switch Online, to connect to online multiplayer servers
+- Double-check the IP and port (default: 19132)
+- Verify the DNS config was sent properly in the NetherLink app
+- Make sure the server you are trying to connect to allows Bedrock players to connect
+- Close NetherLink completely, reopen and try again
+- Restart your game console to clear DNS cache
+- Give it time to appear
+- VPNs can alter your DNS servers
+- Make sure the server you select has the MOTD "NetherLink RelayServer"
+- Try reloading the featured server list a couple of times, as Minecraft itself can glitch when trying to load the featured server list. In Minecraft, hit B until you're back to the main screen, then go back to servers. This will reload the featured servers tab
+- You might have IPv6 enabled on your network, which can cause issues on Xbox and possibly other game consoles, as they don't support custom IPv6 DNS settings to be set. Disable IPv6 on your router, if possible
+- Your network might be blocking the DNS. In which case, you can try setting the DNS directly in your router's settings. Where to set this would depend on what brand of router you have. (e.g. Netgear, TP-Link, etc) You can try googling "[your router brand here] router how to set dns in router settings
 
 ---
 
