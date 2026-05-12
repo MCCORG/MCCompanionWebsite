@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { FaWindows, FaApple, FaAndroid, FaServer, FaUsers } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import FeaturedServersCarousel from "../components/FeaturedServersCarousel";
-import { useCombinedMetrics } from "../hooks/useMetrics";
 import ChangelogSection from "../components/ChangelogSection";
 import Layout from '@theme/Layout';
 
@@ -53,8 +52,6 @@ function RotatingWords({
 }
 
 export default function Home() {
-  const { totalServers, totalJoins, loading: metricsLoading } = useCombinedMetrics();
-
   return (
     <Layout>
       <div className="min-h-screen flex flex-col">
@@ -77,25 +74,7 @@ export default function Home() {
               <p className="text-lg text-slate-400">
                 <RotatingWords words={["add your server", "start mode", "connect", "play"]} interval={2200} />
               </p>
-              <div className="flex gap-3 flex-wrap justify-center">
-                {[
-                  { icon: <FaServer size={12} />, value: totalServers, label: "servers joined" },
-                  { icon: <FaUsers size={12} />, value: totalJoins, label: "players connected" },
-                ].map(s => (
-                  <div
-                    key={s.label}
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl"
-                    style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}
-                  >
-                    <span className="text-cyan-400">{s.icon}</span>
-                    {metricsLoading
-                      ? <span className="w-10 h-4 rounded animate-pulse bg-white/10" />
-                      : <span className="text-sm font-bold text-white tabular-nums">{s.value.toLocaleString()}</span>
-                    }
-                    <span className="text-xs text-slate-500">{s.label}</span>
-                  </div>
-                ))}
-              </div>
+            
             </motion.div>
 
             <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start">
