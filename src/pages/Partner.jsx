@@ -96,6 +96,54 @@ function Tag({ children, color = "cyan" }) {
   return <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${colors[color] || colors.cyan}`}>{children}</span>;
 }
 
+
+function StatsChart({ data, label, color = "#22d3ee" }) {
+  if (!data || data.length === 0) {
+    return <p className="text-xs text-slate-600 py-2 text-center">No data yet</p>;
+  }
+
+  const max = Math.max(...data.map(d => d.count), 1);
+  const H = 48; 
+  const barW = Math.max(4, Math.floor(200 / data.length) - 2);
+
+  return (
+    <div>
+      <div className="flex items-end gap-0.5 overflow-x-auto pb-1" style={{ minHeight: H + 4 }}>
+        {data.map((d) => {
+          const h = Math.max(2, Math.round((d.count / max) * H));
+          const day = d.day.slice(5);
+          return (
+            <div key={d.day} className="flex flex-col items-center gap-0.5 shrink-0 group" style={{ width: barW }}>
+              <div className="relative flex items-end" style={{ height: H }}>
+                <div
+                  style={{ width: barW, height: h, background: color, borderRadius: 2, opacity: 0.85 }}
+                  className="group-hover:opacity-100 transition-opacity"
+                />
+                {/* tooltip */}
+                <div className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 hidden group-hover:flex flex-col items-center z-10 pointer-events-none">
+                  <div className="bg-[#07111c] border border-[#1e3045] rounded-lg px-2 py-1 text-xs text-white font-bold whitespace-nowrap shadow-xl">
+                    {d.count}
+                  </div>
+                  <div className="w-1.5 h-1.5 bg-[#1e3045] rotate-45 -mt-1" />
+                </div>
+              </div>
+              {data.length <= 14 && (
+                <span className="text-[9px] text-slate-600 rotate-0 tabular-nums">{day}</span>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      {data.length > 14 && (
+        <div className="flex justify-between text-[9px] text-slate-600 mt-1">
+          <span>{data[0]?.day.slice(5)}</span>
+          <span>{data[data.length - 1]?.day.slice(5)}</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function useToasts() {
   const [toasts, setToasts] = useState([]);
   const add = useCallback((message, type = "success") => {
@@ -120,6 +168,34 @@ function ToastContainer({ toasts, remove }) {
         </div>
       ))}
       <style>{`@keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }`}</style>
+    </div>
+  );
+}
+
+function MiniChart({ daily }) {
+  if (!daily || daily.length === 0) return null;
+  const max = Math.max(...daily.map(d => d.count), 1);
+  const slice = daily.slice(-14);
+  return (
+    <div className="mt-1 mb-2">
+      <div className="flex items-end gap-px h-8">
+        {slice.map(({ day, count }) => (
+          <div
+            key={day}
+            title={`${day}: ${count}`}
+            className="flex-1 rounded-sm transition-all"
+            style={{
+              height: `${Math.max(2, Math.round((count / max) * 100))}%`,
+              background: count > 0 ? "linear-gradient(to top, #22d3ee80, #3b82f680)" : "#1e3045",
+              minWidth: 2,
+            }}
+          />
+        ))}
+      </div>
+      <div className="flex justify-between mt-0.5">
+        <span className="text-[9px] text-slate-700">{slice[0]?.day?.slice(5)}</span>
+        <span className="text-[9px] text-slate-700">{slice[slice.length - 1]?.day?.slice(5)}</span>
+      </div>
     </div>
   );
 }
@@ -177,6 +253,9 @@ function ServerForm({ initial = EMPTY, onSubmit, onCancel, submitting }) {
 }
 
 function ServerCard({ server, onEdit, onDelete, deleting }) {
+  const [statsRange, setStatsRange] = useState("week");
+  const chartData = statsRange === "week" ? (server.statsWeek || []) : (server.statsMonth || []);
+
   return (
     <div className="bg-[#0c1a27] border border-[#1e3045] rounded-2xl overflow-hidden flex flex-col">
       <div className="p-4 flex gap-3 flex-1">
@@ -194,8 +273,9 @@ function ServerCard({ server, onEdit, onDelete, deleting }) {
           <p className="text-xs text-slate-500 font-mono mb-2">{server.address}:{server.port}</p>
           {server.connections !== undefined && (
             <div className="flex items-center gap-1.5 mb-2">
-              <span className="text-xs text-slate-600">Connections:</span>
+              <span className="text-xs text-slate-600">All-time:</span>
               <span className="text-xs font-bold text-cyan-400 tabular-nums">{server.connections.toLocaleString()}</span>
+              <span className="text-xs text-slate-600">connections</span>
             </div>
           )}
           {server.description && (
@@ -209,6 +289,22 @@ function ServerCard({ server, onEdit, onDelete, deleting }) {
           )}
         </div>
       </div>
+      {/* stats chart */}
+      <div className="px-4 pb-3 border-t border-[#1e3045] pt-3">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-xs text-slate-500">Connections</span>
+          <div className="flex gap-1">
+            {["week", "month"].map(r => (
+              <button key={r} onClick={() => setStatsRange(r)}
+                className={`text-xs px-2 py-0.5 rounded-md font-semibold transition ${statsRange === r ? "bg-cyan-500/20 text-cyan-400 border border-cyan-500/30" : "text-slate-600 hover:text-slate-400"}`}>
+                {r === "week" ? "7d" : "30d"}
+              </button>
+            ))}
+          </div>
+        </div>
+        <StatsChart data={chartData} color="#22d3ee" />
+      </div>
+
       <div className="border-t border-[#1e3045] grid grid-cols-2">
         <button onClick={() => onEdit(server)}
           className="flex items-center justify-center gap-1.5 py-3 text-xs font-semibold text-cyan-400 hover:bg-cyan-500/8 transition border-r border-[#1e3045]">
@@ -275,6 +371,7 @@ function LoginScreen({ onLogin }) {
   );
 }
 
+
 function Dashboard({ user }) {
   const [servers, setServers]     = useState([]);
   const [loading, setLoading]     = useState(true);
@@ -289,7 +386,7 @@ function Dashboard({ user }) {
   const loadServers = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await apiFetch("/api/featured-servers/me");
+      const data = await apiFetch("/api/partner/servers");
       setServers(data.servers ?? []);
       if (data.slots) setSlots(data.slots);
     } catch (err) {
@@ -301,9 +398,13 @@ function Dashboard({ user }) {
 
   const refreshStats = useCallback(async () => {
     try {
-      const data = await apiFetch("/api/featured-servers/me/stats");
-      const statsMap = Object.fromEntries((data.stats ?? []).map(s => [s.id, s.connections]));
-      setServers(prev => prev.map(s => ({ ...s, connections: statsMap[s.id] ?? s.connections ?? 0 })));
+      const data = await apiFetch("/api/partner/servers/stats");
+      const statsMap = Object.fromEntries((data.stats ?? []).map(s => [s.id, s]));
+      setServers(prev => prev.map(s => {
+        const fresh = statsMap[s.id];
+        if (!fresh) return s;
+        return { ...s, connections: fresh.connections ?? s.connections ?? 0, statsWeek: fresh.statsWeek ?? s.statsWeek, statsMonth: fresh.statsMonth ?? s.statsMonth };
+      }));
     } catch (_) { /* silently ignore */ }
   }, []);
 
@@ -317,7 +418,7 @@ function Dashboard({ user }) {
   async function handleAdd(formData) {
     setSubmitting(true);
     try {
-      await apiBoth("/api/featured-servers", { method: "POST", body: JSON.stringify(formData) });
+      await apiBoth("/api/partner/servers", { method: "POST", body: JSON.stringify(formData) });
       toast("Server added successfully");
       await loadServers();
       setMode("list");
@@ -331,7 +432,7 @@ function Dashboard({ user }) {
   async function handleEdit(formData) {
     setSubmitting(true);
     try {
-      await apiBoth(`/api/featured-servers/${editTarget.id}`, { method: "PATCH", body: JSON.stringify(formData) });
+      await apiBoth(`/api/partner/servers/${editTarget.id}`, { method: "PATCH", body: JSON.stringify(formData) });
       toast("Server updated");
       await loadServers();
       setMode("list");
@@ -346,7 +447,7 @@ function Dashboard({ user }) {
     if (!confirm("Delete this server? This cannot be undone.")) return;
     setDeletingId(id);
     try {
-      await apiBoth(`/api/featured-servers/${id}`, { method: "DELETE" });
+      await apiBoth(`/api/partner/servers/${id}`, { method: "DELETE" });
       toast("Server deleted");
       setServers((p) => p.filter((s) => s.id !== id));
     } catch (err) {

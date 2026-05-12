@@ -12,8 +12,6 @@ const REGION_BASES = {
 
 const EVENTS_CAP = 1500;
 
-// ── icons ──────────────────────────────────────────────────────────────────────
-
 function IconCopy() {
   return <svg width="13" height="13" viewBox="0 0 24 24" fill="none" className="inline-block" xmlns="http://www.w3.org/2000/svg"><path d="M9 9H5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><rect x="9" y="3" width="11" height="11" rx="2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>;
 }
