@@ -9,11 +9,17 @@ async function resolveRole(user) {
   if (!user) return "none";
   try {
     const token = await user.getIdToken();
-    const res   = await fetch(`${API_BASE}/api/admin/members`, {
+
+    const adminRes = await fetch(`${API_BASE}/api/admin/members`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    if (res.status === 200) return "admin";
-    if (res.status === 403) return "member";
+    if (adminRes.status === 200) return "admin";
+
+    const memberRes = await fetch(`${API_BASE}/api/partner/servers`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (memberRes.status === 200) return "member";
+
     return "none";
   } catch {
     return "none";

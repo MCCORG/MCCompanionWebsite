@@ -260,7 +260,6 @@ function ServerForm({ initial = EMPTY, onSubmit, onCancel, submitting }) {
   );
 }
 
-
 function ServerCard({ server, onEdit, onDelete, deleting }) {
   const [statsRange, setStatsRange] = useState("week");
   const stats = server.stats || {};
@@ -552,8 +551,15 @@ export default function PartnerDashboardPage() {
   const [checking, setChecking] = useState(true);
   useEffect(() => {
     if (!auth) { window.location.replace("/login"); return; }
-    const unsub = onAuthStateChanged(auth, (u) => {
+    const unsub = onAuthStateChanged(auth, async (u) => {
       if (!u) { window.location.replace("/login"); return; }
+      try {
+        const token = await u.getIdToken();
+        const res = await fetch("https://eubackend.netherlink.net/api/admin/members", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.status === 200) { window.location.replace("/dashboard"); return; }
+      } catch (_) { }
       setUser(u);
       setChecking(false);
     });

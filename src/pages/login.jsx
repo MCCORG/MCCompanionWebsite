@@ -78,7 +78,7 @@ export default function LoginPage() {
 
     return (
         <Layout>
-            <div className="min-h-screen flex items-center justify-center bg-[#07111c] px-4">
+            <div className="min-h-screen flex items-center justify-center px-4">
                 <div className="w-full max-w-sm">
                     <div className="text-center mb-8">
                         <div className="w-14 h-14 rounded-2xl bg-violet-500/15 border border-violet-500/30 flex items-center justify-center mx-auto mb-4">
@@ -89,7 +89,7 @@ export default function LoginPage() {
                     </div>
 
                     <form onSubmit={handleSubmit}
-                        className="bg-[#0c1220] border border-white/8 rounded-2xl p-6 flex flex-col gap-4 shadow-2xl">
+                        className="bg-[#1b1d24] border border-white/8 rounded-2xl p-6 flex flex-col gap-4 shadow-2xl">
                         {[
                             { label: "EMAIL", type: "email", val: email, set: setEmail, ac: "email" },
                             { label: "PASSWORD", type: "password", val: password, set: setPassword, ac: "current-password" },

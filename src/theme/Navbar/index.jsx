@@ -99,8 +99,8 @@ export default function Navbar() {
   }
 
   async function handleSignOut() {
-    try { await signOut(auth); } catch (_) { }
-    navigate("/login");
+    try { await signOut(auth); } catch (_) {}
+    navigate("/");
   }
 
   const NAVBAR_HEIGHT = 68;
@@ -109,8 +109,8 @@ export default function Navbar() {
   const portalLink = role === "admin"
     ? { label: "Dashboard", path: "/dashboard" }
     : role === "member"
-      ? { label: "Partner Portal", path: "/partner" }
-      : null;
+    ? { label: "Partner Portal", path: "/partner" }
+    : null;
 
   return (
     <header key={location.pathname} className="navbar nl-navbar fixed w-full top-0 z-40 transition-all" style={{
@@ -153,27 +153,12 @@ export default function Navbar() {
             <FaStar size={18} /> Featured Slot
           </button>
 
-          {/* Portal link — only shown when role is known and user is logged in */}
+          {/* Portal link — only shown when role is resolved */}
           {portalLink && (
             <button onClick={() => navigate(portalLink.path)}
-              className="flex items-center gap-2 text-slate-200 hover:text-slate-300 font-semibold px-2 py-1 rounded bg-slate-900/20"
+              className="flex items-center gap-2 text-slate-200 hover:text-slate-100 font-semibold px-2 py-1 rounded"
               style={{ background: "none", border: "none" }}>
               {portalLink.label}
-            </button>
-          )}
-
-          {/* Sign in / sign out */}
-          {user ? (
-            <button onClick={handleSignOut}
-              className="flex items-center gap-2 text-slate-400 hover:text-slate-200 font-semibold px-2 py-1 rounded text-sm"
-              style={{ background: "none", border: "none" }}>
-              Sign out
-            </button>
-          ) : (
-            <button onClick={() => navigate("/login")}
-              className="flex items-center gap-2 text-slate-200 hover:text-slate-300 font-semibold px-3 py-1.5 rounded-lg border border-white/10 bg-white/4 text-sm"
-              style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
-              Sign in
             </button>
           )}
 
@@ -181,6 +166,21 @@ export default function Navbar() {
             className="flex items-center gap-2 text-slate-200 hover:text-slate-300 font-semibold px-2 py-1 rounded">
             <FaDiscord size={18} /> Discord
           </a>
+
+          {/* Sign in / Sign out */}
+          {user ? (
+            <button onClick={handleSignOut}
+              className="text-slate-500 hover:text-slate-300 text-xs font-medium px-2 py-1 rounded transition"
+              style={{ background: "none", border: "none" }}>
+              Sign out
+            </button>
+          ) : (
+            <button onClick={() => navigate("/login")}
+              className="flex items-center gap-2 text-slate-200 hover:text-slate-100 font-semibold px-3 py-1.5 rounded-lg transition"
+              style={{ border: "1px solid rgba(255,255,255,0.12)", background: "rgba(255,255,255,0.05)" }}>
+              Sign in
+            </button>
+          )}
         </div>
 
         {/* Hamburger */}
@@ -199,7 +199,6 @@ export default function Navbar() {
           &#10005;
         </button>
 
-        {/* Wiki */}
         <div>
           <button onClick={() => setWikiDropMobile(x => !x)}
             className="w-full text-left flex items-center gap-2 px-5 py-4 rounded-2xl text-slate-200 hover:text-slate-300 font-semibold"
@@ -224,21 +223,26 @@ export default function Navbar() {
           </button>
         )}
 
-        {user ? (
-          <button onClick={handleSignOut} className="w-full text-left flex items-center gap-2 px-5 py-4 rounded-2xl text-slate-400 hover:text-slate-200 font-semibold" style={{ background: "none", border: "none" }}>
-            Sign out
-          </button>
-        ) : (
-          <button onClick={() => navigate("/login")} className="w-full text-left flex items-center gap-2 px-5 py-4 rounded-2xl text-slate-200 hover:text-slate-300 font-semibold" style={{ background: "none", border: "none" }}>
-            Sign in
-          </button>
-        )}
-
         <a href="https://discord.gg/xvaNzE35Rs" target="_blank" rel="noopener noreferrer"
           className="w-full flex items-center gap-2 px-5 py-4 rounded-2xl text-slate-200 hover:text-slate-300 font-semibold"
           style={{ background: "none", border: "none" }} onClick={() => setDrawerOpen(false)}>
           <FaDiscord className="inline-block" size={19} /> Discord
         </a>
+
+        {/* Sign in / Sign out */}
+        {user ? (
+          <button onClick={handleSignOut}
+            className="w-full text-left flex items-center gap-2 px-5 py-4 rounded-2xl text-slate-500 hover:text-slate-300 text-sm font-medium"
+            style={{ background: "none", border: "none" }}>
+            Sign out
+          </button>
+        ) : (
+          <button onClick={() => navigate("/login")}
+            className="w-full text-left flex items-center gap-2 px-5 py-4 rounded-2xl text-slate-200 hover:text-slate-100 font-semibold"
+            style={{ background: "none", border: "none" }}>
+            Sign in
+          </button>
+        )}
       </div>
     </header>
   );
