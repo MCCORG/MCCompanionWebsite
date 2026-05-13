@@ -2,115 +2,126 @@ import React, { useState, useEffect } from "react";
 import { useHistory } from "@docusaurus/router";
 import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebaseClient";
+import Layout from "@theme/Layout";
+
+function Spinner({ size = 16 }) {
+    return (
+        <svg className="animate-spin" width={size} height={size} viewBox="0 0 24 24" fill="none">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3V0a12 12 0 100 24v-4l-3 3 3 3v4a12 12 0 01-12-12z" />
+        </svg>
+    );
+}
 
 export default function LoginPage() {
     const history = useHistory();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
+    const [checking, setChecking] = useState(true);
     const [error, setError] = useState("");
-    const [user, setUser] = useState(null);
 
     useEffect(() => {
-        if (!auth) return;
-        const unsub = onAuthStateChanged(auth, (u) => {
-            setUser(u);
+        if (!auth) { setChecking(false); return; }
+        const unsub = onAuthStateChanged(auth, async (u) => {
+            if (u) {
+                await redirectForUser(u);
+            } else {
+                setChecking(false);
+            }
         });
         return () => unsub();
     }, []);
 
-    async function handleSubmit(e) {
-        e.preventDefault();
-        setError("");
-        setLoading(true);
+    async function redirectForUser(u) {
         try {
-            await signInWithEmailAndPassword(auth, email, password);
-            setLoading(false);
-        } catch (err) {
-            setLoading(false);
-            setError(err.message || "Login failed");
+            const token = await u.getIdToken();
+            const res = await fetch(
+                `${process.env.REACT_APP_API_BASE || "https://eubackend.netherlink.net"}/api/admin/members`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            if (res.status === 200) {
+                history.replace("/dashboard");
+            } else {
+                history.replace("/partner");
+            }
+        } catch {
+            history.replace("/partner");
         }
     }
 
-    function handleCancel() {
-        history.push("/");
+    async function handleSubmit(e) {
+        e.preventDefault();
+        setError(""); setLoading(true);
+        try {
+            if (!auth) throw new Error("Firebase not initialised");
+            const cred = await signInWithEmailAndPassword(auth, email, password);
+            await redirectForUser(cred.user);
+        } catch (err) {
+            setError(
+                err.code === "auth/invalid-credential" || err.code === "auth/wrong-password"
+                    ? "Invalid email or password."
+                    : err.message
+            );
+        } finally {
+            setLoading(false);
+        }
     }
 
-    const cardClass =
-        "max-w-md mx-auto mt-24 p-6 rounded-xl text-slate-100 border border-white/8 backdrop-blur-md";
-    const cardStyle = {
-        background: "rgba(8,6,10,0.5)",
-        boxShadow: "0 6px 24px rgba(8,12,18,0.35)",
-    };
-
-    const inputClass =
-        "w-full p-2 rounded bg-[rgba(255,255,255,0.02)] border border-white/6 text-slate-100";
-
-    if (user) {
-        return (
-            <div className={cardClass} style={cardStyle}>
-                <h1 className="text-2xl font-semibold mb-4">Admin login</h1>
-                <p className="text-green-400">You are signed in as {user.email}.</p>
-                <div className="flex gap-2 mt-4">
-                    <button
-                        className="px-4 py-2 rounded bg-violet-600 text-white hover:bg-violet-500"
-                        onClick={() => history.push("/")}
-                    >
-                        Go to site
-                    </button>
-                    <button
-                        className="px-4 py-2 rounded bg-gray-700 text-white hover:bg-gray-600"
-                        onClick={() => history.push("/")}
-                    >
-                        Close
-                    </button>
-                </div>
+    if (checking) return (
+        <Layout>
+            <div className="min-h-screen flex items-center justify-center bg-[#07111c]">
+                <Spinner size={28} />
             </div>
-        );
-    }
+        </Layout>
+    );
 
     return (
-        <div className={cardClass} style={cardStyle}>
-            <h1 className="text-2xl font-semibold mb-4">Admin login</h1>
+        <Layout>
+            <div className="min-h-screen flex items-center justify-center bg-[#07111c] px-4">
+                <div className="w-full max-w-sm">
+                    <div className="text-center mb-8">
+                        <div className="w-14 h-14 rounded-2xl bg-violet-500/15 border border-violet-500/30 flex items-center justify-center mx-auto mb-4">
+                            <span className="text-2xl">🔗</span>
+                        </div>
+                        <h1 className="text-xl font-bold text-white">NetherLink</h1>
+                        <p className="text-sm text-slate-500 mt-1">Sign in to your account</p>
+                    </div>
 
-            <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-                <input
-                    className={inputClass}
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    type="email"
-                    required
-                    aria-label="Email"
-                />
-                <input
-                    className={inputClass}
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    type="password"
-                    required
-                    aria-label="Password"
-                />
-                {error && <div className="text-red-400 text-sm">{error}</div>}
-                <div className="flex gap-2 mt-2">
-                    <button
-                        disabled={loading}
-                        type="submit"
-                        className="flex-1 px-4 py-2 bg-violet-600 rounded text-white hover:bg-violet-500 disabled:opacity-60"
-                    >
-                        {loading ? "Signing in..." : "Sign in"}
-                    </button>
-                    <button
-                        type="button"
-                        onClick={handleCancel}
-                        className="px-4 py-2 bg-gray-700 rounded text-white hover:bg-gray-600"
-                    >
-                        Cancel
-                    </button>
+                    <form onSubmit={handleSubmit}
+                        className="bg-[#0c1220] border border-white/8 rounded-2xl p-6 flex flex-col gap-4 shadow-2xl">
+                        {[
+                            { label: "EMAIL", type: "email", val: email, set: setEmail, ac: "email" },
+                            { label: "PASSWORD", type: "password", val: password, set: setPassword, ac: "current-password" },
+                        ].map(({ label, type, val, set, ac }) => (
+                            <div key={label}>
+                                <label className="block text-xs font-bold text-slate-500 mb-1.5 tracking-widest">{label}</label>
+                                <input
+                                    type={type} value={val} onChange={(e) => set(e.target.value)}
+                                    required autoComplete={ac}
+                                    className="w-full px-3 py-2.5 rounded-xl border border-white/8 bg-white/3 text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500/40 transition placeholder:text-slate-600"
+                                />
+                            </div>
+                        ))}
+
+                        {error && (
+                            <p className="text-xs text-rose-400 bg-rose-500/10 border border-rose-500/20 rounded-lg px-3 py-2">
+                                {error}
+                            </p>
+                        )}
+
+                        <button
+                            type="submit" disabled={loading}
+                            className="w-full mt-1 py-2.5 rounded-xl font-semibold text-sm transition-all bg-violet-600 text-white hover:bg-violet-500 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                            {loading ? <><Spinner size={14} /> Signing in…</> : "Sign in"}
+                        </button>
+                    </form>
+
+                    <p className="text-xs text-slate-600 text-center mt-4">
+                        You'll be redirected to the right dashboard automatically.
+                    </p>
                 </div>
-            </form>
-            <p className="text-xs text-slate-400 mt-3">This page is unlinked — only for admins.</p>
-        </div>
+            </div>
+        </Layout>
     );
 }

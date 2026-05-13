@@ -11,17 +11,26 @@ const REGION_BASES = {
 
 async function apiFetch(path, options = {}) {
   const token = await fetchIdToken();
-  const res = await fetch(`${REGION_BASES.EU}${path}`, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...options.headers,
-    },
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw Object.assign(new Error(data.message || res.statusText), { data });
-  return data;
+  const headers = {
+    "Content-Type": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    ...options.headers,
+  };
+  let lastErr;
+  for (const base of [REGION_BASES.EU, REGION_BASES.US]) {
+    try {
+      const res = await fetch(`${base}${path}`, { ...options, headers });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) return data;
+      if (res.status < 500) throw Object.assign(new Error(data.message || res.statusText), { data });
+      // 5xx — try next
+      lastErr = new Error(data.message || `HTTP ${res.status}`);
+    } catch (err) {
+      lastErr = err;
+      if (err.data) throw err;
+    }
+  }
+  throw lastErr || new Error("Both regions unreachable");
 }
 
 async function apiBoth(path, options = {}) {
@@ -58,10 +67,10 @@ function Button({ children, onClick, variant = "primary", size = "md", disabled,
   const base = "inline-flex items-center justify-center gap-2 font-semibold rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-cyan-500/40";
   const sizes = { sm: "px-3 py-1.5 text-xs", md: "px-4 py-2.5 text-sm" };
   const variants = {
-    primary:   "bg-gradient-to-r from-cyan-400 to-blue-500 text-[#07111c] hover:opacity-90",
+    primary: "bg-gradient-to-r from-cyan-400 to-blue-500 text-[#07111c] hover:opacity-90",
     secondary: "bg-white/6 text-slate-300 hover:bg-white/10 border border-white/8",
-    danger:    "bg-rose-600/90 text-white hover:bg-rose-500",
-    ghost:     "bg-transparent text-slate-400 hover:text-slate-200 hover:bg-white/6 border border-white/8",
+    danger: "bg-rose-600/90 text-white hover:bg-rose-500",
+    ghost: "bg-transparent text-slate-400 hover:text-slate-200 hover:bg-white/6 border border-white/8",
   };
   return (
     <button type={type} onClick={onClick} disabled={disabled}
@@ -90,12 +99,11 @@ function Card({ title, subtitle, children, action, className = "" }) {
 
 function Tag({ children, color = "cyan" }) {
   const colors = {
-    cyan:  "bg-cyan-500/15 text-cyan-400 border-cyan-500/25",
+    cyan: "bg-cyan-500/15 text-cyan-400 border-cyan-500/25",
     amber: "bg-amber-500/15 text-amber-400 border-amber-500/25",
   };
   return <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${colors[color] || colors.cyan}`}>{children}</span>;
 }
-
 
 function StatsChart({ data, label, color = "#22d3ee" }) {
   if (!data || data.length === 0) {
@@ -103,7 +111,7 @@ function StatsChart({ data, label, color = "#22d3ee" }) {
   }
 
   const max = Math.max(...data.map(d => d.count), 1);
-  const H = 48; 
+  const H = 48;
   const barW = Math.max(4, Math.floor(200 / data.length) - 2);
 
   return (
@@ -209,11 +217,11 @@ function ServerForm({ initial = EMPTY, onSubmit, onCancel, submitting }) {
   const inputCls = "w-full px-3 py-2.5 rounded-xl border border-[#1e3045] bg-[#0a1520] text-slate-100 text-sm placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-500/30 focus:border-cyan-500/40 transition";
 
   const fields = [
-    { key: "name",       label: "SERVER NAME",  placeholder: "My Awesome Server",            type: "text",   required: true  },
-    { key: "address",    label: "ADDRESS",      placeholder: "play.myserver.net",             type: "text",   required: true  },
-    { key: "port",       label: "PORT",         placeholder: "19132",                         type: "number", required: false },
-    { key: "iconUrl",    label: "ICON URL",     placeholder: "https://example.com/icon.png", type: "url",    required: false },
-    { key: "websiteUrl", label: "WEBSITE URL",  placeholder: "https://myserver.net",          type: "url",    required: false },
+    { key: "name", label: "SERVER NAME", placeholder: "My Awesome Server", type: "text", required: true },
+    { key: "address", label: "ADDRESS", placeholder: "play.myserver.net", type: "text", required: true },
+    { key: "port", label: "PORT", placeholder: "19132", type: "number", required: false },
+    { key: "iconUrl", label: "ICON URL", placeholder: "https://example.com/icon.png", type: "url", required: false },
+    { key: "websiteUrl", label: "WEBSITE URL", placeholder: "https://myserver.net", type: "url", required: false },
   ];
 
   return (
@@ -252,9 +260,21 @@ function ServerForm({ initial = EMPTY, onSubmit, onCancel, submitting }) {
   );
 }
 
+
 function ServerCard({ server, onEdit, onDelete, deleting }) {
   const [statsRange, setStatsRange] = useState("week");
-  const chartData = statsRange === "week" ? (server.statsWeek || []) : (server.statsMonth || []);
+  const stats = server.stats || {};
+
+  const chartData = (() => {
+    const daily = stats.daily || [];
+    if (statsRange === "week") {
+      const cutoff = new Date();
+      cutoff.setUTCDate(cutoff.getUTCDate() - 6);
+      cutoff.setUTCHours(0, 0, 0, 0);
+      return daily.filter(d => new Date(d.day) >= cutoff);
+    }
+    return daily;
+  })();
 
   return (
     <div className="bg-[#0c1a27] border border-[#1e3045] rounded-2xl overflow-hidden flex flex-col">
@@ -271,11 +291,18 @@ function ServerCard({ server, onEdit, onDelete, deleting }) {
             {server.featured && <Tag color="amber">FEATURED</Tag>}
           </div>
           <p className="text-xs text-slate-500 font-mono mb-2">{server.address}:{server.port}</p>
-          {server.connections !== undefined && (
-            <div className="flex items-center gap-1.5 mb-2">
-              <span className="text-xs text-slate-600">All-time:</span>
-              <span className="text-xs font-bold text-cyan-400 tabular-nums">{server.connections.toLocaleString()}</span>
-              <span className="text-xs text-slate-600">connections</span>
+          {server.stats && (
+            <div className="flex items-center gap-3 mb-2 flex-wrap">
+              {[
+                { label: "Total", value: server.stats.total },
+                { label: "This week", value: server.stats.thisWeek },
+                { label: "This month", value: server.stats.thisMonth },
+              ].map(({ label, value }) => (
+                <div key={label}>
+                  <span className="text-[10px] text-slate-600 block leading-none">{label}</span>
+                  <span className="text-xs font-bold text-cyan-400 tabular-nums">{(value ?? 0).toLocaleString()}</span>
+                </div>
+              ))}
             </div>
           )}
           {server.description && (
@@ -319,63 +346,10 @@ function ServerCard({ server, onEdit, onDelete, deleting }) {
   );
 }
 
-function LoginScreen({ onLogin }) {
-  const [email, setEmail]       = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError]       = useState("");
-  const [loading, setLoading]   = useState(false);
-
-  async function handleSubmit(e) {
-    e.preventDefault();
-    setError(""); setLoading(true);
-    try {
-      if (!auth) throw new Error("Firebase not initialised");
-      await signInWithEmailAndPassword(auth, email, password);
-      onLogin();
-    } catch (err) {
-      setError(err.code === "auth/invalid-credential" ? "Invalid email or password." : err.message);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-[#07111c] px-4">
-      <div className="w-full max-w-sm">
-        <div className="text-center mb-8">
-          <div className="w-14 h-14 rounded-2xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center mx-auto mb-4">
-            <span className="text-2xl">🔗</span>
-          </div>
-          <h1 className="text-xl font-bold text-white">Partner Portal</h1>
-          <p className="text-sm text-slate-500 mt-1">NetherLink Partner Dashboard</p>
-        </div>
-        <form onSubmit={handleSubmit} className="bg-[#0c1a27] border border-[#1e3045] rounded-2xl p-6 flex flex-col gap-4">
-          {[
-            { label: "EMAIL",    type: "email",    val: email,    set: setEmail    },
-            { label: "PASSWORD", type: "password", val: password, set: setPassword },
-          ].map(({ label, type, val, set }) => (
-            <div key={label}>
-              <label className="block text-xs font-bold text-slate-500 mb-1.5 tracking-widest">{label}</label>
-              <input type={type} value={val} onChange={(e) => set(e.target.value)} required
-                autoComplete={type === "email" ? "email" : "current-password"}
-                className="w-full px-3 py-2.5 rounded-xl border border-[#1e3045] bg-[#0a1520] text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/30 focus:border-cyan-500/40" />
-            </div>
-          ))}
-          {error && <p className="text-xs text-rose-400 bg-rose-500/10 border border-rose-500/20 rounded-lg px-3 py-2">{error}</p>}
-          <Button type="submit" disabled={loading} className="w-full mt-1">
-            {loading ? <><Spinner size={14} /> Signing in…</> : "Sign in"}
-          </Button>
-        </form>
-      </div>
-    </div>
-  );
-}
-
-
 function Dashboard({ user }) {
-  const [servers, setServers]     = useState([]);
-  const [loading, setLoading]     = useState(true);
-  const [mode, setMode]           = useState("list");
+  const [servers, setServers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [mode, setMode] = useState("list");
   const [editTarget, setEditTarget] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
@@ -399,12 +373,11 @@ function Dashboard({ user }) {
   const refreshStats = useCallback(async () => {
     try {
       const data = await apiFetch("/api/partner/servers/stats");
-      const statsMap = Object.fromEntries((data.stats ?? []).map(s => [s.id, s]));
-      setServers(prev => prev.map(s => {
-        const fresh = statsMap[s.id];
-        if (!fresh) return s;
-        return { ...s, connections: fresh.connections ?? s.connections ?? 0, statsWeek: fresh.statsWeek ?? s.statsWeek, statsMonth: fresh.statsMonth ?? s.statsMonth };
-      }));
+      const statsMap = Object.fromEntries((data.stats ?? []).map(s => [s.id, s.stats]));
+      setServers(prev => prev.map(s => ({
+        ...s,
+        stats: statsMap[s.id] ?? s.stats,
+      })));
     } catch (_) { /* silently ignore */ }
   }, []);
 
@@ -458,26 +431,10 @@ function Dashboard({ user }) {
   }
 
   function startEdit(server) { setEditTarget(server); setMode("edit"); }
-  function cancelForm()      { setMode("list"); setEditTarget(null); }
+  function cancelForm() { setMode("list"); setEditTarget(null); }
 
   return (
-    <div className="min-h-screen bg-[#07111c]">
-      <div className="h-14 border-b border-[#1e3045] bg-[#0a1520] flex items-center justify-between px-6">
-        <div className="flex items-center gap-3">
-          <div className="w-2 h-2 rounded-full bg-cyan-400" style={{ boxShadow: "0 0 8px #22d3ee80" }} />
-          <span className="text-sm font-bold text-white">NetherLink</span>
-          <span className="text-slate-600 text-sm">/</span>
-          <span className="text-sm text-slate-400">Partner Portal</span>
-        </div>
-        <div className="flex items-center gap-4">
-          <span className="text-xs text-slate-500 hidden sm:block">{user.email}</span>
-          <button onClick={() => signOut(auth)}
-            className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-200 transition px-3 py-1.5 rounded-lg border border-[#1e3045] hover:bg-white/4">
-            Sign out
-          </button>
-        </div>
-      </div>
-
+    <div className="min-h-screen">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 flex flex-col gap-6">
 
         <div className="flex items-start justify-between gap-4 flex-wrap">
@@ -528,12 +485,12 @@ function Dashboard({ user }) {
           <Card title={mode === "add" ? "Add a new server" : `Edit — ${editTarget?.name}`}>
             <ServerForm
               initial={mode === "edit" ? {
-                name:        editTarget.name,
-                address:     editTarget.address,
-                port:        String(editTarget.port),
+                name: editTarget.name,
+                address: editTarget.address,
+                port: String(editTarget.port),
                 description: editTarget.description ?? "",
-                iconUrl:     editTarget.iconUrl ?? "",
-                websiteUrl:  editTarget.websiteUrl ?? "",
+                iconUrl: editTarget.iconUrl ?? "",
+                websiteUrl: editTarget.websiteUrl ?? "",
               } : EMPTY}
               onSubmit={mode === "add" ? handleAdd : handleEdit}
               onCancel={cancelForm}
@@ -591,15 +548,14 @@ function Dashboard({ user }) {
 }
 
 export default function PartnerDashboardPage() {
-  const [user, setUser]         = useState(null);
+  const [user, setUser] = useState(null);
   const [checking, setChecking] = useState(true);
-  const [showLogin, setShowLogin] = useState(false);
-
   useEffect(() => {
-    if (!auth) { setChecking(false); setShowLogin(true); return; }
+    if (!auth) { window.location.replace("/login"); return; }
     const unsub = onAuthStateChanged(auth, (u) => {
-      setUser(u); setChecking(false);
-      if (!u) setShowLogin(true);
+      if (!u) { window.location.replace("/login"); return; }
+      setUser(u);
+      setChecking(false);
     });
     return () => unsub();
   }, []);
@@ -608,10 +564,6 @@ export default function PartnerDashboardPage() {
     <Layout>
       <div className="min-h-screen flex items-center justify-center bg-[#07111c]"><Spinner size={28} /></div>
     </Layout>
-  );
-
-  if (!user || showLogin) return (
-    <Layout><LoginScreen onLogin={() => setShowLogin(false)} /></Layout>
   );
 
   return (

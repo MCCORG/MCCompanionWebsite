@@ -10,6 +10,19 @@ const REGION_BASES = {
   US: "https://usbackend.netherlink.net",
 };
 
+async function dbFetch(path, options = {}) {
+  for (const base of [REGION_BASES.EU, REGION_BASES.US]) {
+    try {
+      const res = await fetch(`${base}${path}`, options);
+      if (res.ok || res.status < 500) {
+        const data = await res.json().catch(() => ({}));
+        return { ok: res.ok, status: res.status, data };
+      }
+    } catch (_) { /* network error — try next region */ }
+  }
+  throw new Error("Both regions unreachable");
+}
+
 const EVENTS_CAP = 1500;
 
 function IconCopy() {
@@ -37,14 +50,15 @@ function IconPlus() {
   return <svg width="13" height="13" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /><line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>;
 }
 
+
 function Badge({ children, color = "slate" }) {
   const cls = {
-    slate:  "bg-slate-700/60 text-slate-300 border border-slate-600/40",
-    green:  "bg-emerald-500/15 text-emerald-400 border border-emerald-500/25",
-    red:    "bg-rose-500/15 text-rose-400 border border-rose-500/25",
+    slate: "bg-slate-700/60 text-slate-300 border border-slate-600/40",
+    green: "bg-emerald-500/15 text-emerald-400 border border-emerald-500/25",
+    red: "bg-rose-500/15 text-rose-400 border border-rose-500/25",
     yellow: "bg-amber-500/15 text-amber-400 border border-amber-500/25",
     violet: "bg-violet-500/15 text-violet-400 border border-violet-500/25",
-    blue:   "bg-blue-500/15 text-blue-400 border border-blue-500/25",
+    blue: "bg-blue-500/15 text-blue-400 border border-blue-500/25",
   }[color] || "bg-slate-700/60 text-slate-300";
   return <span className={`inline-flex items-center text-xs px-2 py-0.5 rounded-full font-medium ${cls}`}>{children}</span>;
 }
@@ -53,11 +67,11 @@ function Button({ children, onClick, variant = "primary", size = "md", className
   const base = "inline-flex items-center gap-1.5 font-semibold transition-all rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500/50";
   const sizes = { sm: "px-2.5 py-1.5 text-xs", md: "px-3.5 py-2 text-sm" };
   const variants = {
-    primary:   "bg-violet-600 text-white hover:bg-violet-500 active:bg-violet-700",
+    primary: "bg-violet-600 text-white hover:bg-violet-500 active:bg-violet-700",
     secondary: "bg-white/8 text-slate-200 hover:bg-white/12 border border-white/8",
-    danger:    "bg-rose-600/90 text-white hover:bg-rose-500 active:bg-rose-700",
-    ghost:     "bg-transparent text-slate-300 hover:bg-white/6 border border-white/8",
-    success:   "bg-emerald-600 text-white hover:bg-emerald-500",
+    danger: "bg-rose-600/90 text-white hover:bg-rose-500 active:bg-rose-700",
+    ghost: "bg-transparent text-slate-300 hover:bg-white/6 border border-white/8",
+    success: "bg-emerald-600 text-white hover:bg-emerald-500",
   };
   return (
     <button type={type} title={title} onClick={onClick} disabled={disabled}
@@ -99,10 +113,10 @@ function RegionResultBadge({ results }) {
 
 function StatusDot({ status }) {
   const colors = {
-    open:       "bg-emerald-400 shadow-[0_0_6px_2px_rgba(52,211,153,0.4)]",
+    open: "bg-emerald-400 shadow-[0_0_6px_2px_rgba(52,211,153,0.4)]",
     connecting: "bg-amber-400 shadow-[0_0_6px_2px_rgba(251,191,36,0.4)] animate-pulse",
-    error:      "bg-rose-400 shadow-[0_0_6px_2px_rgba(251,113,133,0.4)]",
-    closed:     "bg-slate-500",
+    error: "bg-rose-400 shadow-[0_0_6px_2px_rgba(251,113,133,0.4)]",
+    closed: "bg-slate-500",
   };
   return <span className={`inline-block w-2 h-2 rounded-full ${colors[status] || colors.closed}`} />;
 }
@@ -150,19 +164,19 @@ function TabBar({ active, onChange }) {
 }
 
 const EVENT_META = {
-  set:      { color: "border-emerald-500/50 bg-emerald-500/4", dot: "bg-emerald-400", label: "SET",      badge: "green"  },
-  del:      { color: "border-rose-500/50 bg-rose-500/4",       dot: "bg-rose-400",    label: "DEL",      badge: "red"    },
-  clear:    { color: "border-amber-500/50 bg-amber-500/4",     dot: "bg-amber-400",   label: "CLEAR",    badge: "yellow" },
-  snapshot: { color: "border-blue-500/50 bg-blue-500/4",       dot: "bg-blue-400",    label: "SNAPSHOT", badge: "blue"   },
+  set: { color: "border-emerald-500/50 bg-emerald-500/4", dot: "bg-emerald-400", label: "SET", badge: "green" },
+  del: { color: "border-rose-500/50 bg-rose-500/4", dot: "bg-rose-400", label: "DEL", badge: "red" },
+  clear: { color: "border-amber-500/50 bg-amber-500/4", dot: "bg-amber-400", label: "CLEAR", badge: "yellow" },
+  snapshot: { color: "border-blue-500/50 bg-blue-500/4", dot: "bg-blue-400", label: "SNAPSHOT", badge: "blue" },
 };
 
 function FeedEventRow({ ev, onBan, isBanned }) {
   const [expanded, setExpanded] = useState(false);
   const meta = EVENT_META[ev.type] || EVENT_META.set;
   const v = ev.value || {};
-  const publicIp  = v.publicIp || v.publicIP || v.public || ev.key || "";
-  const player    = v.playerName || "";
-  const remoteIp  = v.remoteServerIp || v.remoteServerIP || v.remote || "";
+  const publicIp = v.publicIp || v.publicIP || v.public || ev.key || "";
+  const player = v.playerName || "";
+  const remoteIp = v.remoteServerIp || v.remoteServerIP || v.remote || "";
   const remotePort = v.remoteServerPort || v.remotePort || v.port || "";
   const time = ev.time ? new Date(ev.time).toLocaleTimeString() : "";
 
@@ -217,8 +231,8 @@ function FeedEventRow({ ev, onBan, isBanned }) {
 
 function SlotEditor({ uid, current, apiBase, onUpdate }) {
   const [editing, setEditing] = useState(false);
-  const [value, setValue]     = useState(String(current));
-  const [saving, setSaving]   = useState(false);
+  const [value, setValue] = useState(String(current));
+  const [saving, setSaving] = useState(false);
 
   async function save() {
     const n = parseInt(value, 10);
@@ -278,14 +292,14 @@ function SlotEditor({ uid, current, apiBase, onUpdate }) {
 }
 
 function PartnersPanel({ apiBase }) {
-  const [members, setMembers]     = useState([]);
-  const [loading, setLoading]     = useState(true);
-  const [error, setError]         = useState(null);
-  const [deleting, setDeleting]   = useState(null);
-  const [showForm, setShowForm]   = useState(false);
-  const [form, setForm]           = useState({ firebaseUid: "", email: "" });
+  const [members, setMembers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [deleting, setDeleting] = useState(null);
+  const [showForm, setShowForm] = useState(false);
+  const [form, setForm] = useState({ firebaseUid: "", email: "" });
   const [formError, setFormError] = useState(null);
-  const [creating, setCreating]   = useState(false);
+  const [creating, setCreating] = useState(false);
   const [expandedUid, setExpandedUid] = useState(null);
   const [memberServers, setMemberServers] = useState({});
   const [loadingServers, setLoadingServers] = useState({});
@@ -396,7 +410,7 @@ function PartnersPanel({ apiBase }) {
   }
 
   function fmtDate(t) { return t ? new Date(t).toLocaleDateString() : ""; }
-  function copyToClipboard(text) { try { navigator.clipboard?.writeText(text || ""); } catch (_) {} }
+  function copyToClipboard(text) { try { navigator.clipboard?.writeText(text || ""); } catch (_) { } }
 
   return (
     <div className="space-y-5">
@@ -554,11 +568,10 @@ function PartnersPanel({ apiBase }) {
                               <button
                                 onClick={() => toggleFeatured(s)}
                                 title={s.featured ? "Remove featured" : "Mark as featured"}
-                                className={`shrink-0 flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg border font-semibold transition-all ${
-                                  s.featured
+                                className={`shrink-0 flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg border font-semibold transition-all ${s.featured
                                     ? "bg-amber-500/20 border-amber-500/40 text-amber-300 hover:bg-amber-500/10"
                                     : "bg-white/4 border-white/8 text-slate-500 hover:text-amber-400 hover:border-amber-500/30"
-                                }`}
+                                  }`}
                               >
                                 ★ {s.featured ? "Featured" : "Feature"}
                               </button>
@@ -581,60 +594,64 @@ function PartnersPanel({ apiBase }) {
 export default function DashboardPage() {
   const history = useHistory();
 
-  const [region, setRegion]   = useState("EU");
+  const [region, setRegion] = useState("EU");
   const apiBase = REGION_BASES[region];
-  const [user, setUser]       = useState(null);
+  const [user, setUser] = useState(null);
   const [checking, setChecking] = useState(true);
   const [activeTab, setActiveTab] = useState("overview");
 
   const [currentNotification, setCurrentNotification] = useState("");
-  const [editing, setEditing]     = useState("");
-  const [isDirty, setIsDirty]     = useState(false);
-  const [saving, setSaving]       = useState(false);
-  const [notifAllRegions, setNotifAllRegions] = useState(true);
-  const [notifResults, setNotifResults]       = useState(null);
+  const [editing, setEditing] = useState("");
+  const [isDirty, setIsDirty] = useState(false);
+  const [saving, setSaving] = useState(false);
 
-  const [currentVersion, setCurrentVersion]     = useState("");
+  const [currentVersion, setCurrentVersion] = useState("");
   const [versionUpdatedAt, setVersionUpdatedAt] = useState("");
-  const [editingVersion, setEditingVersion]     = useState("");
-  const [isVersionDirty, setIsVersionDirty]     = useState(false);
-  const [savingVersion, setSavingVersion]       = useState(false);
-  const [versionError, setVersionError]         = useState(null);
-  const [versionAllRegions, setVersionAllRegions] = useState(true);
-  const [versionResults, setVersionResults]       = useState(null);
+  const [editingVersion, setEditingVersion] = useState("");
+  const [isVersionDirty, setIsVersionDirty] = useState(false);
+  const [savingVersion, setSavingVersion] = useState(false);
+  const [versionError, setVersionError] = useState(null);
 
-  const [eventsFeed, setEventsFeed]   = useState([]);
-  const [sseStatus, setSseStatus]     = useState("closed");
-  const esRef                         = useRef(null);
-  const feedContainerRef              = useRef(null);
-  const [currentMap, setCurrentMap]   = useState({});
-  const [rawFilter, setRawFilter]     = useState("");
-  const [filter, setFilter]           = useState("");
-  const filterTimer                   = useRef(null);
-  const [showOnly, setShowOnly]       = useState("all");
-  const [autoStart, setAutoStart]     = useState(false);
-  const [autoScroll, setAutoScroll]   = useState(true);
+  const [eventsFeed, setEventsFeed] = useState([]);
+  const [sseStatus, setSseStatus] = useState("closed");
+  const esRef = useRef(null);
+  const feedContainerRef = useRef(null);
+  const [currentMap, setCurrentMap] = useState({});
+  const [rawFilter, setRawFilter] = useState("");
+  const [filter, setFilter] = useState("");
+  const filterTimer = useRef(null);
+  const [showOnly, setShowOnly] = useState("all");
+  const [autoStart, setAutoStart] = useState(false);
+  const [autoScroll, setAutoScroll] = useState(true);
 
-  const [bans, setBans]               = useState([]);
+  const [bans, setBans] = useState([]);
   const [bansLoading, setBansLoading] = useState(false);
-  const [banIpInput, setBanIpInput]   = useState("");
+  const [banIpInput, setBanIpInput] = useState("");
   const [banReasonInput, setBanReasonInput] = useState("");
-  const [banError, setBanError]       = useState(null);
-  const [banAllRegions, setBanAllRegions] = useState(true);
+  const [banError, setBanError] = useState(null);
 
   useEffect(() => {
-    if (!auth) { setChecking(false); return; }
-    const unsub = onAuthStateChanged(auth, u => { setUser(u); setChecking(false); });
+    if (!auth) { setChecking(false); history.replace("/login"); return; }
+    const unsub = onAuthStateChanged(auth, async (u) => {
+      if (!u) { setChecking(false); history.replace("/login"); return; }
+      setUser(u);
+      try {
+        const token = await u.getIdToken();
+        const res = await fetch("https://eubackend.netherlink.net/api/admin/members", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.status !== 200) { history.replace("/partner"); return; }
+      } catch (_) { history.replace("/login"); return; }
+      setChecking(false);
+    });
     return () => unsub();
   }, []);
-  useEffect(() => { if (!checking && !user) history.replace("/login"); }, [checking, user, history]);
 
   async function loadCurrentNotification() {
     try {
       const token = await fetchIdToken(); if (!token) return;
-      const res = await fetch(`${apiBase}/notification`, { headers: { Authorization: `Bearer ${token}` } });
-      if (!res.ok) return;
-      const json = await res.json();
+      const { ok, data: json } = await dbFetch("/notification", { headers: { Authorization: `Bearer ${token}` } });
+      if (!ok) return;
       const msg = json?.message || "";
       setCurrentNotification(msg); setEditing(msg); setIsDirty(false);
     } catch (err) { console.warn("loadCurrentNotification error", err); }
@@ -644,10 +661,9 @@ export default function DashboardPage() {
     setVersionError(null);
     try {
       const token = await fetchIdToken(); if (!token) return;
-      const res = await fetch(`${apiBase}/api/version`, { headers: { Authorization: `Bearer ${token}` } });
-      if (res.status === 404) { setCurrentVersion(""); setEditingVersion(""); setVersionUpdatedAt(""); return; }
-      if (!res.ok) throw new Error(`Failed to load version: ${res.status}`);
-      const json = await res.json();
+      const { ok: vOk, status: vStatus, data: json } = await dbFetch("/api/version", { headers: { Authorization: `Bearer ${token}` } });
+      if (vStatus === 404) { setCurrentVersion(""); setEditingVersion(""); setVersionUpdatedAt(""); return; }
+      if (!vOk) throw new Error(`Failed to load version: ${vStatus}`);
       setCurrentVersion(json?.version || ""); setEditingVersion(json?.version || "");
       setVersionUpdatedAt(json?.updated_at || ""); setIsVersionDirty(false);
     } catch (err) { console.warn("loadCurrentVersion error", err); setVersionError(String(err)); }
@@ -657,9 +673,8 @@ export default function DashboardPage() {
     setBansLoading(true); setBanError(null);
     try {
       const token = await fetchIdToken(); if (!token) throw new Error("Not authenticated");
-      const res = await fetch(`${apiBase}/api/admin/bans`, { headers: { Authorization: `Bearer ${token}` } });
-      if (!res.ok) throw new Error(`Failed to load bans: ${res.status}`);
-      const json = await res.json();
+      const { ok: bOk, status: bStatus, data: json } = await dbFetch("/api/admin/bans", { headers: { Authorization: `Bearer ${token}` } });
+      if (!bOk) throw new Error(`Failed to load bans: ${bStatus}`);
       setBans(Array.isArray(json.bans) ? json.bans : []);
     } catch (err) { console.error("loadBans error", err); setBanError(String(err)); setBans([]); }
     finally { setBansLoading(false); }
@@ -687,7 +702,7 @@ export default function DashboardPage() {
       const { streamToken } = await r.json();
       const es = new EventSource(`${apiBase}/cache/admin/cache/stream?streamToken=${encodeURIComponent(streamToken)}`);
       esRef.current = es;
-      es.onopen  = () => setSseStatus("open");
+      es.onopen = () => setSseStatus("open");
       es.onerror = () => setSseStatus("error");
 
       es.addEventListener("snapshot", e => {
@@ -698,34 +713,34 @@ export default function DashboardPage() {
           for (const { key, value } of entries) { if (key && value) map[key] = value; }
           setCurrentMap(map);
           setEventsFeed(prev => [...prev, { type: "snapshot", count: entries.length, time: d.time || Date.now() }].slice(-EVENTS_CAP));
-        } catch (_) {}
+        } catch (_) { }
       });
       es.addEventListener("set", e => {
         try {
           const d = JSON.parse(e.data || "{}");
           setEventsFeed(prev => [...prev, { type: "set", key: d.key, value: d.value, time: d.time || Date.now() }].slice(-EVENTS_CAP));
           if (d.key) setCurrentMap(prev => ({ ...prev, [d.key]: d.value || {} }));
-        } catch (_) {}
+        } catch (_) { }
       });
       es.addEventListener("del", e => {
         try {
           const d = JSON.parse(e.data || "{}");
           setEventsFeed(prev => [...prev, { type: "del", key: d.key, value: d.value, existed: d.existed, time: d.time || Date.now() }].slice(-EVENTS_CAP));
           if (d.key) setCurrentMap(prev => { const n = { ...prev }; delete n[d.key]; return n; });
-        } catch (_) {}
+        } catch (_) { }
       });
       es.addEventListener("clear", e => {
         try {
           const d = JSON.parse(e.data || "{}");
           setEventsFeed(prev => [...prev, { type: "clear", entries: d.entries || [], time: d.time || Date.now() }].slice(-EVENTS_CAP));
           setCurrentMap({});
-        } catch (_) {}
+        } catch (_) { }
       });
     } catch (err) { setSseStatus("closed"); console.warn(err); }
   }, [apiBase]);
 
   const stopStream = useCallback(() => {
-    if (esRef.current) { try { esRef.current.close(); } catch (_) {} esRef.current = null; }
+    if (esRef.current) { try { esRef.current.close(); } catch (_) { } esRef.current = null; }
     setSseStatus("closed");
   }, []);
 
@@ -737,21 +752,12 @@ export default function DashboardPage() {
     e?.preventDefault(); setSaving(true); setNotifResults(null);
     try {
       const token = await fetchIdToken(); if (!token) throw new Error("Not authenticated");
-      const targets = notifAllRegions ? Object.entries(REGION_BASES) : [[region, apiBase]];
-      const results = await Promise.allSettled(
-        targets.map(([, base]) =>
-          fetch(`${base}/notification`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-            body: JSON.stringify({ message: editing || "" })
-          }).then(r => ({ ok: r.ok, base }))
-        )
-      );
-      const mapped = {};
-      results.forEach((r, i) => { mapped[targets[i][0]] = r.status === "fulfilled" && r.value.ok; });
-      setNotifResults(mapped);
-      const activeResult = results.find((_, i) => targets[i][1] === apiBase);
-      if (activeResult?.status === "fulfilled" && activeResult.value.ok) { setCurrentNotification(editing); setIsDirty(false); }
+      const { ok } = await dbFetch("/notification", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ message: editing || "" }),
+      });
+      if (ok) { setCurrentNotification(editing); setIsDirty(false); }
     } catch (err) { console.warn(err); } finally { setSaving(false); }
   }
 
@@ -760,14 +766,11 @@ export default function DashboardPage() {
     setSaving(true); setNotifResults(null);
     try {
       const token = await fetchIdToken(); if (!token) throw new Error("Not authenticated");
-      const targets = notifAllRegions ? Object.entries(REGION_BASES) : [[region, apiBase]];
-      const results = await Promise.allSettled(
-        targets.map(([, base]) => fetch(`${base}/notification`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } }).then(r => ({ ok: r.ok })))
-      );
-      const mapped = {};
-      results.forEach((r, i) => { mapped[targets[i][0]] = r.status === "fulfilled" && r.value.ok; });
-      setNotifResults(mapped);
-      if (Object.values(mapped).some(Boolean)) { setCurrentNotification(""); setEditing(""); setIsDirty(false); }
+      const { ok: dOk } = await dbFetch("/notification", {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (dOk) { setCurrentNotification(""); setEditing(""); setIsDirty(false); }
     } catch (err) { console.warn(err); } finally { setSaving(false); }
   }
 
@@ -775,27 +778,18 @@ export default function DashboardPage() {
     e?.preventDefault(); setVersionError(null); setSavingVersion(true); setVersionResults(null);
     try {
       const token = await fetchIdToken(); if (!token) throw new Error("Not authenticated");
-      const semverRegex = /^\d+\.\d+\.\d+(\+\d+)?$/;
-      if (!semverRegex.test(editingVersion.trim())) { setVersionError("Format must be 1.0.0 or 1.0.0+1"); return; }
-      const targets = versionAllRegions ? Object.entries(REGION_BASES) : [[region, apiBase]];
-      const results = await Promise.allSettled(
-        targets.map(([, base]) =>
-          fetch(`${base}/api/version`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-            body: JSON.stringify({ version: editingVersion.trim() })
-          }).then(async r => ({ ok: r.ok, json: r.ok ? await r.json() : null }))
-        )
-      );
-      const mapped = {};
-      results.forEach((r, i) => { mapped[targets[i][0]] = r.status === "fulfilled" && r.value.ok; });
-      setVersionResults(mapped);
-      const activeIdx = targets.findIndex(([, b]) => b === apiBase);
-      const activeResult = results[activeIdx];
-      if (activeResult?.status === "fulfilled" && activeResult.value.ok) {
-        setCurrentVersion(activeResult.value.json?.version || "");
-        setVersionUpdatedAt(activeResult.value.json?.updated_at || "");
+      if (!/^\d+\.\d+\.\d+(\+\d+)?$/.test(editingVersion.trim())) { setVersionError("Format must be 1.0.0 or 1.0.0+1"); return; }
+      const { ok: vOk2, status: vStatus2, data: vJson } = await dbFetch("/api/version", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ version: editingVersion.trim() }),
+      });
+      if (vOk2) {
+        setCurrentVersion(vJson.version || "");
+        setVersionUpdatedAt(vJson.updated_at || "");
         setIsVersionDirty(false);
+      } else {
+        setVersionError(`Failed: ${vStatus2}`);
       }
     } catch (err) { console.error(err); setVersionError(String(err)); }
     finally { setSavingVersion(false); }
@@ -804,24 +798,15 @@ export default function DashboardPage() {
   async function handleBan(ip, reason = "") {
     setBanError(null);
     if (!ip || typeof ip !== "string") { setBanError("Invalid IP"); return; }
-    if (!confirm(`Ban ${ip}${banAllRegions ? " in ALL regions" : ""}?`)) return;
+    if (!confirm(`Ban ${ip}?`)) return;
     try {
       const token = await fetchIdToken(); if (!token) throw new Error("Not authenticated");
-      const targets = banAllRegions ? Object.values(REGION_BASES) : [apiBase];
-      const results = await Promise.allSettled(
-        targets.map(base =>
-          fetch(`${base}/api/admin/bans`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-            body: JSON.stringify({ ip, reason })
-          }).then(r => ({ ok: r.ok }))
-        )
-      );
-      const anyFailed = results.some(r => r.status !== "fulfilled" || !r.value.ok);
-      if (anyFailed) {
-        const failedRegions = Object.keys(REGION_BASES).filter((_, i) => { const r = results[i]; return !r || r.status !== "fulfilled" || !r.value.ok; });
-        setBanError(`Failed for: ${failedRegions.join(", ")}`);
-      }
+      const { ok: banOk, status: banStatus } = await dbFetch("/api/admin/bans", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ ip, reason }),
+      });
+      if (!banOk) { setBanError(`Failed: ${banStatus}`); return; }
       await loadBans();
       setCurrentMap(prev => { const n = { ...prev }; delete n[ip]; return n; });
       setBanIpInput(""); setBanReasonInput("");
@@ -829,16 +814,14 @@ export default function DashboardPage() {
   }
 
   async function handleUnban(ip) {
-    if (!ip || !confirm(`Unban ${ip}${banAllRegions ? " in ALL regions" : ""}?`)) return;
+    if (!ip || !confirm(`Unban ${ip}?`)) return;
     setBanError(null);
     try {
       const token = await fetchIdToken(); if (!token) throw new Error("Not authenticated");
-      const targets = banAllRegions ? Object.values(REGION_BASES) : [apiBase];
-      await Promise.allSettled(
-        targets.map(base =>
-          fetch(`${base}/api/admin/bans/${encodeURIComponent(ip)}`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } })
-        )
-      );
+      await dbFetch(`/api/admin/bans/${encodeURIComponent(ip)}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
       await loadBans();
     } catch (err) { console.error(err); setBanError(String(err)); }
   }
@@ -850,13 +833,13 @@ export default function DashboardPage() {
       const s = filter.toLowerCase();
       const v = ev.value || {};
       return [v.publicIp, v.publicIP, v.public, v.remoteServerIp, v.remoteServerIP, v.remote,
-        String(v.remoteServerPort || v.remotePort || v.port || ""), v.playerName, ev.key
+      String(v.remoteServerPort || v.remotePort || v.port || ""), v.playerName, ev.key
       ].some(x => (x || "").toLowerCase().includes(s));
     });
   }, [eventsFeed, filter, showOnly]);
 
   function isIpLocallyBanned(ip) { return ip ? bans.some(b => String(b.ip).toLowerCase() === String(ip).toLowerCase()) : false; }
-  function copyToClipboard(text) { try { navigator.clipboard?.writeText(text || ""); } catch (_) {} }
+  function copyToClipboard(text) { try { navigator.clipboard?.writeText(text || ""); } catch (_) { } }
   function fmtTime(t) { return t ? new Date(t).toLocaleString() : ""; }
 
   return (
@@ -877,14 +860,7 @@ export default function DashboardPage() {
             </div>
             <div className="flex items-center gap-2 flex-wrap">
               <TabBar active={activeTab} onChange={setActiveTab} />
-              <div className="flex rounded-lg overflow-hidden border border-white/8">
-                {Object.keys(REGION_BASES).map(r => (
-                  <button key={r} onClick={() => setRegion(r)}
-                    className={`px-4 py-2 text-xs font-semibold transition ${region === r ? "bg-violet-600 text-white" : "text-slate-400 hover:text-white hover:bg-white/5"}`}>
-                    {r}
-                  </button>
-                ))}
-              </div>
+
               <Button onClick={async () => { try { await signOut(auth); } catch (e) { console.error(e); } }} variant="ghost" size="sm">
                 <IconSignOut /> Sign out
               </Button>
@@ -902,10 +878,9 @@ export default function DashboardPage() {
             {/* Stats */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
               {[
-                { label: "Region",       value: region,                          sub: "Active"       },
-                { label: "Live players", value: Object.keys(currentMap).length,  sub: "In cache"     },
-                { label: "Active bans",  value: bans.length,                     sub: "This region"  },
-                { label: "Feed events",  value: eventsFeed.length,               sub: `Cap ${EVENTS_CAP}` },
+                { label: "Live players", value: Object.keys(currentMap).length, sub: "In cache" },
+                { label: "Active bans", value: bans.length, sub: "Shared DB" },
+                { label: "Feed events", value: eventsFeed.length, sub: `Cap ${EVENTS_CAP}` },
               ].map(s => (
                 <div key={s.label} className="bg-[rgba(12,9,18,0.7)] rounded-xl border border-white/6 px-4 py-3">
                   <p className="text-xs text-slate-500 mb-1">{s.label}</p>
@@ -932,12 +907,10 @@ export default function DashboardPage() {
                         {saving ? <><Spinner size={12} /> Saving…</> : "Save"}
                       </Button>
                       <Button onClick={handleClearNotification} variant="danger" size="sm" disabled={saving || !currentNotification}>Clear</Button>
-                      <SyncToggle value={notifAllRegions} onChange={setNotifAllRegions} />
                       <span className={`ml-auto text-xs px-2 py-1 rounded-full ${currentNotification ? "bg-emerald-500/15 text-emerald-400" : "bg-slate-700/50 text-slate-500"}`}>
                         {currentNotification ? "Active" : "Empty"}
                       </span>
                     </div>
-                    <RegionResultBadge results={notifResults} />
                   </Card>
 
                   <Card title="App Version" subtitle="Flutter app update check">
@@ -955,9 +928,7 @@ export default function DashboardPage() {
                         <IconRefresh />
                       </Button>
                     </div>
-                    <div className="mt-2 shrink-0"><SyncToggle value={versionAllRegions} onChange={setVersionAllRegions} /></div>
                     {versionError && <p className="text-xs text-rose-400 mt-2 shrink-0">{versionError}</p>}
-                    <RegionResultBadge results={versionResults} />
                     <div className="flex-1" />
                     <div className="shrink-0">
                       <div className="flex items-end justify-between">
@@ -983,6 +954,15 @@ export default function DashboardPage() {
                   subtitle={`${filtered.length} events`}
                   action={
                     <div className="flex items-center gap-2">
+                      {/* Region selector — only affects the live cache feed */}
+                      <div className="flex rounded-lg overflow-hidden border border-white/8">
+                        {Object.keys(REGION_BASES).map(r => (
+                          <button key={r} onClick={() => { if (r !== region) { stopStream(); setRegion(r); } }}
+                            className={`px-3 py-1.5 text-xs font-semibold transition ${region === r ? "bg-violet-600 text-white" : "text-slate-400 hover:text-white hover:bg-white/5"}`}>
+                            {r}
+                          </button>
+                        ))}
+                      </div>
                       <StatusDot status={sseStatus} />
                       <span className="text-xs text-slate-500">{sseStatus}</span>
                       {sseStatus !== "open" && sseStatus !== "connecting"
@@ -1047,7 +1027,7 @@ export default function DashboardPage() {
                     ) : Object.entries(currentMap).map(([key, val]) => {
                       const player = val?.playerName || "—";
                       const remote = val?.remoteServerIp || val?.remote || "—";
-                      const port   = val?.remoteServerPort || val?.remotePort || val?.port || "";
+                      const port = val?.remoteServerPort || val?.remotePort || val?.port || "";
                       const banned = isIpLocallyBanned(key);
                       return (
                         <div key={key} className="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-white/3 border border-white/4 hover:bg-white/5 transition-colors">
@@ -1080,7 +1060,6 @@ export default function DashboardPage() {
                       <Button onClick={() => handleBan(banIpInput.trim(), banReasonInput.trim())} variant="danger" className="flex-1 justify-center" disabled={!banIpInput.trim()}>
                         <IconBan /> Ban IP
                       </Button>
-                      <SyncToggle value={banAllRegions} onChange={setBanAllRegions} />
                     </div>
                     {banError && <p className="text-xs text-rose-400 pt-1">{banError}</p>}
                   </div>
@@ -1088,7 +1067,7 @@ export default function DashboardPage() {
 
                 <Card
                   title="Active bans"
-                  subtitle={`${bans.length} in ${region}`}
+                  subtitle={`${bans.length} total`}
                   action={
                     <button onClick={loadBans} className="text-slate-500 hover:text-slate-300 transition p-1 rounded-lg hover:bg-white/5" title="Refresh"><IconRefresh /></button>
                   }
@@ -1120,7 +1099,7 @@ export default function DashboardPage() {
                   <div className="grid grid-cols-2 gap-2">
                     {[
                       { label: "Metrics", action: () => window.open('/metrics', '_blank') },
-                      { label: "Panel",   action: () => window.open('https://panel.netherlink.net', '_blank') },
+                      { label: "Panel", action: () => window.open('https://panel.netherlink.net', '_blank') },
                     ].map(a => (
                       <button key={a.label} onClick={a.action}
                         className="px-3 py-2.5 rounded-xl bg-white/4 border border-white/6 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition text-center">
