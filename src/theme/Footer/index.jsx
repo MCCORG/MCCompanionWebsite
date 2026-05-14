@@ -16,7 +16,6 @@ const footerLinks = [
   { to: "/privacy", label: "Privacy" },
   { to: "/terms", label: "Terms" },
   { to: "/contact", label: "Contact" },
-  { to: "/metrics", label: "Metrics" },
 ];
 
 const socialLinks = [
