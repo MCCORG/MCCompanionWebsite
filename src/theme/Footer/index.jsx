@@ -1,100 +1,131 @@
-import Link from '@docusaurus/Link';
+import Link from "@docusaurus/Link";
 import { FaDiscord, FaGithub } from "react-icons/fa";
+
+const NL = {
+  surface: "#191c23",
+  elevated: "#1f232c",
+  border: "rgba(255,255,255,0.07)",
+  borderMid: "rgba(255,255,255,0.12)",
+  text: "#e8e9ec",
+  secondary: "#9299a6",
+  muted: "#5a6070",
+  accent: "#4fd1c5",
+};
+
+const footerLinks = [
+  { to: "/privacy", label: "Privacy" },
+  { to: "/terms", label: "Terms" },
+  { to: "/contact", label: "Contact" },
+  { to: "/metrics", label: "Metrics" },
+];
+
+const socialLinks = [
+  { href: "https://discord.gg/xvaNzE35Rs", label: "Discord", icon: <FaDiscord size={15} />, color: "#7289da" },
+  { href: "https://github.com/NetherDevMc/NetherLinkWebsite", label: "GitHub", icon: <FaGithub size={15} />, color: NL.secondary },
+];
+
+function SocialBtn({ href, label, icon, color }) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={label}
+      title={label}
+      style={{
+        display: "flex", alignItems: "center", justifyContent: "center",
+        width: 32, height: 32, borderRadius: 8,
+        background: NL.elevated, border: `1px solid ${NL.border}`,
+        color, textDecoration: "none",
+        transition: "border-color 0.18s, color 0.18s",
+      }}
+      onMouseEnter={e => {
+        e.currentTarget.style.borderColor = NL.borderMid;
+        e.currentTarget.style.color = NL.text;
+      }}
+      onMouseLeave={e => {
+        e.currentTarget.style.borderColor = NL.border;
+        e.currentTarget.style.color = color;
+      }}
+    >
+      {icon}
+    </a>
+  );
+}
 
 export default function Footer() {
   return (
-    <footer
-      className="mt-16 pt-10 pb-8 px-4"
-      style={{
-        borderTop: "1px solid rgba(120,64,200,0.10)",
-        background: "#1b1d24",
-      }}
-    >
-      <div className="max-w-5xl mx-auto flex flex-col items-center gap-5">
-        <div className="flex items-center gap-3">
-          <span
-            className="text-xl font-black tracking-tighter"
-            style={{
-              background: "linear-gradient(135deg, #a184fa 0%, #6e3c9b 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              filter: "drop-shadow(0 0 6px rgba(120,64,200,0.3))",
-            }}
-          >
-            NL
+    <footer style={{
+      borderTop: `1px solid ${NL.border}`,
+      background: NL.surface,
+      padding: "36px 24px 28px",
+      fontFamily: "'Inter', system-ui, sans-serif",
+    }}>
+      <div style={{
+        maxWidth: 960, margin: "0 auto",
+        display: "flex", flexDirection: "column",
+        alignItems: "center", gap: 20,
+      }}>
+
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <span style={{
+            fontFamily: "'JetBrains Mono', monospace",
+            fontWeight: 700, fontSize: 14, color: NL.accent, letterSpacing: "-0.02em",
+          }}>NL</span>
+          <span style={{ color: NL.text, fontWeight: 600, fontSize: 14, letterSpacing: "-0.01em" }}>
+            NetherLink
           </span>
-          <span className="font-bold text-slate-100 text-lg">NetherLink</span>
+          <span style={{ width: 1, height: 12, background: NL.border, margin: "0 2px" }} />
+          <span style={{
+            fontFamily: "'JetBrains Mono', monospace",
+            fontSize: 10, color: NL.muted, letterSpacing: "0.05em",
+          }}>
+            Minecraft proxy
+          </span>
         </div>
 
-        <div className="flex gap-3">
-          <a
-            href="https://discord.gg/xvaNzE35Rs"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Discord"
-            className="p-3 rounded-full transition-all duration-200 text-white"
-            style={{
-              background: "linear-gradient(135deg, #a184fa, #6e3c9b)",
-              boxShadow: "0 0 16px rgba(120,64,200,0.22)",
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.boxShadow = "0 0 28px rgba(120,64,200,0.35)";
-              e.currentTarget.style.transform = "translateY(-2px)";
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.boxShadow = "0 0 16px rgba(120,64,200,0.22)";
-              e.currentTarget.style.transform = "translateY(0)";
-            }}
-          >
-            <FaDiscord size={18} />
-          </a>
-          <a
-            href="https://github.com/NetherDevMc/NetherLinkWebsite"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="GitHub"
-            className="p-3 rounded-full transition-all duration-200 text-slate-100 hover:text-white"
-            style={{
-              background: "rgba(160,128,250,0.13)",
-              border: "1px solid rgba(120,64,200,0.17)",
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.background = "rgba(160,128,250,0.18)";
-              e.currentTarget.style.transform = "translateY(-2px)";
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.background = "rgba(160,128,250,0.13)";
-              e.currentTarget.style.transform = "translateY(0)";
-            }}
-          >
-            <FaGithub size={18} />
-          </a>
-        </div>
-
-        <nav className="flex flex-wrap gap-6 justify-center">
-          {[
-            { to: "/privacy", label: "Privacy" },
-            { to: "/terms", label: "Terms" },
-            { to: "/contact", label: "Contact" },
-          ].map(({ to, label }) => (
+        <nav style={{ display: "flex", flexWrap: "wrap", gap: "2px 2px", justifyContent: "center" }}>
+          {footerLinks.map(({ to, label }) => (
             <Link
               key={to}
               to={to}
-              className="text-slate-100 hover:text-white-300 font-medium transition-colors duration-200 text-sm"
-              style={{ textDecoration: "none" }}
+              style={{
+                color: NL.secondary,
+                textDecoration: "none",
+                fontSize: 12,
+                fontWeight: 500,
+                padding: "4px 10px",
+                borderRadius: 6,
+                transition: "color 0.15s, background 0.15s",
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.color = NL.text;
+                e.currentTarget.style.background = NL.elevated;
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.color = NL.secondary;
+                e.currentTarget.style.background = "transparent";
+              }}
             >
               {label}
             </Link>
           ))}
         </nav>
 
-        <div className="text-slate-500 text-sm text-center">
-          © {new Date().getFullYear()} NetherLink. Built by{" "}
-          <span className="font-semibold" style={{ color: "#a184fa" }}>
-            Jens-Co
-          </span>
-          .
+        <div style={{ display: "flex", gap: 8 }}>
+          {socialLinks.map(s => <SocialBtn key={s.label} {...s} />)}
         </div>
+
+        <div style={{
+          width: "100%", maxWidth: 280, height: 1,
+          background: NL.border,
+        }} />
+
+        <p style={{ color: NL.muted, fontSize: 11, textAlign: "center", margin: 0, lineHeight: 1.5 }}>
+          © {new Date().getFullYear()} NetherLink ·{" "}
+          Built by <span style={{ color: NL.secondary, fontWeight: 500 }}>Jens-Co</span>
+        </p>
+
       </div>
     </footer>
   );

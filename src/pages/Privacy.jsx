@@ -1,7 +1,20 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { FaShieldAlt, FaArrowLeft } from "react-icons/fa";
-import Layout from '@theme/Layout';
+import Layout from "@theme/Layout";
+
+const NL = {
+  bg: "#111318",
+  surface: "#191c23",
+  elevated: "#1f232c",
+  border: "rgba(255,255,255,0.07)",
+  text: "#e8e9ec",
+  secondary: "#9299a6",
+  muted: "#5a6070",
+  accent: "#4fd1c5",
+  accentDim: "rgba(79,209,197,0.10)",
+  accentBorder: "rgba(79,209,197,0.22)",
+};
 
 const sections = [
   {
@@ -58,132 +71,114 @@ const sections = [
   },
 ];
 
+function Section({ section, index }) {
+  return (
+    <motion.section
+      initial={{ opacity: 0, y: 14 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{ delay: index * 0.03, duration: 0.38 }}
+    >
+      <h2 style={{
+        fontSize: 13, fontWeight: 600, color: NL.text,
+        margin: "0 0 10px",
+        display: "flex", alignItems: "center", gap: 10,
+      }}>
+        <span style={{
+          width: 3, height: 16, borderRadius: 2,
+          background: NL.accent, flexShrink: 0,
+          display: "inline-block",
+        }} />
+        {section.title}
+      </h2>
+      <div style={{
+        background: NL.elevated, border: `1px solid ${NL.border}`,
+        borderRadius: 12, padding: "16px 18px",
+      }}>
+        <p style={{ color: NL.secondary, fontSize: 13, lineHeight: 1.7, margin: 0 }}>{section.content}</p>
+        {section.list && (
+          <ul style={{ margin: "12px 0 0", padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 8 }}>
+            {section.list.map((item, j) => (
+              <li key={j} style={{ display: "flex", alignItems: "flex-start", gap: 10, color: NL.secondary, fontSize: 13, lineHeight: 1.6 }}>
+                <span style={{
+                  marginTop: 5, width: 5, height: 5, borderRadius: "50%",
+                  background: NL.accent, opacity: 0.6, flexShrink: 0,
+                }} />
+                {item}
+              </li>
+            ))}
+          </ul>
+        )}
+        {section.footer && (
+          <p style={{ color: NL.secondary, fontSize: 13, lineHeight: 1.7, marginTop: 12, marginBottom: 0 }}>{section.footer}</p>
+        )}
+      </div>
+    </motion.section>
+  );
+}
+
 export default function Privacy() {
   return (
     <Layout>
-    <div
-      className="min-h-screen font-sans"
-    >
-      <div className="max-w-4xl mx-auto px-3 py-12">
-        <motion.div
-          className="relative rounded-2xl p-8 overflow-hidden"
-          style={{
-            background: "linear-gradient(135deg, rgba(81,51,150,0.11) 0%, rgba(161,132,250,0.13) 100%)",
-            border: "1px solid rgba(120,64,200,0.13)",
-            boxShadow: "0 8px 48px rgba(40,20,60,0.32)",
-            backdropFilter: "blur(16px)",
-            WebkitBackdropFilter: "blur(16px)",
-          }}
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <div style={{
-            position: "absolute", top: 0, left: 0, right: 0, height: "2px",
-            background: "linear-gradient(90deg, #a184fa99, #6e3c9b77, transparent)",
-          }} />
+      <div style={{
+        minHeight: "100vh", background: NL.bg,
+        fontFamily: "'Inter', system-ui, sans-serif",
+        padding: "64px 16px",
+      }}>
+        <div style={{ maxWidth: 720, margin: "0 auto" }}>
 
-          <div className="flex justify-center mb-8">
-            <div className="relative">
-              <div style={{
-                position: "absolute", inset: 0,
-                background: "rgba(120,64,200,0.13)", borderRadius: "50%", filter: "blur(16px)",
-              }} />
-              <div className="relative p-5 rounded-full" style={{
-                background: "rgba(120,64,200,0.10)",
-                border: "1px solid #a184fa77",
-              }}>
-                <FaShieldAlt size={40} style={{ color: "#a184fa" }} />
-              </div>
+          <motion.div
+            style={{ textAlign: "center", marginBottom: 44 }}
+            initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <div style={{
+              display: "inline-flex", alignItems: "center", justifyContent: "center",
+              width: 52, height: 52, borderRadius: 14,
+              background: NL.surface, border: `1px solid ${NL.border}`,
+              marginBottom: 16, color: NL.accent,
+            }}>
+              <FaShieldAlt size={20} />
             </div>
-          </div>
+            <h1 style={{
+              fontSize: 28, fontWeight: 700, color: NL.text,
+              letterSpacing: "-0.025em", margin: "0 0 10px",
+            }}>Privacy Policy</h1>
+            <p style={{ fontSize: 14, color: NL.secondary, lineHeight: 1.6, margin: 0, maxWidth: 480, marginInline: "auto" }}>
+              At <span style={{ color: NL.text, fontWeight: 500 }}>NetherLink</span>, we are committed to protecting your privacy.
+              This policy outlines what information we collect and how we use it.
+            </p>
+          </motion.div>
 
-          <h1 className="text-4xl font-bold mb-5 text-center" style={{
-            background: "linear-gradient(135deg, #e2e8f0, #a184fa 60%, #6e3c9b 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            filter: "drop-shadow(0 0 20px #a184fa33)",
-          }}>
-            Privacy Policy
-          </h1>
-          <p className="mb-10 text-slate-400 text-base text-center max-w-2xl mx-auto leading-relaxed">
-            At <span className="text-slate-200 font-semibold">NetherLink</span>, we are committed to protecting your privacy.
-            This policy outlines what information we collect and how we use it.
-          </p>
-
-          <div className="space-y-5">
+          <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 40 }}>
             {sections.map((section, i) => (
-              <motion.section
-                key={i}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-40px" }}
-                transition={{ delay: i * 0.04, duration: 0.4 }}
-              >
-                <h2 className="text-base font-bold mb-3" style={{
-                  borderLeft: "3px solid #a184fa",
-                  paddingLeft: "12px",
-                  color: "#e2e8f0",
-                }}>
-                  {section.title}
-                </h2>
-                <div style={{
-                  background: "rgba(120,64,200,0.07)",
-                  border: "1px solid #a184fa27",
-                  borderRadius: "12px",
-                  padding: "16px 20px",
-                }}>
-                  <p className="text-slate-400 text-sm leading-relaxed">{section.content}</p>
-                  {section.list && (
-                    <ul className="mt-3 space-y-1.5 pl-2">
-                      {section.list.map((item, j) => (
-                        <li key={j} className="flex items-start gap-2 text-slate-400 text-sm">
-                          <span className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0"
-                            style={{ background: "#a184fa99" }} />
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                  {section.footer && (
-                    <p className="text-slate-400 text-sm leading-relaxed mt-3">{section.footer}</p>
-                  )}
-                </div>
-              </motion.section>
+              <Section key={i} section={section} index={i} />
             ))}
           </div>
 
-          <p className="mt-10 text-xs text-slate-600 text-right font-medium">
+          <p style={{ fontSize: 11, color: NL.muted, textAlign: "right", marginBottom: 32 }}>
             Last updated: March 24, 2026
           </p>
 
-          <div className="mt-8 text-center">
+          <div style={{ textAlign: "center" }}>
             <Link
               to="/"
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl font-bold text-sm transition-all duration-200"
               style={{
-                background: "rgba(120,64,200,0.11)",
-                border: "1px solid #a184fa27",
-                color: "#e2e8f0",
-                textDecoration: "none",
+                display: "inline-flex", alignItems: "center", gap: 8,
+                padding: "10px 20px",
+                background: NL.elevated, border: `1px solid ${NL.border}`,
+                borderRadius: 10, color: NL.secondary,
+                fontSize: 13, fontWeight: 500, textDecoration: "none",
+                transition: "color 0.2s, border-color 0.2s",
               }}
-              onMouseEnter={e => {
-                e.currentTarget.style.background = "rgba(161,132,250,0.18)";
-                e.currentTarget.style.boxShadow = "0 0 20px #a184fa33";
-                e.currentTarget.style.transform = "translateY(-2px)";
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.background = "rgba(120,64,200,0.11)";
-                e.currentTarget.style.boxShadow = "none";
-                e.currentTarget.style.transform = "translateY(0)";
-              }}
+              onMouseEnter={e => { e.currentTarget.style.color = NL.text; e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"; }}
+              onMouseLeave={e => { e.currentTarget.style.color = NL.secondary; e.currentTarget.style.borderColor = NL.border; }}
             >
-              <FaArrowLeft size={13} /> Back to Home
+              <FaArrowLeft size={12} /> Back to Home
             </Link>
           </div>
-        </motion.div>
+        </div>
       </div>
-    </div>
     </Layout>
   );
 }

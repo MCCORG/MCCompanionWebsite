@@ -1,88 +1,164 @@
 import { motion } from "framer-motion";
 import { FaDiscord } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import Layout from '@theme/Layout';
+import Layout from "@theme/Layout";
+
+const NL = {
+  bg: "#111318",
+  surface: "#191c23",
+  elevated: "#1f232c",
+  subtle: "#252931",
+  border: "rgba(255,255,255,0.07)",
+  borderMid: "rgba(255,255,255,0.12)",
+  text: "#e8e9ec",
+  secondary: "#9299a6",
+  muted: "#5a6070",
+  accent: "#4fd1c5",
+  accentDim: "rgba(79,209,197,0.10)",
+  accentBorder: "rgba(79,209,197,0.22)",
+};
+
+function FeatureLine({ children }) {
+  return (
+    <div style={{
+      display: "flex", alignItems: "center", gap: 10,
+      padding: "9px 0",
+      borderBottom: `1px solid ${NL.border}`,
+      color: NL.secondary, fontSize: 13,
+    }}>
+      <span style={{
+        width: 16, height: 16, flexShrink: 0,
+        background: NL.accentDim, border: `1px solid ${NL.accentBorder}`,
+        borderRadius: 4,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        fontSize: 9, color: NL.accent,
+      }}>✓</span>
+      {children}
+    </div>
+  );
+}
 
 export default function FeaturedSlot() {
   return (
     <Layout>
-      <div className="min-h-screen font-sans flex flex-col">
-        <main className="flex-1 flex flex-col items-center justify-center px-4 py-20">
-          <motion.div
-            className="w-full max-w-md mx-auto rounded-2xl p-8 relative overflow-hidden"
-            style={{
-              background: "#231f36",
-              border: "1.5px solid #413c53",
-            }}
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <h1
-              className="text-3xl md:text-4xl font-extrabold text-center mb-3"
-              style={{
-                color: "#fff",
-                letterSpacing: "-0.03em",
-                lineHeight: 1.19
-              }}
-            >
-              Featured Server Slot
-            </h1>
-            <p className="mb-7 text-white text-center text-base leading-relaxed font-semibold">
-              Showcase your Minecraft server in the <span className="text-[#a184fa] font-bold">Featured</span> section of NetherLink.
-              <br />
-              <span className="text-slate-100/70 font-normal text-sm">Get instantly visible for thousands of console players.</span>
-            </p>
+      <div style={{
+        minHeight: "100vh", background: NL.bg,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        padding: "64px 16px",
+        fontFamily: "'Inter', system-ui, sans-serif",
+      }}>
+        <motion.div
+          style={{ width: "100%", maxWidth: 440 }}
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.42, ease: "easeOut" }}
+        >
+          <div style={{ textAlign: "center", marginBottom: 24 }}>
+            <span style={{
+              fontFamily: "'JetBrains Mono', monospace",
+              fontSize: 11, letterSpacing: "0.13em", textTransform: "uppercase",
+              color: NL.accent, background: NL.accentDim,
+              border: `1px solid ${NL.accentBorder}`,
+              borderRadius: 4, padding: "4px 12px",
+            }}>Featured Slot</span>
+          </div>
 
-            <div
-              className="mb-7 rounded-xl p-5 text-center"
-              style={{
-                background: "#2b2545",
-                border: "1.5px solid #7157c733",
-              }}
-            >
-              <span className="block text-[#a184fa] text-xs uppercase tracking-widest mb-2 font-bold">
-                Price
-              </span>
-              <div className="flex items-baseline justify-center gap-1 mb-1">
-                <span className="text-4xl font-black" style={{ color: "#fff" }}>$50</span>
-                <span className="text-[#ddd] text-base font-bold">/ month</span>
+          <div style={{
+            background: NL.surface,
+            border: `1px solid ${NL.border}`,
+            borderRadius: 20,
+            overflow: "hidden",
+            position: "relative",
+          }}>
+            <div style={{
+              height: 2,
+              background: `linear-gradient(90deg, ${NL.accent}66 0%, ${NL.accent}18 60%, transparent 100%)`,
+            }} />
+
+            <div style={{ padding: "26px 26px 22px" }}>
+              <h1 style={{
+                fontSize: 24, fontWeight: 700, color: NL.text,
+                letterSpacing: "-0.025em", margin: "0 0 8px", lineHeight: 1.2,
+              }}>
+                Showcase your server
+              </h1>
+              <p style={{
+                color: NL.secondary, fontSize: 13, lineHeight: 1.65, margin: "0 0 22px",
+              }}>
+                Appear in the <span style={{ color: NL.text, fontWeight: 500 }}>Featured</span> section
+                of NetherLink — instantly visible to thousands of console players on PlayStation, Xbox, and Switch.
+              </p>
+
+              <div style={{
+                background: NL.elevated, border: `1px solid ${NL.borderMid}`,
+                borderRadius: 12, padding: "18px 18px 14px",
+                marginBottom: 18, textAlign: "center",
+              }}>
+                <div style={{ display: "flex", alignItems: "baseline", gap: 6, justifyContent: "center" }}>
+                  <span style={{
+                    fontFamily: "'JetBrains Mono', monospace",
+                    fontSize: 44, fontWeight: 700, color: NL.text, letterSpacing: "-0.04em", lineHeight: 1,
+                  }}>$50</span>
+                  <span style={{ color: NL.muted, fontSize: 15, fontWeight: 500 }}>/ month</span>
+                </div>
+                <p style={{ color: NL.muted, fontSize: 11, marginTop: 7, letterSpacing: "0.01em" }}>
+                  Billed monthly · Cancel anytime
+                </p>
               </div>
-              <p className="text-[#e5e5f7] text-[0.98em] mt-1">
-                Your server appears in our app, website and Discord Server Of The Day.
-              </p>
-            </div>
 
-            <div className="mb-7 text-center">
-              <p className="text-white font-bold mb-1 text-base">How to request your Featured Slot?</p>
-              <p className="text-[#edeeff] text-[15px] mb-4">
-                DM <span className="font-bold text-[#a184fa]">Jens.Co</span> on Discord or join the public server:&nbsp;
-                <a
-                  href="https://discord.gg/xvaNzE35Rs"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 align-middle group"
-                  style={{ textDecoration: "none", color: "#fff", fontWeight: 500 }}
-                >
-                  <FaDiscord size={20} className="text-white group-hover:text-[#a184fa] transition-colors duration-150" />
-                  <span className="font-semibold">Discord</span>
-                </a>
-              </p>
-            </div>
+              <div style={{ marginBottom: 20 }}>
+                <FeatureLine>Listed in the Featured section of the app</FeatureLine>
+                <FeatureLine>Shown on the NetherLink website</FeatureLine>
+                <FeatureLine>Discord Server of the Day rotation</FeatureLine>
+                <FeatureLine>Cancel anytime · Full refund guarantee</FeatureLine>
+              </div>
 
-            <div className="flex flex-col gap-1 items-center">
-              <Link
-                to="/terms"
-                className="text-xs font-medium underline underline-offset-2 text-[#a184fa] hover:text-white"
+              <p style={{ fontSize: 13, color: NL.secondary, marginBottom: 10, lineHeight: 1.5 }}>
+                Contact <strong style={{ color: NL.text, fontWeight: 600 }}>Jens.Co</strong> on Discord to request your slot:
+              </p>
+              <a
+                href="https://discord.gg/xvaNzE35Rs"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                  padding: "11px",
+                  background: NL.elevated, border: `1px solid ${NL.borderMid}`,
+                  borderRadius: 10, color: NL.text,
+                  textDecoration: "none", fontSize: 14, fontWeight: 600,
+                  marginBottom: 16,
+                  transition: "border-color 0.2s, background 0.2s",
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.borderColor = NL.accentBorder;
+                  e.currentTarget.style.background = NL.accentDim;
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.borderColor = NL.borderMid;
+                  e.currentTarget.style.background = NL.elevated;
+                }}
               >
-                Terms of Service
-              </Link>
-              <p className="text-xs text-[#ddd] text-center mt-1 max-w-xs">
-                Your slot supports NetherLink's development and keeps the platform online for everyone.
+                <FaDiscord size={16} style={{ color: "#7289da" }} />
+                Open Discord
+              </a>
+
+              <p style={{ fontSize: 12, color: NL.muted, textAlign: "center", lineHeight: 1.5 }}>
+                Read the{" "}
+                <Link to="/terms" style={{ color: NL.secondary, textDecoration: "underline", textUnderlineOffset: 3 }}>
+                  Terms of Service
+                </Link>{" "}
+                before purchasing.
               </p>
             </div>
-          </motion.div>
-        </main>
+          </div>
+
+          <p style={{
+            textAlign: "center", color: NL.muted,
+            fontSize: 12, marginTop: 18, lineHeight: 1.5,
+          }}>
+            Your slot keeps NetherLink running for all players.
+          </p>
+        </motion.div>
       </div>
     </Layout>
   );

@@ -1,6 +1,21 @@
 import React, { useCallback, useEffect, useState } from "react";
 import Layout from "@theme/Layout";
 
+const NL = {
+  bg: "#111318",
+  surface: "#191c23",
+  elevated: "#1f232c",
+  subtle: "#252931",
+  border: "rgba(255,255,255,0.07)",
+  borderMid: "rgba(255,255,255,0.12)",
+  text: "#e8e9ec",
+  secondary: "#9299a6",
+  muted: "#5a6070",
+  accent: "#4fd1c5",
+  accentDim: "rgba(79,209,197,0.10)",
+  accentBorder: "rgba(79,209,197,0.22)",
+};
+
 const REGION_BASES = {
   EU: "https://eubackend.netherlink.net",
   US: "https://usbackend.netherlink.net",
@@ -19,38 +34,20 @@ async function dbFetch(path, options = {}) {
   throw new Error("Both regions unreachable");
 }
 
-function IconRefresh({ spinning }) {
+function Spinner({ size = 20 }) {
   return (
-    <svg className={spinning ? "animate-spin" : ""} width="13" height="13" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M1 4v6h6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M3.51 15a9 9 0 1 0 .49-4.95" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-function IconServer() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="2" y="2" width="20" height="8" rx="2" stroke="currentColor" strokeWidth="1.6" />
-      <rect x="2" y="14" width="20" height="8" rx="2" stroke="currentColor" strokeWidth="1.6" />
-      <line x1="6" y1="6" x2="6.01" y2="6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <line x1="6" y1="18" x2="6.01" y2="18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </svg>
-  );
-}
-function IconUsers() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="1.6" />
-      <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-function Spinner() {
-  return (
-    <svg className="animate-spin" width="20" height="20" viewBox="0 0 24 24" fill="none">
+    <svg className="animate-spin" width={size} height={size} viewBox="0 0 24 24" fill="none">
       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3V0a12 12 0 100 24v-4l-3 3 3 3v4a12 12 0 01-12-12z" />
+    </svg>
+  );
+}
+
+function IconRefresh({ spinning }) {
+  return (
+    <svg className={spinning ? "animate-spin" : ""} width="13" height="13" viewBox="0 0 24 24" fill="none">
+      <path d="M1 4v6h6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M3.51 15a9 9 0 1 0 .49-4.95" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -85,97 +82,153 @@ export default function MetricsPage() {
 
   return (
     <Layout>
-      <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-2xl mx-auto">
+      <div style={{
+        minHeight: "100vh", background: NL.bg,
+        fontFamily: "'Inter', system-ui, sans-serif",
+        padding: "64px 16px",
+      }}>
+        <div style={{ maxWidth: 600, margin: "0 auto" }}>
 
-          {/* Header */}
-          <div className="text-center mb-10">
-            <div className="inline-flex items-center gap-2 text-xs px-3 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-300 font-medium mb-4">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_2px_rgba(52,211,153,0.4)]" />
+          <div style={{ textAlign: "center", marginBottom: 36 }}>
+            <div style={{
+              display: "inline-flex", alignItems: "center", gap: 8,
+              fontSize: 11, padding: "4px 12px",
+              borderRadius: 20, marginBottom: 16,
+              background: NL.accentDim, border: `1px solid ${NL.accentBorder}`,
+              color: NL.accent, fontFamily: "'JetBrains Mono', monospace",
+              letterSpacing: "0.1em", textTransform: "uppercase",
+            }}>
+              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#34d399" }} />
               Live data
             </div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-white mb-3">Server Metrics</h1>
-            <p className="text-slate-400 text-sm max-w-md mx-auto">
+            <h1 style={{
+              fontSize: 28, fontWeight: 700, color: NL.text,
+              letterSpacing: "-0.025em", margin: "0 0 8px",
+            }}>Server Metrics</h1>
+            <p style={{ fontSize: 13, color: NL.secondary, maxWidth: 360, margin: "0 auto" }}>
               Rankings based on connections through the NetherLink app.
             </p>
           </div>
 
-          {/* Summary stats */}
-          <div className="grid grid-cols-2 gap-3 mb-6">
-            <div className="bg-[rgba(12,9,18,0.7)] rounded-xl border border-white/6 px-5 py-4 text-center">
-              <p className="text-xs text-slate-500 mb-1 flex items-center justify-center gap-1.5"><IconServer /> Total servers</p>
-              <p className="text-3xl font-bold text-white tabular-nums">{totalServers.toLocaleString()}</p>
-            </div>
-            <div className="bg-[rgba(12,9,18,0.7)] rounded-xl border border-white/6 px-5 py-4 text-center">
-              <p className="text-xs text-slate-500 mb-1 flex items-center justify-center gap-1.5"><IconUsers /> Total joins</p>
-              <p className="text-3xl font-bold text-white tabular-nums">{totalCount.toLocaleString()}</p>
-            </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 }}>
+            {[
+              { label: "Total servers", value: totalServers.toLocaleString() },
+              { label: "Total joins", value: totalCount.toLocaleString() },
+            ].map(s => (
+              <div key={s.label} style={{
+                background: NL.surface, border: `1px solid ${NL.border}`,
+                borderRadius: 14, padding: "18px 16px", textAlign: "center",
+              }}>
+                <p style={{ fontSize: 11, color: NL.muted, marginBottom: 6 }}>{s.label}</p>
+                <p style={{
+                  fontFamily: "'JetBrains Mono', monospace",
+                  fontSize: 28, fontWeight: 700, color: NL.text, lineHeight: 1,
+                }}>{s.value}</p>
+              </div>
+            ))}
           </div>
 
-          {/* Leaderboard */}
-          <div className="bg-[rgba(12,9,18,0.7)] backdrop-blur-xl rounded-2xl border border-white/6 shadow-xl overflow-hidden">
-            <div className="px-6 py-4 border-b border-white/5 flex items-center justify-between">
-              <h2 className="text-sm font-semibold text-slate-100">Top servers</h2>
+          <div style={{
+            background: NL.surface, border: `1px solid ${NL.border}`,
+            borderRadius: 18, overflow: "hidden",
+          }}>
+            <div style={{
+              display: "flex", alignItems: "center", justifyContent: "space-between",
+              padding: "14px 18px",
+              borderBottom: `1px solid ${NL.border}`,
+            }}>
+              <h2 style={{ fontSize: 13, fontWeight: 600, color: NL.text, margin: 0 }}>Top servers</h2>
               <button
-                onClick={fetchMetrics} disabled={loading}
-                className={`inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border font-semibold transition-all ${loading ? "bg-white/3 border-white/6 text-slate-600 cursor-not-allowed"
-                    : "bg-white/5 border-white/8 text-slate-300 hover:bg-white/10 hover:text-white"
-                  }`}>
+                onClick={fetchMetrics}
+                disabled={loading}
+                style={{
+                  display: "inline-flex", alignItems: "center", gap: 6,
+                  fontSize: 12, padding: "6px 12px",
+                  background: NL.elevated, border: `1px solid ${NL.border}`,
+                  borderRadius: 8, color: NL.secondary,
+                  fontFamily: "inherit", cursor: loading ? "not-allowed" : "pointer",
+                  opacity: loading ? 0.5 : 1,
+                  transition: "color 0.2s, border-color 0.2s",
+                }}
+                onMouseEnter={e => !loading && (e.currentTarget.style.color = NL.text)}
+                onMouseLeave={e => (e.currentTarget.style.color = NL.secondary)}
+              >
                 <IconRefresh spinning={loading} /> Refresh
               </button>
             </div>
 
-            <div className="p-4 flex flex-col gap-1.5">
+            <div style={{ padding: "10px 10px", display: "flex", flexDirection: "column", gap: 4 }}>
               {loading ? (
-                <div className="flex flex-col items-center justify-center py-16 gap-3 text-slate-500">
-                  <Spinner /><span className="text-sm">Loading metrics…</span>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "48px 0", gap: 12, color: NL.muted }}>
+                  <Spinner />
+                  <span style={{ fontSize: 13 }}>Loading metrics…</span>
                 </div>
               ) : error ? (
-                <div className="flex flex-col items-center justify-center py-16 gap-2 text-slate-500">
-                  <span className="text-2xl">⚠️</span>
-                  <p className="text-sm text-rose-400">{error}</p>
-                  <button onClick={fetchMetrics} className="text-xs text-slate-400 hover:text-white underline mt-1">Try again</button>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "48px 0", gap: 8 }}>
+                  <span style={{ fontSize: 24 }}>⚠️</span>
+                  <p style={{ fontSize: 13, color: NL.danger }}>{error}</p>
+                  <button onClick={fetchMetrics} style={{
+                    fontSize: 12, color: NL.secondary, background: "none",
+                    border: "none", cursor: "pointer", textDecoration: "underline",
+                    fontFamily: "inherit",
+                  }}>Try again</button>
                 </div>
               ) : top.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-16 gap-2 text-slate-500">
-                  <span className="text-2xl">📭</span>
-                  <p className="text-sm">No data yet.</p>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "48px 0", gap: 8, color: NL.muted }}>
+                  <span style={{ fontSize: 24 }}>📭</span>
+                  <p style={{ fontSize: 13 }}>No data yet.</p>
                 </div>
               ) : top.map((row, idx) => {
                 const pct = Math.max(4, Math.round((row.count / maxCount) * 100));
                 const isTop3 = idx < 3;
+                const barColor = idx === 0 ? NL.accent : idx === 1 ? "#9299a6" : idx === 2 ? "#cd7c3b" : NL.accentDim;
+
                 return (
-                  <div key={row.ip}
-                    className={`group flex items-center gap-3 px-4 py-3 rounded-xl border transition-all ${idx === 0 ? "bg-amber-500/8 border-amber-500/20 hover:bg-amber-500/12"
-                        : isTop3 ? "bg-white/3 border-white/5 hover:bg-white/5"
-                          : "bg-transparent border-transparent hover:bg-white/3 hover:border-white/5"
-                      }`}
+                  <div
+                    key={row.ip}
+                    style={{
+                      display: "flex", alignItems: "center", gap: 10,
+                      padding: "10px 10px",
+                      borderRadius: 10,
+                      background: idx === 0 ? "rgba(79,209,197,0.06)" : "transparent",
+                      border: `1px solid ${idx === 0 ? NL.accentBorder : "transparent"}`,
+                      transition: "background 0.15s",
+                    }}
+                    onMouseEnter={e => idx !== 0 && (e.currentTarget.style.background = NL.elevated)}
+                    onMouseLeave={e => idx !== 0 && (e.currentTarget.style.background = "transparent")}
                   >
-                    <div className="w-8 text-center shrink-0">
+                    <div style={{ width: 28, textAlign: "center", flexShrink: 0 }}>
                       {idx < 3
-                        ? <span className="text-base leading-none">{MEDAL[idx]}</span>
-                        : <span className="text-xs font-bold text-slate-600">{idx + 1}</span>
+                        ? <span style={{ fontSize: 16, lineHeight: 1 }}>{MEDAL[idx]}</span>
+                        : <span style={{ fontSize: 12, fontWeight: 700, color: NL.muted }}>{idx + 1}</span>
                       }
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-2 mb-1.5">
-                        <span className={`font-mono text-sm truncate ${idx === 0 ? "text-white" : "text-slate-300"}`}>
+
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 6 }}>
+                        <span style={{
+                          fontFamily: "'JetBrains Mono', monospace",
+                          fontSize: 13, color: isTop3 ? NL.text : NL.secondary,
+                          fontWeight: idx === 0 ? 600 : 400,
+                          overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                        }}>
                           {row.ip}
                         </span>
-                        <span className={`text-xs font-bold shrink-0 tabular-nums ${idx === 0 ? "text-amber-300" : isTop3 ? "text-slate-300" : "text-slate-500"
-                          }`}>
+                        <span style={{
+                          fontFamily: "'JetBrains Mono', monospace",
+                          fontSize: 12, fontWeight: 700, flexShrink: 0,
+                          color: idx === 0 ? NL.accent : isTop3 ? NL.secondary : NL.muted,
+                        }}>
                           {Number(row.count).toLocaleString()}
                         </span>
                       </div>
-                      <div className="h-1 rounded-full bg-white/5 overflow-hidden">
-                        <div
-                          className={`h-full rounded-full transition-all duration-700 ${idx === 0 ? "bg-amber-400/70"
-                              : idx === 1 ? "bg-slate-400/50"
-                                : idx === 2 ? "bg-orange-600/50"
-                                  : "bg-violet-500/40"
-                            }`}
-                          style={{ width: `${pct}%` }}
-                        />
+                      <div style={{ height: 3, borderRadius: 2, background: NL.subtle, overflow: "hidden" }}>
+                        <div style={{
+                          height: "100%", borderRadius: 2,
+                          background: barColor,
+                          width: `${pct}%`,
+                          transition: "width 0.6s ease",
+                        }} />
                       </div>
                     </div>
                   </div>

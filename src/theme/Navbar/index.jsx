@@ -1,96 +1,111 @@
 import { useState, useEffect, useRef } from "react";
 import { FaDiscord, FaStar, FaBook, FaChevronDown } from "react-icons/fa";
 import { useHistory, useLocation } from "@docusaurus/router";
-import sidebars from '../../../sidebars.js';
+import sidebars from "../../../sidebars.js";
 import { signOut } from "firebase/auth";
 import { auth } from "../../firebaseClient.js";
 import { useAuth } from "../../useAuth.js";
 
-const DOC_SIDEBAR = sidebars.tutorialSidebar || sidebars.geyserSidebar || [];
+const NL = {
+  surface: "#191c23",
+  elevated: "#1f232c",
+  border: "rgba(255,255,255,0.07)",
+  borderMid: "rgba(255,255,255,0.12)",
+  text: "#e8e9ec",
+  secondary: "#9299a6",
+  muted: "#5a6070",
+  accent: "#4fd1c5",
+};
 
-function SidebarDropdown({ items, navigate, level = 0 }) {
+const DOC_SIDEBAR = sidebars.tutorialSidebar || sidebars.geyserSidebar || [];
+const H = 62;
+
+function SidebarDropdown({ items, onClose, level = 0 }) {
   if (!items) return null;
   return (
-    <ul className={level > 0 ? "pl-3 pt-1" : ""}>
+    <ul style={{ listStyle: "none", margin: 0, padding: level > 0 ? "4px 0 0 12px" : 0 }}>
       {items.map(item => {
-        if (item.type === 'doc') {
-          return (
-            <li key={item.id}>
-              <a href={`/docs/${item.id}`} className="block py-1.5 px-3 rounded text-slate-100 hover:text-slate-200 hover:bg-[#393e4d] transition whitespace-nowrap"
-                onClick={e => { e.preventDefault(); navigate(`/docs/${item.id}`); }}>
-                {item.label}
-              </a>
-            </li>
-          );
-        }
-        if (item.type === 'category') {
-          return (
-            <li key={item.label} className="mt-1">
-              <div className="flex items-center gap-2 font-semibold text-slate-300">
-                <FaChevronDown className="text-xs opacity-60" />
-                {item.label}
-              </div>
-              <SidebarDropdown items={item.items} navigate={navigate} level={level + 1} />
-            </li>
-          );
-        }
-        if (typeof item === 'string') {
-          return (
-            <li key={item}>
-              <a href={`/docs/${item.replace(/\/?index$/, '')}`}
-                className="block py-1.5 px-3 rounded text-slate-100 hover:text-slate-200 hover:bg-[#1b1d24] transition whitespace-nowrap"
-                onClick={e => { e.preventDefault(); navigate(`/docs/${item.replace(/\/?index$/, '')}`); }}>
-                {item.split('/').slice(-1)[0].replace(/-/g, ' ')}
-              </a>
-            </li>
-          );
-        }
+        if (item.type === "doc") return (
+          <li key={item.id}>
+            <a
+              href={`/docs/${item.id}`}
+              onClick={onClose}
+              style={{ display: "block", padding: "7px 10px", borderRadius: 6, color: NL.secondary, fontSize: 13, textDecoration: "none", whiteSpace: "nowrap" }}
+              onMouseEnter={e => { e.currentTarget.style.color = NL.text; e.currentTarget.style.background = NL.elevated; }}
+              onMouseLeave={e => { e.currentTarget.style.color = NL.secondary; e.currentTarget.style.background = "transparent"; }}
+            >{item.label}</a>
+          </li>
+        );
+        if (item.type === "category") return (
+          <li key={item.label} style={{ marginTop: 6 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "4px 10px", fontSize: 11, fontWeight: 600, color: NL.muted, letterSpacing: "0.06em", textTransform: "uppercase" }}>
+              <FaChevronDown style={{ fontSize: 9, opacity: 0.5 }} />{item.label}
+            </div>
+            <SidebarDropdown items={item.items} onClose={onClose} level={level + 1} />
+          </li>
+        );
+        if (typeof item === "string") return (
+          <li key={item}>
+            <a
+              href={`/docs/${item.replace(/\/?index$/, "")}`}
+              onClick={onClose}
+              style={{ display: "block", padding: "7px 10px", borderRadius: 6, color: NL.secondary, fontSize: 13, textDecoration: "none" }}
+              onMouseEnter={e => { e.currentTarget.style.color = NL.text; e.currentTarget.style.background = NL.elevated; }}
+              onMouseLeave={e => { e.currentTarget.style.color = NL.secondary; e.currentTarget.style.background = "transparent"; }}
+            >{item.split("/").slice(-1)[0].replace(/-/g, " ")}</a>
+          </li>
+        );
         return null;
       })}
     </ul>
   );
 }
 
-function HamburgerIcon() {
-  return (
-    <div className="w-7 h-7 flex flex-col items-center justify-center gap-[5px]">
-      <span className="block h-0.5 w-6 rounded bg-white" />
-      <span className="block h-0.5 w-6 rounded bg-white" />
-      <span className="block h-0.5 w-6 rounded bg-white" />
-    </div>
-  );
-}
+const btnReset = {
+  background: "none", border: "none", cursor: "pointer",
+  fontFamily: "'Inter', system-ui, sans-serif",
+  padding: 0, margin: 0,
+};
 
 export default function Navbar() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [wikiDrop, setWikiDrop] = useState(false);
   const [wikiDropMobile, setWikiDropMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const menuRef = useRef();
   const wikiRef = useRef();
   const history = useHistory();
   const location = useLocation();
-
   const { user, role } = useAuth();
 
-  useEffect(() => { setDrawerOpen(false); setWikiDrop(false); setWikiDropMobile(false); }, [location.pathname]);
+  useEffect(() => {
+    function check() { setIsMobile(window.innerWidth < 768); }
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   useEffect(() => {
-    function handle(e) { if (wikiRef.current && !wikiRef.current.contains(e.target)) setWikiDrop(false); }
-    if (wikiDrop) document.addEventListener("mousedown", handle);
-    return () => document.removeEventListener("mousedown", handle);
+    setDrawerOpen(false); setWikiDrop(false); setWikiDropMobile(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    const h = e => { if (wikiRef.current && !wikiRef.current.contains(e.target)) setWikiDrop(false); };
+    if (wikiDrop) document.addEventListener("mousedown", h);
+    return () => document.removeEventListener("mousedown", h);
   }, [wikiDrop]);
 
   useEffect(() => {
-    function handle(e) { if (menuRef.current && !menuRef.current.contains(e.target)) setDrawerOpen(false); }
-    if (drawerOpen) document.addEventListener("mousedown", handle);
-    return () => document.removeEventListener("mousedown", handle);
+    const h = e => { if (menuRef.current && !menuRef.current.contains(e.target)) setDrawerOpen(false); };
+    if (drawerOpen) document.addEventListener("mousedown", h);
+    return () => document.removeEventListener("mousedown", h);
   }, [drawerOpen]);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
+    const h = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", h);
+    return () => window.removeEventListener("scroll", h);
   }, []);
 
   function navigate(path) {
@@ -99,151 +114,201 @@ export default function Navbar() {
   }
 
   async function handleSignOut() {
-    try { await signOut(auth); } catch (_) {}
+    try { await signOut(auth); } catch (_) { }
     navigate("/");
   }
-
-  const NAVBAR_HEIGHT = 68;
-  const NAV_BG = "#1b1d24";
 
   const portalLink = role === "admin"
     ? { label: "Dashboard", path: "/dashboard" }
     : role === "member"
-    ? { label: "Partner Portal", path: "/partner" }
-    : null;
+      ? { label: "Partner Portal", path: "/partner" }
+      : null;
+
+  const drawerBtn = (color = NL.secondary) => ({
+    ...btnReset,
+    display: "flex", alignItems: "center", gap: 8,
+    width: "100%", padding: "11px 12px", borderRadius: 8,
+    fontSize: 13, fontWeight: 500, color,
+  });
+  const drawerEnter = e => { e.currentTarget.style.color = NL.text; e.currentTarget.style.background = NL.elevated; };
+  const drawerLeave = (color = NL.secondary) => e => { e.currentTarget.style.color = color; e.currentTarget.style.background = "none"; };
 
   return (
-    <header key={location.pathname} className="navbar nl-navbar fixed w-full top-0 z-40 transition-all" style={{
-      background: NAV_BG,
-      borderBottom: "1px solid rgba(120,64,200,0.10)",
-      boxShadow: scrolled ? "0 4px 32px rgba(45,30,65,0.18)" : "none",
-    }}>
-      <div className="w-full px-5 md:px-12 py-3 flex items-center" style={{ maxWidth: "100vw" }}>
-        {/* Logo */}
-        <div className="flex items-center gap-2 cursor-pointer" onClick={() => history.push("/")}>
-          <span className="font-black text-2xl tracking-tight" style={{
-            background: "linear-gradient(135deg, #9e9bac 0%, #a492b4 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            filter: "drop-shadow(0 0 8px rgba(120,64,200,0.3))",
-          }}>NL</span>
-          <span className="font-bold text-slate-100 text-lg hidden sm:block tracking-wide">NetherLink</span>
+    <>
+      <style>{`
+        div.navbar {
+          padding: 0 20px !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: space-between !important;
+          flex-wrap: nowrap !important;
+        }
+        div.navbar .navbar__inner { display: none !important; }
+      `}</style>
+      <div className="navbar" style={{
+        position: "fixed", top: 0, left: 0, right: 0, zIndex: 1000,
+        height: H,
+        background: NL.surface,
+        borderBottom: `1px solid ${scrolled ? NL.border : "transparent"}`,
+        boxShadow: scrolled ? "0 4px 24px rgba(0,0,0,0.25)" : "none",
+        transition: "border-color 0.2s, box-shadow 0.2s",
+        fontFamily: "'Inter', system-ui, sans-serif",
+        display: "flex", alignItems: "center",
+        justifyContent: "space-between",
+        padding: "0 20px",
+        boxSizing: "border-box",
+      }}>
+
+        <div onClick={() => history.push("/")} style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", userSelect: "none", flexShrink: 0 }}>
+          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 16, color: NL.accent, letterSpacing: "-0.02em" }}>NL</span>
+          <span style={{ fontWeight: 600, fontSize: 14, color: NL.text, letterSpacing: "-0.01em" }}>NetherLink</span>
         </div>
 
-        <div className="flex-1" />
+        {!isMobile && (
+          <nav style={{ display: "flex", alignItems: "center", gap: 2 }}>
 
-        {/* Desktop nav */}
-        <div className="hidden md:flex items-center gap-4">
-          {/* Wiki dropdown */}
-          <div className="relative" ref={wikiRef}>
-            <button onClick={() => setWikiDrop(x => !x)} onMouseEnter={() => setWikiDrop(true)}
-              className="flex items-center gap-2 text-slate-200 hover:text-slate-100 font-semibold px-2 py-1 rounded"
-              style={{ background: "none", border: "none" }} aria-haspopup="menu" aria-expanded={wikiDrop}>
-              <FaBook size={18} /> Wiki
-              <FaChevronDown size={16} className={`transition-transform duration-200 ml-1 ${wikiDrop ? "rotate-180" : ""}`} />
+            <div ref={wikiRef} style={{ position: "relative" }}>
+              <button onClick={() => setWikiDrop(x => !x)} style={{
+                ...btnReset,
+                display: "inline-flex", alignItems: "center", gap: 6,
+                padding: "6px 10px", borderRadius: 7,
+                fontSize: 13, fontWeight: 500,
+                color: wikiDrop ? NL.text : NL.secondary,
+                background: wikiDrop ? NL.elevated : "none",
+              }}
+                onMouseEnter={e => { e.currentTarget.style.color = NL.text; e.currentTarget.style.background = NL.elevated; }}
+                onMouseLeave={e => { if (!wikiDrop) { e.currentTarget.style.color = NL.secondary; e.currentTarget.style.background = "none"; } }}
+              >
+                <FaBook size={13} /> Wiki
+                <FaChevronDown size={10} style={{ transition: "transform 0.2s", transform: wikiDrop ? "rotate(180deg)" : "none" }} />
+              </button>
+              {wikiDrop && DOC_SIDEBAR.length > 0 && (
+                <div style={{
+                  position: "absolute", right: 0, top: "calc(100% + 8px)", minWidth: 220,
+                  background: NL.surface, border: `1px solid ${NL.borderMid}`,
+                  borderRadius: 12, padding: 6,
+                  boxShadow: "0 12px 40px rgba(0,0,0,0.4)", zIndex: 1001,
+                }}>
+                  <SidebarDropdown items={DOC_SIDEBAR} onClose={() => setWikiDrop(false)} />
+                </div>
+              )}
+            </div>
+
+            <button onClick={() => navigate("/slot")} style={{ ...btnReset, display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 10px", borderRadius: 7, fontSize: 13, fontWeight: 500, color: NL.secondary }}
+              onMouseEnter={e => { e.currentTarget.style.color = NL.text; e.currentTarget.style.background = NL.elevated; }}
+              onMouseLeave={e => { e.currentTarget.style.color = NL.secondary; e.currentTarget.style.background = "none"; }}
+            >
+              <FaStar size={13} /> Featured Slot
             </button>
-            {wikiDrop && DOC_SIDEBAR.length > 0 && (
-              <div className="absolute left-0 top-full min-w-[240px] border border-gray-800 rounded-xl shadow-2xl p-2 mt-2 z-50" style={{ backgroundColor: "#1b1d24" }}>
-                <SidebarDropdown items={DOC_SIDEBAR} navigate={navigate} />
+
+            {portalLink && (
+              <button onClick={() => navigate(portalLink.path)} style={{ ...btnReset, display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 10px", borderRadius: 7, fontSize: 13, fontWeight: 500, color: NL.secondary }}
+                onMouseEnter={e => { e.currentTarget.style.color = NL.text; e.currentTarget.style.background = NL.elevated; }}
+                onMouseLeave={e => { e.currentTarget.style.color = NL.secondary; e.currentTarget.style.background = "none"; }}
+              >
+                {portalLink.label}
+              </button>
+            )}
+
+            <a href="https://discord.gg/xvaNzE35Rs" target="_blank" rel="noopener noreferrer"
+              style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 10px", borderRadius: 7, fontSize: 13, fontWeight: 500, color: "#7289da", textDecoration: "none" }}
+              onMouseEnter={e => { e.currentTarget.style.color = NL.text; e.currentTarget.style.background = NL.elevated; }}
+              onMouseLeave={e => { e.currentTarget.style.color = "#7289da"; e.currentTarget.style.background = "none"; }}
+            >
+              <FaDiscord size={14} /> Discord
+            </a>
+
+            <span style={{ width: 1, height: 18, background: NL.border, margin: "0 4px" }} />
+
+            {user ? (
+              <button onClick={handleSignOut} style={{ ...btnReset, padding: "6px 10px", borderRadius: 7, fontSize: 12, color: NL.muted }}
+                onMouseEnter={e => e.currentTarget.style.color = NL.secondary}
+                onMouseLeave={e => e.currentTarget.style.color = NL.muted}
+              >Sign out</button>
+            ) : (
+              <button onClick={() => navigate("/login")} style={{ ...btnReset, display: "inline-flex", alignItems: "center", padding: "6px 14px", borderRadius: 7, fontSize: 13, fontWeight: 500, color: NL.secondary, background: NL.elevated, border: `1px solid ${NL.border}` }}
+                onMouseEnter={e => { e.currentTarget.style.color = NL.text; e.currentTarget.style.borderColor = NL.borderMid; }}
+                onMouseLeave={e => { e.currentTarget.style.color = NL.secondary; e.currentTarget.style.borderColor = NL.border; }}
+              >Sign in</button>
+            )}
+          </nav>
+        )}
+
+        {isMobile && (
+          <button onClick={() => setDrawerOpen(v => !v)} aria-label="Toggle menu"
+            style={{ ...btnReset, display: "flex", flexDirection: "column", gap: 5, padding: 6 }}
+          >
+            {[0, 1, 2].map(i => (
+              <span key={i} style={{
+                display: "block", width: 22, height: 2, borderRadius: 1, background: NL.secondary,
+                transition: "transform 0.2s, opacity 0.2s",
+                transform: drawerOpen
+                  ? i === 0 ? "translateY(7px) rotate(45deg)"
+                    : i === 2 ? "translateY(-7px) rotate(-45deg)" : "none"
+                  : "none",
+                opacity: drawerOpen && i === 1 ? 0 : 1,
+              }} />
+            ))}
+          </button>
+        )}
+      </div>
+
+      {isMobile && (
+        <div ref={menuRef} style={{
+          position: "fixed", top: 0, right: 0, bottom: 0,
+          width: "78vw", maxWidth: 300,
+          background: NL.surface, borderLeft: `1px solid ${NL.border}`,
+          paddingTop: H + 8,
+          display: "flex", flexDirection: "column",
+          overflowY: "auto",
+          transform: drawerOpen ? "translateX(0)" : "translateX(100%)",
+          transition: "transform 0.25s ease",
+          zIndex: 999,
+          boxShadow: drawerOpen ? "-12px 0 40px rgba(0,0,0,0.5)" : "none",
+          boxSizing: "border-box",
+        }}>
+          <div style={{ padding: "0 10px", display: "flex", flexDirection: "column", gap: 2 }}>
+
+            <button onClick={() => setWikiDropMobile(x => !x)} style={drawerBtn()}
+              onMouseEnter={drawerEnter} onMouseLeave={drawerLeave()}
+            >
+              <FaBook size={14} /> Wiki
+              <FaChevronDown size={10} style={{ marginLeft: "auto", transform: wikiDropMobile ? "rotate(180deg)" : "none", transition: "transform 0.2s" }} />
+            </button>
+            {wikiDropMobile && DOC_SIDEBAR.length > 0 && (
+              <div style={{ paddingLeft: 12, borderLeft: `2px solid ${NL.border}`, marginLeft: 12, marginBottom: 4 }}>
+                <SidebarDropdown items={DOC_SIDEBAR} onClose={() => { setWikiDropMobile(false); setDrawerOpen(false); }} />
               </div>
             )}
+
+            <button onClick={() => navigate("/slot")} style={drawerBtn()}
+              onMouseEnter={drawerEnter} onMouseLeave={drawerLeave()}
+            ><FaStar size={14} /> Featured Slot</button>
+
+            {portalLink && (
+              <button onClick={() => navigate(portalLink.path)} style={drawerBtn()}
+                onMouseEnter={drawerEnter} onMouseLeave={drawerLeave()}
+              >{portalLink.label}</button>
+            )}
+
+            <a href="https://discord.gg/xvaNzE35Rs" target="_blank" rel="noopener noreferrer"
+              onClick={() => setDrawerOpen(false)}
+              style={{ ...drawerBtn("#7289da"), textDecoration: "none" }}
+              onMouseEnter={drawerEnter} onMouseLeave={drawerLeave("#7289da")}
+            ><FaDiscord size={14} /> Discord</a>
+
+            <div style={{ height: 1, background: NL.border, margin: "4px 0" }} />
+
+            {user ? (
+              <button onClick={handleSignOut} style={{ ...drawerBtn(NL.muted) }}>Sign out</button>
+            ) : (
+              <button onClick={() => navigate("/login")} style={drawerBtn()}
+                onMouseEnter={drawerEnter} onMouseLeave={drawerLeave()}
+              >Sign in</button>
+            )}
           </div>
-
-          <button onClick={() => navigate("/slot")} className="flex items-center gap-2 text-slate-200 hover:text-slate-300 font-semibold px-2 py-1 rounded" style={{ background: "none", border: "none" }}>
-            <FaStar size={18} /> Featured Slot
-          </button>
-
-          {/* Portal link — only shown when role is resolved */}
-          {portalLink && (
-            <button onClick={() => navigate(portalLink.path)}
-              className="flex items-center gap-2 text-slate-200 hover:text-slate-100 font-semibold px-2 py-1 rounded"
-              style={{ background: "none", border: "none" }}>
-              {portalLink.label}
-            </button>
-          )}
-
-          <a href="https://discord.gg/xvaNzE35Rs" target="_blank" rel="noopener noreferrer"
-            className="flex items-center gap-2 text-slate-200 hover:text-slate-300 font-semibold px-2 py-1 rounded">
-            <FaDiscord size={18} /> Discord
-          </a>
-
-          {/* Sign in / Sign out */}
-          {user ? (
-            <button onClick={handleSignOut}
-              className="text-slate-500 hover:text-slate-300 text-xs font-medium px-2 py-1 rounded transition"
-              style={{ background: "none", border: "none" }}>
-              Sign out
-            </button>
-          ) : (
-            <button onClick={() => navigate("/login")}
-              className="flex items-center gap-2 text-slate-200 hover:text-slate-100 font-semibold px-3 py-1.5 rounded-lg transition"
-              style={{ border: "1px solid rgba(255,255,255,0.12)", background: "rgba(255,255,255,0.05)" }}>
-              Sign in
-            </button>
-          )}
         </div>
-
-        {/* Hamburger */}
-        <button className="md:hidden ml-2" aria-label={drawerOpen ? "Close menu" : "Open menu"}
-          onClick={() => setDrawerOpen(v => !v)} style={{ background: "none", border: "none", boxShadow: "none" }}>
-          <HamburgerIcon />
-        </button>
-      </div>
-
-      {/* Mobile drawer */}
-      <div ref={menuRef}
-        className={`fixed top-0 right-0 z-50 h-full transition-transform duration-300 md:hidden ${drawerOpen ? 'translate-x-0' : 'translate-x-full'}`}
-        style={{ width: "80vw", maxWidth: 320, paddingTop: NAVBAR_HEIGHT + 18, display: "flex", flexDirection: "column", gap: "0.8rem", background: "#1b1d24", borderTopLeftRadius: 32, borderBottomLeftRadius: 32, overflowY: "auto", position: "fixed", right: 0, top: 0 }}>
-        <button onClick={() => setDrawerOpen(false)} aria-label="Close sidebar"
-          style={{ position: "absolute", top: 18, right: 18, zIndex: 10001, background: "none", border: "none", color: "#aaa", fontSize: 27, cursor: "pointer", padding: 5, lineHeight: 1 }}>
-          &#10005;
-        </button>
-
-        <div>
-          <button onClick={() => setWikiDropMobile(x => !x)}
-            className="w-full text-left flex items-center gap-2 px-5 py-4 rounded-2xl text-slate-200 hover:text-slate-300 font-semibold"
-            style={{ background: "none", border: "none" }}>
-            <FaBook className="inline-block" size={19} /> Wiki
-            <FaChevronDown className={`ml-auto transition-transform ${wikiDropMobile ? "rotate-180" : ""}`} size={16} />
-          </button>
-          {wikiDropMobile && DOC_SIDEBAR.length > 0 && (
-            <div className="pl-3 pt-1" style={{ borderLeft: "2px solid #26221f", backgroundColor: "#1b1d24" }}>
-              <SidebarDropdown items={DOC_SIDEBAR} navigate={navigate} />
-            </div>
-          )}
-        </div>
-
-        <button onClick={() => navigate("/slot")} className="w-full text-left flex items-center gap-2 px-5 py-4 rounded-2xl text-slate-200 hover:text-slate-300 font-semibold" style={{ background: "none", border: "none" }}>
-          <FaStar className="inline-block" size={19} /> Featured Slot
-        </button>
-
-        {portalLink && (
-          <button onClick={() => navigate(portalLink.path)} className="w-full text-left flex items-center gap-2 px-5 py-4 rounded-2xl text-slate-200 hover:text-slate-300 font-semibold" style={{ background: "none", border: "none" }}>
-            {portalLink.label}
-          </button>
-        )}
-
-        <a href="https://discord.gg/xvaNzE35Rs" target="_blank" rel="noopener noreferrer"
-          className="w-full flex items-center gap-2 px-5 py-4 rounded-2xl text-slate-200 hover:text-slate-300 font-semibold"
-          style={{ background: "none", border: "none" }} onClick={() => setDrawerOpen(false)}>
-          <FaDiscord className="inline-block" size={19} /> Discord
-        </a>
-
-        {/* Sign in / Sign out */}
-        {user ? (
-          <button onClick={handleSignOut}
-            className="w-full text-left flex items-center gap-2 px-5 py-4 rounded-2xl text-slate-500 hover:text-slate-300 text-sm font-medium"
-            style={{ background: "none", border: "none" }}>
-            Sign out
-          </button>
-        ) : (
-          <button onClick={() => navigate("/login")}
-            className="w-full text-left flex items-center gap-2 px-5 py-4 rounded-2xl text-slate-200 hover:text-slate-100 font-semibold"
-            style={{ background: "none", border: "none" }}>
-            Sign in
-          </button>
-        )}
-      </div>
-    </header>
+      )}
+    </>
   );
 }

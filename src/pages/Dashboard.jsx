@@ -3,12 +3,38 @@ import { useHistory } from "@docusaurus/router";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../firebaseClient";
 import { fetchIdToken } from "../firebaseAuthHelpers";
-import Layout from '@theme/Layout';
+import Layout from "@theme/Layout";
+
+const NL = {
+  bg: "#111318",
+  surface: "#191c23",
+  elevated: "#1f232c",
+  subtle: "#252931",
+  border: "rgba(255,255,255,0.07)",
+  borderMid: "rgba(255,255,255,0.12)",
+  text: "#e8e9ec",
+  secondary: "#9299a6",
+  muted: "#5a6070",
+  accent: "#4fd1c5",
+  accentDim: "rgba(79,209,197,0.10)",
+  accentBorder: "rgba(79,209,197,0.22)",
+  danger: "#f87171",
+  dangerDim: "rgba(248,113,113,0.10)",
+  dangerBorder: "rgba(248,113,113,0.22)",
+  success: "#34d399",
+  successDim: "rgba(52,211,153,0.10)",
+  warn: "#fbbf24",
+  warnDim: "rgba(251,191,36,0.10)",
+};
+const font = "'Inter', system-ui, sans-serif";
+const mono = "'JetBrains Mono', 'Fira Code', monospace";
 
 const REGION_BASES = {
   EU: "https://eubackend.netherlink.net",
   US: "https://usbackend.netherlink.net",
 };
+const EVENTS_CAP = 1500;
+const TABS = [{ id: "overview", label: "Overview" }, { id: "partners", label: "Partners" }];
 
 async function dbFetch(path, options = {}) {
   for (const base of [REGION_BASES.EU, REGION_BASES.US]) {
@@ -18,144 +44,123 @@ async function dbFetch(path, options = {}) {
         const data = await res.json().catch(() => ({}));
         return { ok: res.ok, status: res.status, data };
       }
-    } catch (_) { /* network error — try next region */ }
+    } catch (_) { }
   }
   throw new Error("Both regions unreachable");
 }
 
-const EVENTS_CAP = 1500;
 
-function IconCopy() {
-  return <svg width="13" height="13" viewBox="0 0 24 24" fill="none" className="inline-block" xmlns="http://www.w3.org/2000/svg"><path d="M9 9H5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><rect x="9" y="3" width="11" height="11" rx="2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>;
-}
-function IconRefresh() {
-  return <svg width="13" height="13" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 4v6h6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /><path d="M3.51 15a9 9 0 1 0 .49-4.95" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>;
-}
-function IconSignOut() {
-  return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /><polyline points="16 17 21 12 16 7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /><line x1="21" y1="12" x2="9" y2="12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>;
-}
-function IconBan() {
-  return <svg width="13" height="13" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.6" /><line x1="4.93" y1="4.93" x2="19.07" y2="19.07" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>;
-}
-function IconGlobe() {
-  return <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.6" /><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>;
-}
-function IconUsers() {
-  return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /><circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /><path d="M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>;
-}
-function IconTrash() {
-  return <svg width="13" height="13" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><polyline points="3 6 5 6 21 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /><path d="M19 6l-1 14H6L5 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /><path d="M10 11v6M14 11v6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /><path d="M9 6V4h6v2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>;
-}
-function IconPlus() {
-  return <svg width="13" height="13" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /><line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>;
+function Spinner({ size = 16, color = NL.secondary }) {
+  return (
+    <svg className="animate-spin" width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke={color} strokeWidth="3" />
+      <path className="opacity-75" fill={color} d="M4 12a8 8 0 018-8v4l3-3-3-3V0a12 12 0 100 24v-4l-3 3 3 3v4a12 12 0 01-12-12z" />
+    </svg>
+  );
 }
 
-
-function Badge({ children, color = "slate" }) {
-  const cls = {
-    slate: "bg-slate-700/60 text-slate-300 border border-slate-600/40",
-    green: "bg-emerald-500/15 text-emerald-400 border border-emerald-500/25",
-    red: "bg-rose-500/15 text-rose-400 border border-rose-500/25",
-    yellow: "bg-amber-500/15 text-amber-400 border border-amber-500/25",
-    violet: "bg-violet-500/15 text-violet-400 border border-violet-500/25",
-    blue: "bg-blue-500/15 text-blue-400 border border-blue-500/25",
-  }[color] || "bg-slate-700/60 text-slate-300";
-  return <span className={`inline-flex items-center text-xs px-2 py-0.5 rounded-full font-medium ${cls}`}>{children}</span>;
+function Badge({ children, color = "default" }) {
+  const styles = {
+    default: { color: NL.secondary, background: NL.subtle, border: `1px solid ${NL.border}` },
+    accent: { color: NL.accent, background: NL.accentDim, border: `1px solid ${NL.accentBorder}` },
+    success: { color: NL.success, background: NL.successDim, border: `1px solid rgba(52,211,153,0.22)` },
+    danger: { color: NL.danger, background: NL.dangerDim, border: `1px solid ${NL.dangerBorder}` },
+    warn: { color: NL.warn, background: NL.warnDim, border: `1px solid rgba(251,191,36,0.22)` },
+    blue: { color: "#60a5fa", background: "rgba(96,165,250,0.10)", border: "1px solid rgba(96,165,250,0.22)" },
+  };
+  const s = styles[color] || styles.default;
+  return (
+    <span style={{
+      display: "inline-flex", alignItems: "center",
+      fontSize: 11, fontWeight: 600, padding: "2px 8px", borderRadius: 4,
+      fontFamily: mono, letterSpacing: "0.04em",
+      ...s,
+    }}>{children}</span>
+  );
 }
 
-function Button({ children, onClick, variant = "primary", size = "md", className = "", disabled, title, type = "button" }) {
-  const base = "inline-flex items-center gap-1.5 font-semibold transition-all rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500/50";
-  const sizes = { sm: "px-2.5 py-1.5 text-xs", md: "px-3.5 py-2 text-sm" };
+function Btn({ children, onClick, variant = "primary", size = "md", disabled, title, type = "button", style: extraStyle }) {
+  const base = {
+    display: "inline-flex", alignItems: "center", gap: 6,
+    fontWeight: 600, borderRadius: 8, cursor: disabled ? "not-allowed" : "pointer",
+    fontFamily: font, border: "none", transition: "opacity 0.15s, background 0.15s",
+    opacity: disabled ? 0.4 : 1,
+  };
+  const sizes = {
+    sm: { padding: "6px 10px", fontSize: 12 },
+    md: { padding: "8px 14px", fontSize: 13 },
+  };
   const variants = {
-    primary: "bg-violet-600 text-white hover:bg-violet-500 active:bg-violet-700",
-    secondary: "bg-white/8 text-slate-200 hover:bg-white/12 border border-white/8",
-    danger: "bg-rose-600/90 text-white hover:bg-rose-500 active:bg-rose-700",
-    ghost: "bg-transparent text-slate-300 hover:bg-white/6 border border-white/8",
-    success: "bg-emerald-600 text-white hover:bg-emerald-500",
+    primary: { background: NL.accent, color: "#0d1a18" },
+    secondary: { background: NL.elevated, color: NL.secondary, border: `1px solid ${NL.borderMid}` },
+    danger: { background: NL.dangerDim, color: NL.danger, border: `1px solid ${NL.dangerBorder}` },
+    ghost: { background: "transparent", color: NL.secondary, border: `1px solid ${NL.border}` },
+    success: { background: NL.successDim, color: NL.success, border: `1px solid rgba(52,211,153,0.22)` },
   };
   return (
     <button type={type} title={title} onClick={onClick} disabled={disabled}
-      className={`${base} ${sizes[size]} ${variants[variant]} ${className} ${disabled ? "opacity-40 cursor-not-allowed pointer-events-none" : ""}`}>
+      style={{ ...base, ...sizes[size], ...variants[variant], ...extraStyle }}>
       {children}
     </button>
   );
 }
 
-function Card({ title, subtitle, children, className = "", action }) {
+function Card({ title, subtitle, children, style: extraStyle, action }) {
   return (
-    <section className={`bg-[rgba(12,9,18,0.7)] backdrop-blur-xl rounded-2xl border border-white/6 shadow-xl overflow-hidden flex flex-col ${className}`}>
+    <section style={{
+      background: NL.surface, border: `1px solid ${NL.border}`,
+      borderRadius: 16, overflow: "hidden",
+      display: "flex", flexDirection: "column",
+      ...extraStyle,
+    }}>
       {(title || action) && (
-        <div className="flex items-center justify-between px-5 py-4 border-b border-white/5 shrink-0">
+        <div style={{
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          padding: "14px 18px", borderBottom: `1px solid ${NL.border}`, flexShrink: 0,
+        }}>
           <div>
-            <h3 className="text-sm font-semibold text-slate-100">{title}</h3>
-            {subtitle && <p className="text-xs text-slate-500 mt-0.5">{subtitle}</p>}
+            <h3 style={{ fontSize: 13, fontWeight: 600, color: NL.text, margin: 0 }}>{title}</h3>
+            {subtitle && <p style={{ fontSize: 11, color: NL.muted, margin: "2px 0 0" }}>{subtitle}</p>}
           </div>
           {action && <div>{action}</div>}
         </div>
       )}
-      <div className="p-5 flex flex-col flex-1">{children}</div>
+      <div style={{ padding: "16px 18px", flex: 1, display: "flex", flexDirection: "column" }}>{children}</div>
     </section>
   );
 }
 
-function RegionResultBadge({ results }) {
-  if (!results) return null;
-  return (
-    <div className="flex gap-1.5 mt-2">
-      {Object.entries(results).map(([r, ok]) => (
-        <span key={r} className={`text-xs px-2 py-0.5 rounded-full font-medium ${ok ? "bg-emerald-500/15 text-emerald-400" : "bg-rose-500/15 text-rose-400"}`}>
-          {r} {ok ? "✓" : "✗"}
-        </span>
-      ))}
-    </div>
-  );
-}
-
 function StatusDot({ status }) {
-  const colors = {
-    open: "bg-emerald-400 shadow-[0_0_6px_2px_rgba(52,211,153,0.4)]",
-    connecting: "bg-amber-400 shadow-[0_0_6px_2px_rgba(251,191,36,0.4)] animate-pulse",
-    error: "bg-rose-400 shadow-[0_0_6px_2px_rgba(251,113,133,0.4)]",
-    closed: "bg-slate-500",
-  };
-  return <span className={`inline-block w-2 h-2 rounded-full ${colors[status] || colors.closed}`} />;
-}
-
-function Spinner({ size = 16 }) {
+  const cfg = {
+    open: { color: NL.success, glow: "rgba(52,211,153,0.35)" },
+    connecting: { color: NL.warn, glow: "rgba(251,191,36,0.35)", pulse: true },
+    error: { color: NL.danger, glow: "rgba(248,113,113,0.35)" },
+    closed: { color: NL.muted, glow: null },
+  }[status] || { color: NL.muted };
   return (
-    <svg className="animate-spin" width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
-      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3V0a12 12 0 100 24v-4l-3 3 3 3v4a12 12 0 01-12-12z" />
-    </svg>
+    <span style={{
+      display: "inline-block", width: 7, height: 7, borderRadius: "50%",
+      background: cfg.color,
+      boxShadow: cfg.glow ? `0 0 0 2px ${cfg.glow}` : "none",
+      flexShrink: 0,
+    }} className={cfg.pulse ? "animate-pulse" : ""} />
   );
 }
-
-function SyncToggle({ value, onChange }) {
-  return (
-    <button onClick={() => onChange(!value)}
-      title={value ? "Sending to all regions" : "Sending to active region only"}
-      className={`inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg border font-semibold transition-all ${value
-        ? "bg-violet-600/20 border-violet-500/40 text-violet-300"
-        : "bg-white/4 border-white/8 text-slate-500 hover:text-slate-300"}`}>
-      <IconGlobe />
-      {value ? "All regions" : "This region"}
-    </button>
-  );
-}
-
-const TABS = [
-  { id: "overview", label: "Overview" },
-  { id: "partners", label: "Partners" },
-];
 
 function TabBar({ active, onChange }) {
   return (
-    <div className="flex gap-1 bg-white/4 rounded-xl p-1 border border-white/6">
+    <div style={{
+      display: "flex", gap: 2, background: NL.subtle,
+      borderRadius: 10, padding: 3, border: `1px solid ${NL.border}`,
+    }}>
       {TABS.map(t => (
-        <button key={t.id} onClick={() => onChange(t.id)}
-          className={`px-4 py-2 text-xs font-semibold rounded-lg transition-all ${active === t.id
-            ? "bg-violet-600 text-white shadow"
-            : "text-slate-400 hover:text-white hover:bg-white/5"}`}>
+        <button key={t.id} onClick={() => onChange(t.id)} style={{
+          padding: "6px 16px", fontSize: 12, fontWeight: 600, borderRadius: 8,
+          border: "none", cursor: "pointer", fontFamily: font,
+          background: active === t.id ? NL.accent : "transparent",
+          color: active === t.id ? "#0d1a18" : NL.secondary,
+          transition: "background 0.15s, color 0.15s",
+        }}>
           {t.label}
         </button>
       ))}
@@ -163,11 +168,35 @@ function TabBar({ active, onChange }) {
   );
 }
 
+
+const IC = {
+  Copy: () => <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M9 9H5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><rect x="9" y="3" width="11" height="11" rx="2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>,
+  Refresh: () => <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M1 4v6h6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /><path d="M3.51 15a9 9 0 1 0 .49-4.95" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>,
+  SignOut: () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /><polyline points="16 17 21 12 16 7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /><line x1="21" y1="12" x2="9" y2="12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>,
+  Ban: () => <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.6" /><line x1="4.93" y1="4.93" x2="19.07" y2="19.07" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>,
+  Trash: () => <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><polyline points="3 6 5 6 21 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /><path d="M19 6l-1 14H6L5 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /><path d="M10 11v6M14 11v6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /><path d="M9 6V4h6v2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>,
+  Plus: () => <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /><line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>,
+  Users: () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /><circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="1.6" /><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>,
+};
+
+const iconBtn = (onClick, title, children, hoverColor = NL.text) => (
+  <button onClick={onClick} title={title} style={{
+    background: "none", border: "none", cursor: "pointer",
+    color: NL.muted, padding: 5, borderRadius: 6,
+    display: "flex", alignItems: "center", justifyContent: "center",
+    transition: "color 0.15s, background 0.15s",
+  }}
+    onMouseEnter={e => { e.currentTarget.style.color = hoverColor; e.currentTarget.style.background = NL.elevated; }}
+    onMouseLeave={e => { e.currentTarget.style.color = NL.muted; e.currentTarget.style.background = "transparent"; }}
+  >{children}</button>
+);
+
+
 const EVENT_META = {
-  set: { color: "border-emerald-500/50 bg-emerald-500/4", dot: "bg-emerald-400", label: "SET", badge: "green" },
-  del: { color: "border-rose-500/50 bg-rose-500/4", dot: "bg-rose-400", label: "DEL", badge: "red" },
-  clear: { color: "border-amber-500/50 bg-amber-500/4", dot: "bg-amber-400", label: "CLEAR", badge: "yellow" },
-  snapshot: { color: "border-blue-500/50 bg-blue-500/4", dot: "bg-blue-400", label: "SNAPSHOT", badge: "blue" },
+  set: { borderColor: "rgba(52,211,153,0.4)", dotColor: NL.success, badge: "success", label: "SET" },
+  del: { borderColor: "rgba(248,113,113,0.4)", dotColor: NL.danger, badge: "danger", label: "DEL" },
+  clear: { borderColor: "rgba(251,191,36,0.4)", dotColor: NL.warn, badge: "warn", label: "CLEAR" },
+  snapshot: { borderColor: "rgba(96,165,250,0.4)", dotColor: "#60a5fa", badge: "blue", label: "SNAP" },
 };
 
 function FeedEventRow({ ev, onBan, isBanned }) {
@@ -181,46 +210,53 @@ function FeedEventRow({ ev, onBan, isBanned }) {
   const time = ev.time ? new Date(ev.time).toLocaleTimeString() : "";
 
   if (ev.type === "snapshot") return (
-    <div className={`rounded-xl border-l-2 ${meta.color} px-3 py-2.5 border border-blue-500/20`}>
-      <div className="flex items-center gap-2">
-        <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${meta.dot}`} />
-        <Badge color="blue">SNAPSHOT</Badge>
-        <span className="text-xs text-slate-400">{ev.count} entries loaded</span>
-        <span className="ml-auto text-xs text-slate-600">{time}</span>
-      </div>
+    <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 10px", borderRadius: 8, background: NL.elevated, border: `1px solid ${NL.border}` }}>
+      <span style={{ width: 6, height: 6, borderRadius: "50%", background: meta.dotColor, flexShrink: 0 }} />
+      <Badge color="blue">SNAP</Badge>
+      <span style={{ fontSize: 12, color: NL.secondary }}>{ev.count} entries loaded</span>
+      <span style={{ marginLeft: "auto", fontSize: 11, color: NL.muted, fontFamily: mono }}>{time}</span>
     </div>
   );
 
   if (ev.type === "clear") return (
-    <div className={`rounded-xl border-l-2 ${meta.color} px-3 py-2.5 border border-amber-500/20`}>
-      <div className="flex items-center gap-2">
-        <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${meta.dot}`} />
-        <Badge color="yellow">CLEAR</Badge>
-        <span className="text-xs text-slate-400">{ev.entries?.length ?? 0} entries cleared</span>
-        <span className="ml-auto text-xs text-slate-600">{time}</span>
-      </div>
+    <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 10px", borderRadius: 8, background: NL.elevated, border: `1px solid ${NL.border}` }}>
+      <span style={{ width: 6, height: 6, borderRadius: "50%", background: meta.dotColor, flexShrink: 0 }} />
+      <Badge color="warn">CLEAR</Badge>
+      <span style={{ fontSize: 12, color: NL.secondary }}>{ev.entries?.length ?? 0} entries cleared</span>
+      <span style={{ marginLeft: "auto", fontSize: 11, color: NL.muted, fontFamily: mono }}>{time}</span>
     </div>
   );
 
   return (
-    <div className={`rounded-xl border-l-2 ${meta.color} border border-white/4 px-3 py-2.5 transition-all`}>
-      <div className="flex items-center gap-2 min-w-0">
-        <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${meta.dot}`} />
+    <div style={{
+      borderRadius: 8, border: `1px solid ${NL.border}`,
+      borderLeft: `2px solid ${meta.borderColor}`,
+      background: NL.elevated, padding: "8px 10px",
+    }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
+        <span style={{ width: 6, height: 6, borderRadius: "50%", background: meta.dotColor, flexShrink: 0 }} />
         <Badge color={meta.badge}>{meta.label}</Badge>
-        <span className="font-mono text-slate-200 text-xs truncate max-w-[130px]" title={publicIp}>{publicIp || "—"}</span>
-        {player && (<><span className="text-slate-600 text-xs">·</span><span className="text-xs text-slate-300 truncate max-w-[100px]" title={player}>{player}</span></>)}
-        {remoteIp && (<><span className="text-slate-600 text-xs hidden sm:inline">→</span><span className="font-mono text-xs text-slate-500 truncate hidden sm:inline max-w-[120px]">{remoteIp}{remotePort ? `:${remotePort}` : ""}</span></>)}
-        <div className="ml-auto flex items-center gap-1.5 shrink-0">
-          <span className="text-xs text-slate-600 hidden sm:inline">{time}</span>
+        <span style={{ fontFamily: mono, fontSize: 12, color: NL.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 130 }} title={publicIp}>{publicIp || "—"}</span>
+        {player && <span style={{ fontSize: 11, color: NL.secondary, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 100 }}>{player}</span>}
+        {remoteIp && <span style={{ fontFamily: mono, fontSize: 11, color: NL.muted, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 120, display: "none" }} className="sm:block">→ {remoteIp}{remotePort ? `:${remotePort}` : ""}</span>}
+        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 4, flexShrink: 0 }}>
+          <span style={{ fontFamily: mono, fontSize: 10, color: NL.muted }}>{time}</span>
           {ev.type === "set" && publicIp && !isBanned && (
-            <button onClick={() => onBan(publicIp)} className="p-1 rounded text-slate-600 hover:text-rose-400 hover:bg-rose-500/10 transition" title="Ban IP"><IconBan /></button>
+            iconBtn(() => onBan(publicIp), "Ban IP", <IC.Ban />, NL.danger)
           )}
-          <button onClick={() => setExpanded(x => !x)} className="p-1 rounded text-slate-600 hover:text-slate-300 transition text-xs">{expanded ? "▲" : "▼"}</button>
+          <button onClick={() => setExpanded(x => !x)} style={{
+            background: "none", border: "none", cursor: "pointer",
+            color: NL.muted, fontSize: 10, padding: "2px 4px", fontFamily: mono,
+          }}>{expanded ? "▲" : "▼"}</button>
         </div>
       </div>
       {expanded && (
-        <div className="mt-2 pt-2 border-t border-white/5">
-          <pre className="text-xs text-slate-400 bg-black/30 rounded-lg p-2.5 overflow-auto max-h-40">
+        <div style={{ marginTop: 8, paddingTop: 8, borderTop: `1px solid ${NL.border}` }}>
+          <pre style={{
+            fontSize: 11, color: NL.secondary, fontFamily: mono,
+            background: "rgba(0,0,0,0.3)", borderRadius: 6, padding: 10,
+            overflow: "auto", maxHeight: 160, margin: 0,
+          }}>
             {JSON.stringify(ev.type === "set" || ev.type === "del" ? v : ev, null, 2)}
           </pre>
         </div>
@@ -228,6 +264,7 @@ function FeedEventRow({ ev, onBan, isBanned }) {
     </div>
   );
 }
+
 
 function SlotEditor({ uid, current, apiBase, onUpdate }) {
   const [editing, setEditing] = useState(false);
@@ -246,50 +283,46 @@ function SlotEditor({ uid, current, apiBase, onUpdate }) {
         body: JSON.stringify({ slots: n }),
       });
       if (!res.ok) throw new Error(`${res.status}`);
-      onUpdate(n);
-      setEditing(false);
-    } catch (e) {
-      alert("Failed to update slots: " + e.message);
-    } finally {
-      setSaving(false);
-    }
+      onUpdate(n); setEditing(false);
+    } catch (e) { alert("Failed to update slots: " + e.message); }
+    finally { setSaving(false); }
   }
 
-  if (!editing) {
-    return (
-      <button
-        onClick={() => { setValue(String(current)); setEditing(true); }}
-        className="flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg border border-white/5 bg-white/3 text-slate-400 hover:text-white hover:bg-white/6 transition shrink-0"
-        title="Edit server slots"
-      >
-        <span className="font-mono">{current}</span>
-        <span className="text-slate-600">slot{current !== 1 ? "s" : ""}</span>
-        <span className="text-slate-600 text-[10px]">✏</span>
-      </button>
-    );
-  }
+  if (!editing) return (
+    <button onClick={() => { setValue(String(current)); setEditing(true); }} style={{
+      display: "flex", alignItems: "center", gap: 6, padding: "5px 10px",
+      borderRadius: 7, border: `1px solid ${NL.border}`, background: NL.elevated,
+      color: NL.secondary, fontSize: 12, fontFamily: mono, cursor: "pointer", flexShrink: 0,
+    }} title="Edit server slots">
+      {current} <span style={{ color: NL.muted, fontFamily: font, fontSize: 11 }}>slot{current !== 1 ? "s" : ""}</span>
+      <span style={{ color: NL.muted, fontSize: 10 }}>✏</span>
+    </button>
+  );
 
   return (
-    <div className="flex items-center gap-1 shrink-0">
-      <input
-        type="number" min="0" max="100"
-        value={value}
+    <div style={{ display: "flex", alignItems: "center", gap: 4, flexShrink: 0 }}>
+      <input type="number" min="0" max="100" value={value}
         onChange={e => setValue(e.target.value)}
         onKeyDown={e => { if (e.key === "Enter") save(); if (e.key === "Escape") setEditing(false); }}
-        className="w-14 px-2 py-1.5 rounded-lg border border-violet-500/40 bg-black/30 text-slate-100 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-violet-500/40 text-center"
         autoFocus
+        style={{
+          width: 52, padding: "5px 8px", borderRadius: 7, textAlign: "center",
+          border: `1px solid ${NL.accentBorder}`, background: NL.subtle,
+          color: NL.text, fontSize: 12, fontFamily: mono, outline: "none",
+        }}
       />
-      <button onClick={save} disabled={saving}
-        className="text-xs px-2 py-1.5 rounded-lg bg-emerald-600/80 text-white hover:bg-emerald-500 transition disabled:opacity-40">
-        {saving ? "…" : "✓"}
-      </button>
-      <button onClick={() => setEditing(false)}
-        className="text-xs px-2 py-1.5 rounded-lg bg-white/4 text-slate-400 hover:text-white transition">
-        ✕
-      </button>
+      <button onClick={save} disabled={saving} style={{
+        padding: "5px 8px", borderRadius: 7, border: "none",
+        background: NL.successDim, color: NL.success, fontSize: 12, cursor: "pointer",
+      }}>{saving ? "…" : "✓"}</button>
+      <button onClick={() => setEditing(false)} style={{
+        padding: "5px 8px", borderRadius: 7, border: `1px solid ${NL.border}`,
+        background: NL.elevated, color: NL.secondary, fontSize: 12, cursor: "pointer",
+      }}>✕</button>
     </div>
   );
 }
+
 
 function PartnersPanel({ apiBase }) {
   const [members, setMembers] = useState([]);
@@ -312,18 +345,14 @@ function PartnersPanel({ apiBase }) {
       if (!res.ok) throw new Error(`${res.status}`);
       const json = await res.json();
       setMembers(json.members || []);
-    } catch (e) {
-      setError("Failed to load members: " + e.message);
-    } finally {
-      setLoading(false);
-    }
+    } catch (e) { setError("Failed to load members: " + e.message); }
+    finally { setLoading(false); }
   }, [apiBase]);
 
   useEffect(() => { load(); }, [load]);
 
   async function handleCreate(e) {
-    e.preventDefault();
-    setFormError(null); setCreating(true);
+    e.preventDefault(); setFormError(null); setCreating(true);
     try {
       const token = await fetchIdToken();
       const res = await fetch(`${apiBase}/api/admin/members`, {
@@ -333,14 +362,10 @@ function PartnersPanel({ apiBase }) {
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.message || `${res.status}`);
-      setForm({ firebaseUid: "", email: "" });
-      setShowForm(false);
+      setForm({ firebaseUid: "", email: "" }); setShowForm(false);
       await load();
-    } catch (e) {
-      setFormError(e.message);
-    } finally {
-      setCreating(false);
-    }
+    } catch (e) { setFormError(e.message); }
+    finally { setCreating(false); }
   }
 
   async function handleDelete(uid, email) {
@@ -349,34 +374,24 @@ function PartnersPanel({ apiBase }) {
     try {
       const token = await fetchIdToken();
       const res = await fetch(`${apiBase}/api/admin/members/${encodeURIComponent(uid)}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
+        method: "DELETE", headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error(`${res.status}`);
       setMembers(p => p.filter(m => m.firebase_uid !== uid));
-    } catch (e) {
-      alert("Failed to delete: " + e.message);
-    } finally {
-      setDeleting(null);
-    }
+    } catch (e) { alert("Failed to delete: " + e.message); }
+    finally { setDeleting(null); }
   }
 
   async function loadServersForMember(uid) {
     setLoadingServers(p => ({ ...p, [uid]: true }));
     try {
       const token = await fetchIdToken();
-      const res = await fetch(`${apiBase}/api/featured-servers/admin`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch(`${apiBase}/api/featured-servers/admin`, { headers: { Authorization: `Bearer ${token}` } });
       if (!res.ok) throw new Error(`${res.status}`);
       const json = await res.json();
-      const owned = (json.servers || []).filter(s => s.ownerUid === uid);
-      setMemberServers(p => ({ ...p, [uid]: owned }));
-    } catch (_) {
-      setMemberServers(p => ({ ...p, [uid]: [] }));
-    } finally {
-      setLoadingServers(p => ({ ...p, [uid]: false }));
-    }
+      setMemberServers(p => ({ ...p, [uid]: (json.servers || []).filter(s => s.ownerUid === uid) }));
+    } catch (_) { setMemberServers(p => ({ ...p, [uid]: [] })); }
+    finally { setLoadingServers(p => ({ ...p, [uid]: false })); }
   }
 
   async function toggleFeatured(server) {
@@ -391,188 +406,154 @@ function PartnersPanel({ apiBase }) {
       if (!res.ok) throw new Error(`${res.status}`);
       setMemberServers(p => ({
         ...p,
-        [server.ownerUid]: (p[server.ownerUid] || []).map(s =>
-          s.id === server.id ? { ...s, featured: newVal } : s
-        ),
+        [server.ownerUid]: (p[server.ownerUid] || []).map(s => s.id === server.id ? { ...s, featured: newVal } : s),
       }));
-    } catch (e) {
-      alert("Failed to toggle featured: " + e.message);
-    }
+    } catch (e) { alert("Failed: " + e.message); }
   }
 
   function toggleExpand(uid) {
-    if (expandedUid === uid) {
-      setExpandedUid(null);
-    } else {
-      setExpandedUid(uid);
-      loadServersForMember(uid);
-    }
+    if (expandedUid === uid) { setExpandedUid(null); return; }
+    setExpandedUid(uid);
+    loadServersForMember(uid);
   }
 
   function fmtDate(t) { return t ? new Date(t).toLocaleDateString() : ""; }
-  function copyToClipboard(text) { try { navigator.clipboard?.writeText(text || ""); } catch (_) { } }
+  function copyText(text) { try { navigator.clipboard?.writeText(text || ""); } catch (_) { } }
+
+  const inputStyle = {
+    width: "100%", padding: "8px 10px",
+    background: NL.subtle, border: `1px solid ${NL.borderMid}`,
+    borderRadius: 8, color: NL.text, fontSize: 12, fontFamily: font,
+    outline: "none", boxSizing: "border-box",
+  };
 
   return (
-    <div className="space-y-5">
+    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       <Card
         title="Partner accounts"
         subtitle={`${members.length} registered`}
         action={
-          <div className="flex items-center gap-2">
-            <button onClick={load} className="text-slate-500 hover:text-slate-300 transition p-1 rounded-lg hover:bg-white/5" title="Refresh">
-              <IconRefresh />
-            </button>
-            <Button size="sm" onClick={() => { setShowForm(p => !p); setFormError(null); }}>
-              <IconPlus /> {showForm ? "Cancel" : "Add partner"}
-            </Button>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            {iconBtn(load, "Refresh", <IC.Refresh />)}
+            <Btn size="sm" onClick={() => { setShowForm(p => !p); setFormError(null); }}>
+              <IC.Plus /> {showForm ? "Cancel" : "Add partner"}
+            </Btn>
           </div>
         }
       >
-        {/* ── create form ── */}
         {showForm && (
-          <form onSubmit={handleCreate} className="mb-5 p-4 rounded-xl border border-violet-500/20 bg-violet-500/5 flex flex-col gap-3">
-            <p className="text-xs font-semibold text-violet-300 mb-1">New partner account</p>
-            <p className="text-xs text-slate-500 -mt-1">
+          <form onSubmit={handleCreate} style={{
+            marginBottom: 16, padding: 14,
+            background: NL.elevated, border: `1px solid ${NL.accentBorder}`,
+            borderRadius: 10, display: "flex", flexDirection: "column", gap: 10,
+          }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: NL.accent, margin: 0 }}>New partner account</p>
+            <p style={{ fontSize: 11, color: NL.muted, margin: 0 }}>
               First create the Firebase account in the{" "}
-              <a href="https://console.firebase.google.com" target="_blank" rel="noopener noreferrer" className="text-violet-400 hover:underline">Firebase console</a>
+              <a href="https://console.firebase.google.com" target="_blank" rel="noopener noreferrer" style={{ color: NL.accent }}>Firebase console</a>
               , then paste the UID here.
             </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
               <div>
-                <label className="block text-xs font-bold text-slate-500 mb-1 tracking-widest">FIREBASE UID</label>
-                <input
-                  value={form.firebaseUid}
-                  onChange={e => setForm(p => ({ ...p, firebaseUid: e.target.value }))}
-                  placeholder="aBcDeFgH1234…"
-                  required
-                  className="w-full px-3 py-2 rounded-lg border border-white/6 bg-black/30 text-slate-100 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-violet-500/40 placeholder:text-slate-600"
-                />
+                <label style={{ display: "block", fontSize: 10, fontWeight: 600, color: NL.muted, marginBottom: 4, fontFamily: mono, letterSpacing: "0.08em", textTransform: "uppercase" }}>Firebase UID</label>
+                <input value={form.firebaseUid} onChange={e => setForm(p => ({ ...p, firebaseUid: e.target.value }))} placeholder="aBcDeFgH1234…" required style={{ ...inputStyle, fontFamily: mono }} />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-500 mb-1 tracking-widest">EMAIL</label>
-                <input
-                  type="email"
-                  value={form.email}
-                  onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
-                  placeholder="partner@example.com"
-                  required
-                  className="w-full px-3 py-2 rounded-lg border border-white/6 bg-black/30 text-slate-100 text-xs focus:outline-none focus:ring-2 focus:ring-violet-500/40 placeholder:text-slate-600"
-                />
+                <label style={{ display: "block", fontSize: 10, fontWeight: 600, color: NL.muted, marginBottom: 4, fontFamily: mono, letterSpacing: "0.08em", textTransform: "uppercase" }}>Email</label>
+                <input type="email" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} placeholder="partner@example.com" required style={inputStyle} />
               </div>
             </div>
-
-            {formError && <p className="text-xs text-rose-400 bg-rose-500/10 border border-rose-500/20 rounded-lg px-3 py-2">{formError}</p>}
-
-            <div className="flex justify-end gap-2">
-              <Button type="button" variant="ghost" size="sm" onClick={() => { setShowForm(false); setFormError(null); }}>Cancel</Button>
-              <Button type="submit" variant="success" size="sm" disabled={creating}>
-                {creating ? <><Spinner size={12} /> Creating…</> : <><IconPlus /> Create partner</>}
-              </Button>
+            {formError && <p style={{ fontSize: 11, color: NL.danger, background: NL.dangerDim, border: `1px solid ${NL.dangerBorder}`, borderRadius: 6, padding: "6px 10px", margin: 0 }}>{formError}</p>}
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: 6 }}>
+              <Btn type="button" variant="ghost" size="sm" onClick={() => { setShowForm(false); setFormError(null); }}>Cancel</Btn>
+              <Btn type="submit" variant="success" size="sm" disabled={creating}>
+                {creating ? <><Spinner size={12} /> Creating…</> : <><IC.Plus /> Create partner</>}
+              </Btn>
             </div>
           </form>
         )}
 
-        {/* ── member list ── */}
         {loading ? (
-          <div className="flex items-center gap-2 text-slate-500 text-sm py-6 justify-center"><Spinner size={14} /> Loading…</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, color: NL.muted, fontSize: 13, padding: "24px 0", justifyContent: "center" }}>
+            <Spinner /> Loading…
+          </div>
         ) : error ? (
-          <p className="text-xs text-rose-400 py-4 text-center">{error}</p>
+          <p style={{ fontSize: 12, color: NL.danger, padding: "16px 0", textAlign: "center" }}>{error}</p>
         ) : members.length === 0 ? (
-          <div className="text-center py-8">
-            <div className="w-12 h-12 rounded-xl bg-white/4 border border-white/6 flex items-center justify-center mx-auto mb-3">
-              <IconUsers />
-            </div>
-            <p className="text-sm text-slate-400">No partner accounts yet.</p>
-            <p className="text-xs text-slate-600 mt-1">Click "Add partner" to create one.</p>
+          <div style={{ textAlign: "center", padding: "32px 0" }}>
+            <div style={{ width: 40, height: 40, borderRadius: 10, background: NL.elevated, border: `1px solid ${NL.border}`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 10px", color: NL.muted }}><IC.Users /></div>
+            <p style={{ fontSize: 13, color: NL.secondary, margin: "0 0 4px" }}>No partner accounts yet.</p>
+            <p style={{ fontSize: 11, color: NL.muted, margin: 0 }}>Click "Add partner" to create one.</p>
           </div>
         ) : (
-          <div className="space-y-2">
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
             {members.map(m => {
               const uid = m.firebase_uid;
               const isExpanded = expandedUid === uid;
               const servers = memberServers[uid];
               const serversLoading = loadingServers[uid];
-
               return (
-                <div key={uid} className="rounded-xl border border-white/5 bg-white/2 overflow-hidden">
-                  {/* member row */}
-                  <div className="flex items-center gap-3 px-4 py-3">
-                    {/* avatar */}
-                    <div className="w-8 h-8 rounded-full bg-violet-600/20 border border-violet-500/25 flex items-center justify-center shrink-0 text-xs font-bold text-violet-300">
+                <div key={uid} style={{ border: `1px solid ${NL.border}`, borderRadius: 10, background: NL.elevated, overflow: "hidden" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px" }}>
+                    <div style={{
+                      width: 32, height: 32, borderRadius: "50%", flexShrink: 0,
+                      background: NL.accentDim, border: `1px solid ${NL.accentBorder}`,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      fontSize: 12, fontWeight: 700, color: NL.accent,
+                    }}>
                       {(m.email || "?")[0].toUpperCase()}
                     </div>
-
-                    {/* info */}
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-slate-100 truncate">{m.email}</p>
-                      <div className="flex items-center gap-2 mt-0.5">
-                        <span className="font-mono text-xs text-slate-600 truncate max-w-[160px]">{uid}</span>
-                        <button onClick={() => copyToClipboard(uid)} className="text-slate-700 hover:text-slate-400 transition shrink-0" title="Copy UID">
-                          <IconCopy />
-                        </button>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{ fontSize: 13, fontWeight: 500, color: NL.text, margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{m.email}</p>
+                      <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 1 }}>
+                        <span style={{ fontFamily: mono, fontSize: 10, color: NL.muted, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 160 }}>{uid}</span>
+                        {iconBtn(() => copyText(uid), "Copy UID", <IC.Copy />)}
                       </div>
                     </div>
-
-                    {/* date */}
-                    <span className="text-xs text-slate-600 hidden sm:block shrink-0">{fmtDate(m.created_at)}</span>
-
-                    {/* slots editor */}
-                    <SlotEditor
-                      uid={uid}
-                      current={m.server_slots ?? 1}
-                      apiBase={apiBase}
-                      onUpdate={(newSlots) => setMembers(p => p.map(x => x.firebase_uid === uid ? { ...x, server_slots: newSlots } : x))}
-                    />
-
-                    {/* expand servers */}
-                    <button
-                      onClick={() => toggleExpand(uid)}
-                      className="text-xs text-slate-500 hover:text-slate-300 px-2.5 py-1.5 rounded-lg hover:bg-white/5 border border-white/5 transition shrink-0"
-                    >
+                    <span style={{ fontSize: 11, color: NL.muted, flexShrink: 0 }}>{fmtDate(m.created_at)}</span>
+                    <SlotEditor uid={uid} current={m.server_slots ?? 1} apiBase={apiBase}
+                      onUpdate={n => setMembers(p => p.map(x => x.firebase_uid === uid ? { ...x, server_slots: n } : x))} />
+                    <button onClick={() => toggleExpand(uid)} style={{
+                      fontSize: 11, color: NL.secondary, padding: "5px 8px",
+                      borderRadius: 7, border: `1px solid ${NL.border}`,
+                      background: "none", cursor: "pointer", flexShrink: 0, fontFamily: font,
+                    }}>
                       Servers {isExpanded ? "▲" : "▼"}
                     </button>
-
-                    {/* delete */}
-                    <button
-                      onClick={() => handleDelete(uid, m.email)}
-                      disabled={deleting === uid}
-                      className="p-1.5 rounded-lg text-slate-600 hover:text-rose-400 hover:bg-rose-500/10 transition shrink-0 disabled:opacity-40"
-                      title="Remove partner"
-                    >
-                      {deleting === uid ? <Spinner size={13} /> : <IconTrash />}
+                    <button onClick={() => handleDelete(uid, m.email)} disabled={deleting === uid} style={{
+                      background: "none", border: "none", cursor: "pointer",
+                      color: NL.muted, padding: 5, borderRadius: 6, flexShrink: 0,
+                      opacity: deleting === uid ? 0.4 : 1,
+                    }}
+                      onMouseEnter={e => { e.currentTarget.style.color = NL.danger; e.currentTarget.style.background = NL.dangerDim; }}
+                      onMouseLeave={e => { e.currentTarget.style.color = NL.muted; e.currentTarget.style.background = "transparent"; }}
+                      title="Remove partner">
+                      {deleting === uid ? <Spinner size={12} /> : <IC.Trash />}
                     </button>
                   </div>
 
-                  {/* servers drawer */}
                   {isExpanded && (
-                    <div className="border-t border-white/5 bg-black/20 px-4 py-3">
+                    <div style={{ borderTop: `1px solid ${NL.border}`, background: "rgba(0,0,0,0.15)", padding: "10px 12px" }}>
                       {serversLoading ? (
-                        <div className="flex items-center gap-2 text-slate-600 text-xs py-2"><Spinner size={12} /> Loading servers…</div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 6, color: NL.muted, fontSize: 12 }}><Spinner size={12} /> Loading servers…</div>
                       ) : !servers || servers.length === 0 ? (
-                        <p className="text-xs text-slate-600 py-1">No servers listed by this partner.</p>
+                        <p style={{ fontSize: 12, color: NL.muted }}>No servers listed by this partner.</p>
                       ) : (
-                        <div className="space-y-2">
+                        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                           {servers.map(s => (
-                            <div key={s.id} className="flex items-center gap-3 p-2.5 rounded-lg bg-white/3 border border-white/4">
-                              {s.iconUrl && (
-                                <img src={s.iconUrl} alt={s.name} className="w-8 h-8 rounded-lg object-cover shrink-0" onError={e => e.currentTarget.style.display = "none"} />
-                              )}
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2 flex-wrap">
-                                  <span className="text-xs font-semibold text-slate-200 truncate">{s.name}</span>
-                                </div>
-                                <span className="text-xs text-slate-600 font-mono">{s.address}:{s.port}</span>
+                            <div key={s.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 10px", borderRadius: 8, background: NL.surface, border: `1px solid ${NL.border}` }}>
+                              {s.iconUrl && <img src={s.iconUrl} alt={s.name} style={{ width: 28, height: 28, borderRadius: 6, objectFit: "cover", flexShrink: 0 }} onError={e => e.currentTarget.style.display = "none"} />}
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                <span style={{ fontSize: 12, fontWeight: 600, color: NL.text }}>{s.name}</span>
+                                <span style={{ display: "block", fontFamily: mono, fontSize: 10, color: NL.muted }}>{s.address}:{s.port}</span>
                               </div>
-                              {/* featured toggle */}
-                              <button
-                                onClick={() => toggleFeatured(s)}
-                                title={s.featured ? "Remove featured" : "Mark as featured"}
-                                className={`shrink-0 flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg border font-semibold transition-all ${s.featured
-                                    ? "bg-amber-500/20 border-amber-500/40 text-amber-300 hover:bg-amber-500/10"
-                                    : "bg-white/4 border-white/8 text-slate-500 hover:text-amber-400 hover:border-amber-500/30"
-                                  }`}
-                              >
+                              <button onClick={() => toggleFeatured(s)} style={{
+                                fontSize: 11, padding: "4px 10px", borderRadius: 7, cursor: "pointer", fontFamily: font, flexShrink: 0,
+                                background: s.featured ? "rgba(251,191,36,0.15)" : NL.elevated,
+                                border: s.featured ? "1px solid rgba(251,191,36,0.3)" : `1px solid ${NL.border}`,
+                                color: s.featured ? NL.warn : NL.muted,
+                                transition: "all 0.15s",
+                              }}>
                                 ★ {s.featured ? "Featured" : "Feature"}
                               </button>
                             </div>
@@ -590,6 +571,7 @@ function PartnersPanel({ apiBase }) {
     </div>
   );
 }
+
 
 export default function DashboardPage() {
   const history = useHistory();
@@ -637,9 +619,7 @@ export default function DashboardPage() {
       setUser(u);
       try {
         const token = await u.getIdToken();
-        const res = await fetch("https://eubackend.netherlink.net/api/admin/members", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await fetch("https://eubackend.netherlink.net/api/admin/members", { headers: { Authorization: `Bearer ${token}` } });
         if (res.status !== 200) { history.replace("/partner"); return; }
       } catch (_) { history.replace("/login"); return; }
       setChecking(false);
@@ -654,29 +634,29 @@ export default function DashboardPage() {
       if (!ok) return;
       const msg = json?.message || "";
       setCurrentNotification(msg); setEditing(msg); setIsDirty(false);
-    } catch (err) { console.warn("loadCurrentNotification error", err); }
+    } catch (err) { console.warn(err); }
   }
 
   async function loadCurrentVersion() {
     setVersionError(null);
     try {
       const token = await fetchIdToken(); if (!token) return;
-      const { ok: vOk, status: vStatus, data: json } = await dbFetch("/api/version", { headers: { Authorization: `Bearer ${token}` } });
-      if (vStatus === 404) { setCurrentVersion(""); setEditingVersion(""); setVersionUpdatedAt(""); return; }
-      if (!vOk) throw new Error(`Failed to load version: ${vStatus}`);
+      const { ok, status, data: json } = await dbFetch("/api/version", { headers: { Authorization: `Bearer ${token}` } });
+      if (status === 404) { setCurrentVersion(""); setEditingVersion(""); setVersionUpdatedAt(""); return; }
+      if (!ok) throw new Error(`Failed: ${status}`);
       setCurrentVersion(json?.version || ""); setEditingVersion(json?.version || "");
       setVersionUpdatedAt(json?.updated_at || ""); setIsVersionDirty(false);
-    } catch (err) { console.warn("loadCurrentVersion error", err); setVersionError(String(err)); }
+    } catch (err) { console.warn(err); setVersionError(String(err)); }
   }
 
   async function loadBans() {
     setBansLoading(true); setBanError(null);
     try {
       const token = await fetchIdToken(); if (!token) throw new Error("Not authenticated");
-      const { ok: bOk, status: bStatus, data: json } = await dbFetch("/api/admin/bans", { headers: { Authorization: `Bearer ${token}` } });
-      if (!bOk) throw new Error(`Failed to load bans: ${bStatus}`);
+      const { ok, status, data: json } = await dbFetch("/api/admin/bans", { headers: { Authorization: `Bearer ${token}` } });
+      if (!ok) throw new Error(`Failed: ${status}`);
       setBans(Array.isArray(json.bans) ? json.bans : []);
-    } catch (err) { console.error("loadBans error", err); setBanError(String(err)); setBans([]); }
+    } catch (err) { setBanError(String(err)); setBans([]); }
     finally { setBansLoading(false); }
   }
 
@@ -685,7 +665,7 @@ export default function DashboardPage() {
   useEffect(() => {
     if (filterTimer.current) clearTimeout(filterTimer.current);
     filterTimer.current = setTimeout(() => setFilter(rawFilter.trim()), 220);
-    return () => { if (filterTimer.current) clearTimeout(filterTimer.current); };
+    return () => clearTimeout(filterTimer.current);
   }, [rawFilter]);
 
   useEffect(() => {
@@ -704,7 +684,6 @@ export default function DashboardPage() {
       esRef.current = es;
       es.onopen = () => setSseStatus("open");
       es.onerror = () => setSseStatus("error");
-
       es.addEventListener("snapshot", e => {
         try {
           const d = JSON.parse(e.data || "{}");
@@ -725,7 +704,7 @@ export default function DashboardPage() {
       es.addEventListener("del", e => {
         try {
           const d = JSON.parse(e.data || "{}");
-          setEventsFeed(prev => [...prev, { type: "del", key: d.key, value: d.value, existed: d.existed, time: d.time || Date.now() }].slice(-EVENTS_CAP));
+          setEventsFeed(prev => [...prev, { type: "del", key: d.key, value: d.value, time: d.time || Date.now() }].slice(-EVENTS_CAP));
           if (d.key) setCurrentMap(prev => { const n = { ...prev }; delete n[d.key]; return n; });
         } catch (_) { }
       });
@@ -745,11 +724,11 @@ export default function DashboardPage() {
   }, []);
 
   useEffect(() => () => stopStream(), [stopStream]);
-  useEffect(() => { if (esRef.current) stopStream(); }, [region, stopStream]);
+  useEffect(() => { if (esRef.current) stopStream(); }, [region]);
   useEffect(() => { if (autoStart && sseStatus === "closed" && user) startStream(); }, [autoStart, user]);
 
   async function handleUpsert(e) {
-    e?.preventDefault(); setSaving(true); setNotifResults(null);
+    e?.preventDefault(); setSaving(true);
     try {
       const token = await fetchIdToken(); if (!token) throw new Error("Not authenticated");
       const { ok } = await dbFetch("/notification", {
@@ -758,59 +737,53 @@ export default function DashboardPage() {
         body: JSON.stringify({ message: editing || "" }),
       });
       if (ok) { setCurrentNotification(editing); setIsDirty(false); }
-    } catch (err) { console.warn(err); } finally { setSaving(false); }
+    } catch (err) { console.warn(err); }
+    finally { setSaving(false); }
   }
 
   async function handleClearNotification() {
     if (!confirm("Clear notification?")) return;
-    setSaving(true); setNotifResults(null);
+    setSaving(true);
     try {
       const token = await fetchIdToken(); if (!token) throw new Error("Not authenticated");
-      const { ok: dOk } = await dbFetch("/notification", {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (dOk) { setCurrentNotification(""); setEditing(""); setIsDirty(false); }
-    } catch (err) { console.warn(err); } finally { setSaving(false); }
+      const { ok } = await dbFetch("/notification", { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
+      if (ok) { setCurrentNotification(""); setEditing(""); setIsDirty(false); }
+    } catch (err) { console.warn(err); }
+    finally { setSaving(false); }
   }
 
   async function handleSaveVersion(e) {
-    e?.preventDefault(); setVersionError(null); setSavingVersion(true); setVersionResults(null);
+    e?.preventDefault(); setVersionError(null); setSavingVersion(true);
     try {
       const token = await fetchIdToken(); if (!token) throw new Error("Not authenticated");
       if (!/^\d+\.\d+\.\d+(\+\d+)?$/.test(editingVersion.trim())) { setVersionError("Format must be 1.0.0 or 1.0.0+1"); return; }
-      const { ok: vOk2, status: vStatus2, data: vJson } = await dbFetch("/api/version", {
+      const { ok, status, data } = await dbFetch("/api/version", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ version: editingVersion.trim() }),
       });
-      if (vOk2) {
-        setCurrentVersion(vJson.version || "");
-        setVersionUpdatedAt(vJson.updated_at || "");
-        setIsVersionDirty(false);
-      } else {
-        setVersionError(`Failed: ${vStatus2}`);
-      }
-    } catch (err) { console.error(err); setVersionError(String(err)); }
+      if (ok) { setCurrentVersion(data.version || ""); setVersionUpdatedAt(data.updated_at || ""); setIsVersionDirty(false); }
+      else setVersionError(`Failed: ${status}`);
+    } catch (err) { setVersionError(String(err)); }
     finally { setSavingVersion(false); }
   }
 
   async function handleBan(ip, reason = "") {
     setBanError(null);
-    if (!ip || typeof ip !== "string") { setBanError("Invalid IP"); return; }
+    if (!ip) { setBanError("Invalid IP"); return; }
     if (!confirm(`Ban ${ip}?`)) return;
     try {
       const token = await fetchIdToken(); if (!token) throw new Error("Not authenticated");
-      const { ok: banOk, status: banStatus } = await dbFetch("/api/admin/bans", {
+      const { ok, status } = await dbFetch("/api/admin/bans", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ ip, reason }),
       });
-      if (!banOk) { setBanError(`Failed: ${banStatus}`); return; }
+      if (!ok) { setBanError(`Failed: ${status}`); return; }
       await loadBans();
       setCurrentMap(prev => { const n = { ...prev }; delete n[ip]; return n; });
       setBanIpInput(""); setBanReasonInput("");
-    } catch (err) { console.error(err); setBanError(String(err)); }
+    } catch (err) { setBanError(String(err)); }
   }
 
   async function handleUnban(ip) {
@@ -818,12 +791,9 @@ export default function DashboardPage() {
     setBanError(null);
     try {
       const token = await fetchIdToken(); if (!token) throw new Error("Not authenticated");
-      await dbFetch(`/api/admin/bans/${encodeURIComponent(ip)}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await dbFetch(`/api/admin/bans/${encodeURIComponent(ip)}`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
       await loadBans();
-    } catch (err) { console.error(err); setBanError(String(err)); }
+    } catch (err) { setBanError(String(err)); }
   }
 
   const filtered = useMemo(() => {
@@ -839,207 +809,253 @@ export default function DashboardPage() {
   }, [eventsFeed, filter, showOnly]);
 
   function isIpLocallyBanned(ip) { return ip ? bans.some(b => String(b.ip).toLowerCase() === String(ip).toLowerCase()) : false; }
-  function copyToClipboard(text) { try { navigator.clipboard?.writeText(text || ""); } catch (_) { } }
+  function copyText(text) { try { navigator.clipboard?.writeText(text || ""); } catch (_) { } }
   function fmtTime(t) { return t ? new Date(t).toLocaleString() : ""; }
+
+  const inputStyle = {
+    padding: "9px 12px", borderRadius: 9,
+    border: `1px solid ${NL.borderMid}`, background: NL.subtle,
+    color: NL.text, fontSize: 13, fontFamily: font,
+    outline: "none", width: "100%", boxSizing: "border-box",
+    transition: "border-color 0.15s",
+  };
+
+  if (checking) return (
+    <Layout>
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: NL.bg }}>
+        <Spinner size={24} />
+      </div>
+    </Layout>
+  );
 
   return (
     <Layout>
-      <div className="min-h-screen py-8">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div style={{ minHeight: "100vh", background: NL.bg, fontFamily: font, paddingBottom: 48 }}>
+        <div style={{ maxWidth: 1400, margin: "0 auto", padding: "28px 20px 0" }}>
 
-          {/* ── Header ── */}
-          <header className="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-violet-600/20 border border-violet-500/30 flex items-center justify-center shrink-0">
-                <span className="text-violet-400 text-lg">⚡</span>
-              </div>
+          <header style={{
+            marginBottom: 24,
+            display: "flex", flexWrap: "wrap",
+            alignItems: "center", justifyContent: "space-between", gap: 12,
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <div style={{
+                width: 36, height: 36, borderRadius: 10,
+                background: NL.accentDim, border: `1px solid ${NL.accentBorder}`,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                color: NL.accent, fontSize: 18,
+              }}>⚡</div>
               <div>
-                <h1 className="text-xl font-bold text-white leading-none">NetherLink Admin</h1>
-                <p className="text-xs text-slate-500 mt-0.5">{user?.email}</p>
+                <h1 style={{ fontSize: 16, fontWeight: 700, color: NL.text, margin: 0, letterSpacing: "-0.01em" }}>
+                  NetherLink Admin
+                </h1>
+                <p style={{ fontSize: 11, color: NL.muted, margin: 0 }}>{user?.email}</p>
               </div>
             </div>
-            <div className="flex items-center gap-2 flex-wrap">
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
               <TabBar active={activeTab} onChange={setActiveTab} />
-
-              <Button onClick={async () => { try { await signOut(auth); } catch (e) { console.error(e); } }} variant="ghost" size="sm">
-                <IconSignOut /> Sign out
-              </Button>
+              <Btn onClick={async () => { try { await signOut(auth); } catch (e) { console.error(e); } }} variant="ghost" size="sm">
+                <IC.SignOut /> Sign out
+              </Btn>
             </div>
           </header>
 
-          {/* ── Partners tab ── */}
-          {activeTab === "partners" && (
-            <PartnersPanel apiBase={apiBase} />
-          )}
+          {activeTab === "partners" && <PartnersPanel apiBase={apiBase} />}
 
-          {/* ── Overview tab ── */}
           {activeTab === "overview" && (<>
 
-            {/* Stats */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, marginBottom: 20 }}>
               {[
                 { label: "Live players", value: Object.keys(currentMap).length, sub: "In cache" },
                 { label: "Active bans", value: bans.length, sub: "Shared DB" },
                 { label: "Feed events", value: eventsFeed.length, sub: `Cap ${EVENTS_CAP}` },
               ].map(s => (
-                <div key={s.label} className="bg-[rgba(12,9,18,0.7)] rounded-xl border border-white/6 px-4 py-3">
-                  <p className="text-xs text-slate-500 mb-1">{s.label}</p>
-                  <p className="text-2xl font-bold text-white leading-none">{s.value}</p>
-                  <p className="text-xs text-slate-600 mt-1">{s.sub}</p>
+                <div key={s.label} style={{ background: NL.surface, border: `1px solid ${NL.border}`, borderRadius: 12, padding: "14px 16px" }}>
+                  <p style={{ fontSize: 11, color: NL.muted, margin: "0 0 4px" }}>{s.label}</p>
+                  <p style={{ fontFamily: mono, fontSize: 26, fontWeight: 700, color: NL.text, lineHeight: 1, margin: "0 0 4px" }}>{s.value}</p>
+                  <p style={{ fontSize: 11, color: NL.muted, margin: 0 }}>{s.sub}</p>
                 </div>
               ))}
             </div>
 
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
-              <div className="xl:col-span-2 space-y-5">
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
+              <div style={{ gridColumn: "1 / 3", display: "flex", flexDirection: "column", gap: 16 }}>
 
-                {/* Notification + Version */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5" style={{ alignItems: "stretch" }}>
-                  <Card title="Notification" subtitle="Shown in the app to all users">
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+
+                  <Card title="Notification" subtitle="Shown in-app to all users">
                     <textarea
                       value={editing}
-                      onChange={e => { setEditing(e.target.value); setIsDirty(e.target.value !== currentNotification); setNotifResults(null); }}
-                      className="w-full p-3 rounded-xl border border-white/6 bg-white/3 text-slate-100 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-violet-500/40 placeholder:text-slate-600 flex-1 min-h-[80px]"
-                      placeholder="Short notification text..."
+                      onChange={e => { setEditing(e.target.value); setIsDirty(e.target.value !== currentNotification); }}
+                      placeholder="Short notification text…"
+                      style={{
+                        ...inputStyle, resize: "none", minHeight: 72, flex: 1,
+                        fontFamily: font,
+                      }}
                     />
-                    <div className="mt-3 flex flex-wrap items-center gap-2 shrink-0">
-                      <Button onClick={handleUpsert} disabled={!isDirty || saving} size="sm">
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10, flexWrap: "wrap" }}>
+                      <Btn onClick={handleUpsert} disabled={!isDirty || saving} size="sm">
                         {saving ? <><Spinner size={12} /> Saving…</> : "Save"}
-                      </Button>
-                      <Button onClick={handleClearNotification} variant="danger" size="sm" disabled={saving || !currentNotification}>Clear</Button>
-                      <span className={`ml-auto text-xs px-2 py-1 rounded-full ${currentNotification ? "bg-emerald-500/15 text-emerald-400" : "bg-slate-700/50 text-slate-500"}`}>
+                      </Btn>
+                      <Btn onClick={handleClearNotification} variant="danger" size="sm" disabled={saving || !currentNotification}>Clear</Btn>
+                      <span style={{
+                        marginLeft: "auto", fontSize: 11, padding: "3px 8px", borderRadius: 4, fontFamily: mono,
+                        background: currentNotification ? NL.successDim : NL.subtle,
+                        color: currentNotification ? NL.success : NL.muted,
+                        border: `1px solid ${currentNotification ? "rgba(52,211,153,0.22)" : NL.border}`,
+                      }}>
                         {currentNotification ? "Active" : "Empty"}
                       </span>
                     </div>
                   </Card>
 
                   <Card title="App Version" subtitle="Flutter app update check">
-                    <div className="flex gap-2 shrink-0">
+                    <div style={{ display: "flex", gap: 6, marginBottom: 8 }}>
                       <input
                         value={editingVersion}
-                        onChange={e => { setEditingVersion(e.target.value); setIsVersionDirty(e.target.value !== currentVersion); setVersionError(null); setVersionResults(null); }}
+                        onChange={e => { setEditingVersion(e.target.value); setIsVersionDirty(e.target.value !== currentVersion); setVersionError(null); }}
                         placeholder="e.g. 1.0.2"
-                        className="flex-1 p-3 rounded-xl border border-white/6 bg-white/3 text-slate-100 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/40 placeholder:text-slate-600"
+                        style={{ ...inputStyle, flex: 1, fontFamily: mono }}
                       />
-                      <Button onClick={handleSaveVersion} disabled={!isVersionDirty || savingVersion} size="sm">
+                      <Btn onClick={handleSaveVersion} disabled={!isVersionDirty || savingVersion} size="sm">
                         {savingVersion ? <Spinner size={12} /> : "Publish"}
-                      </Button>
-                      <Button onClick={loadCurrentVersion} variant="ghost" size="sm" title="Reload from API">
-                        <IconRefresh />
-                      </Button>
+                      </Btn>
+                      {iconBtn(loadCurrentVersion, "Reload from API", <IC.Refresh />)}
                     </div>
-                    {versionError && <p className="text-xs text-rose-400 mt-2 shrink-0">{versionError}</p>}
-                    <div className="flex-1" />
-                    <div className="shrink-0">
-                      <div className="flex items-end justify-between">
+                    {versionError && <p style={{ fontSize: 11, color: NL.danger, margin: "0 0 8px" }}>{versionError}</p>}
+                    <div style={{ marginTop: "auto" }}>
+                      <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between" }}>
                         <div>
-                          <p className="text-xs text-slate-500 mb-0.5">Current version</p>
-                          <p className="text-3xl font-bold font-mono text-white">{currentVersion || "—"}</p>
+                          <p style={{ fontSize: 11, color: NL.muted, margin: "0 0 2px" }}>Current version</p>
+                          <p style={{ fontFamily: mono, fontSize: 28, fontWeight: 700, color: NL.text, margin: 0, lineHeight: 1 }}>
+                            {currentVersion || "—"}
+                          </p>
                         </div>
                         {versionUpdatedAt && (
-                          <div className="text-right">
-                            <p className="text-xs text-slate-500">Last published</p>
-                            <p className="text-xs text-slate-400">{fmtTime(versionUpdatedAt)}</p>
+                          <div style={{ textAlign: "right" }}>
+                            <p style={{ fontSize: 10, color: NL.muted, margin: "0 0 2px" }}>Last published</p>
+                            <p style={{ fontSize: 11, color: NL.secondary, margin: 0, fontFamily: mono }}>{fmtTime(versionUpdatedAt)}</p>
                           </div>
                         )}
                       </div>
-                      <p className="text-xs text-slate-600 mt-2">Format: <code className="text-slate-500">1.0.0</code> or <code className="text-slate-500">1.0.0+1</code></p>
+                      <p style={{ fontSize: 11, color: NL.muted, margin: "8px 0 0" }}>
+                        Format: <code style={{ fontFamily: mono, color: NL.secondary }}>1.0.0</code> or <code style={{ fontFamily: mono, color: NL.secondary }}>1.0.0+1</code>
+                      </p>
                     </div>
                   </Card>
                 </div>
 
-                {/* Live Feed */}
                 <Card
                   title="Live cache feed"
                   subtitle={`${filtered.length} events`}
                   action={
-                    <div className="flex items-center gap-2">
-                      {/* Region selector — only affects the live cache feed */}
-                      <div className="flex rounded-lg overflow-hidden border border-white/8">
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <div style={{ display: "flex", borderRadius: 8, overflow: "hidden", border: `1px solid ${NL.border}` }}>
                         {Object.keys(REGION_BASES).map(r => (
-                          <button key={r} onClick={() => { if (r !== region) { stopStream(); setRegion(r); } }}
-                            className={`px-3 py-1.5 text-xs font-semibold transition ${region === r ? "bg-violet-600 text-white" : "text-slate-400 hover:text-white hover:bg-white/5"}`}>
-                            {r}
-                          </button>
+                          <button key={r} onClick={() => { if (r !== region) { stopStream(); setRegion(r); } }} style={{
+                            padding: "5px 12px", fontSize: 11, fontWeight: 600, fontFamily: font, cursor: "pointer", border: "none",
+                            background: region === r ? NL.accent : "transparent",
+                            color: region === r ? "#0d1a18" : NL.muted,
+                            transition: "background 0.15s, color 0.15s",
+                          }}>{r}</button>
                         ))}
                       </div>
                       <StatusDot status={sseStatus} />
-                      <span className="text-xs text-slate-500">{sseStatus}</span>
+                      <span style={{ fontSize: 11, color: NL.muted }}>{sseStatus}</span>
                       {sseStatus !== "open" && sseStatus !== "connecting"
-                        ? <Button onClick={startStream} size="sm" variant="primary">Start</Button>
-                        : <Button onClick={stopStream} size="sm" variant="secondary">Stop</Button>
+                        ? <Btn onClick={startStream} size="sm">Start</Btn>
+                        : <Btn onClick={stopStream} size="sm" variant="secondary">Stop</Btn>
                       }
                     </div>
                   }
                 >
-                  <div className="flex flex-col sm:flex-row gap-2 mb-3 shrink-0">
+                  <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
                     <input
                       placeholder="Filter by IP / player / remote…"
-                      value={rawFilter}
-                      onChange={e => setRawFilter(e.target.value)}
-                      className="flex-1 px-3 py-2 rounded-xl border border-white/6 bg-white/3 text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/40 placeholder:text-slate-600"
+                      value={rawFilter} onChange={e => setRawFilter(e.target.value)}
+                      style={{ ...inputStyle, flex: 1, minWidth: 180 }}
                     />
-                    <div className="flex gap-1">
+                    <div style={{ display: "flex", gap: 4 }}>
                       {["all", "set", "del", "clear", "snapshot"].map(v => (
-                        <button key={v} onClick={() => setShowOnly(v)}
-                          className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition ${showOnly === v ? "bg-violet-600 border-violet-500 text-white" : "border-white/6 text-slate-400 hover:text-white hover:bg-white/5"}`}>
+                        <button key={v} onClick={() => setShowOnly(v)} style={{
+                          padding: "6px 10px", borderRadius: 7, fontSize: 11, fontWeight: 600,
+                          fontFamily: font, cursor: "pointer", border: `1px solid ${NL.border}`,
+                          background: showOnly === v ? NL.accent : "transparent",
+                          color: showOnly === v ? "#0d1a18" : NL.muted,
+                          transition: "background 0.15s, color 0.15s",
+                        }}>
                           {v === "all" ? "All" : v.charAt(0).toUpperCase() + v.slice(1)}
                         </button>
                       ))}
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 mb-3 shrink-0">
-                    <label className="flex items-center gap-2 text-xs text-slate-400">
-                      <input type="checkbox" checked={autoStart} onChange={e => setAutoStart(e.target.checked)} className="accent-violet-500 rounded" />
-                      Auto-start
-                    </label>
-                    <label className="flex items-center gap-2 text-xs text-slate-400">
-                      <input type="checkbox" checked={autoScroll} onChange={e => setAutoScroll(e.target.checked)} className="accent-violet-500 rounded" />
-                      Auto-scroll
-                    </label>
-                    <div className="ml-auto flex gap-2">
-                      <Button onClick={() => setEventsFeed(p => p.slice(-50))} variant="secondary" size="sm">Trim to 50</Button>
-                      <Button onClick={() => { setEventsFeed([]); setCurrentMap({}); }} variant="ghost" size="sm">Clear</Button>
+                  <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 10 }}>
+                    {[
+                      { label: "Auto-start", checked: autoStart, set: setAutoStart },
+                      { label: "Auto-scroll", checked: autoScroll, set: setAutoScroll },
+                    ].map(({ label, checked, set }) => (
+                      <label key={label} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: NL.secondary, cursor: "pointer" }}>
+                        <input type="checkbox" checked={checked} onChange={e => set(e.target.checked)} style={{ accentColor: NL.accent }} />
+                        {label}
+                      </label>
+                    ))}
+                    <div style={{ marginLeft: "auto", display: "flex", gap: 6 }}>
+                      <Btn onClick={() => setEventsFeed(p => p.slice(-50))} variant="secondary" size="sm">Trim to 50</Btn>
+                      <Btn onClick={() => { setEventsFeed([]); setCurrentMap({}); }} variant="ghost" size="sm">Clear</Btn>
                     </div>
                   </div>
-                  <div ref={feedContainerRef} className="flex-1 overflow-auto rounded-xl border border-white/5 bg-black/20 min-h-[300px] max-h-[500px] p-2 space-y-1.5">
+                  <div
+                    ref={feedContainerRef}
+                    style={{
+                      flex: 1, overflowY: "auto",
+                      border: `1px solid ${NL.border}`, borderRadius: 10,
+                      background: "rgba(0,0,0,0.2)", minHeight: 300, maxHeight: 500,
+                      padding: 8, display: "flex", flexDirection: "column", gap: 5,
+                    }}
+                  >
                     {filtered.length === 0 ? (
-                      <div className="flex flex-col items-center justify-center h-full py-12 text-slate-500">
-                        <div className="text-3xl mb-2">📡</div>
-                        <p className="text-sm">{sseStatus === "open" ? "Waiting for events…" : "Start the feed to begin streaming."}</p>
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", gap: 8, color: NL.muted, padding: "48px 0" }}>
+                        <span style={{ fontSize: 28 }}>📡</span>
+                        <p style={{ fontSize: 13 }}>{sseStatus === "open" ? "Waiting for events…" : "Start the feed to begin streaming."}</p>
                       </div>
                     ) : filtered.map((ev, i) => (
                       <FeedEventRow key={i} ev={ev}
                         isBanned={isIpLocallyBanned(ev.key || ev.value?.publicIp)}
-                        onBan={ip => handleBan(ip, `Banned from live feed by ${user?.email || 'admin'}`)}
+                        onBan={ip => handleBan(ip, `Banned from live feed by ${user?.email || "admin"}`)}
                       />
                     ))}
                   </div>
                 </Card>
+
               </div>
 
-              {/* Right col */}
-              <div className="space-y-5">
+              <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+
                 <Card title="Live players" subtitle={`${Object.keys(currentMap).length} in cache`}>
-                  <div className="space-y-2 max-h-64 overflow-auto pr-1">
+                  <div style={{ display: "flex", flexDirection: "column", gap: 5, maxHeight: 260, overflowY: "auto" }}>
                     {Object.keys(currentMap).length === 0 ? (
-                      <p className="text-sm text-slate-500 py-4 text-center">No players in cache</p>
+                      <p style={{ fontSize: 13, color: NL.muted, textAlign: "center", padding: "16px 0" }}>No players in cache</p>
                     ) : Object.entries(currentMap).map(([key, val]) => {
                       const player = val?.playerName || "—";
                       const remote = val?.remoteServerIp || val?.remote || "—";
                       const port = val?.remoteServerPort || val?.remotePort || val?.port || "";
                       const banned = isIpLocallyBanned(key);
                       return (
-                        <div key={key} className="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-white/3 border border-white/4 hover:bg-white/5 transition-colors">
-                          <div className="min-w-0 flex-1">
-                            <p className="text-sm font-medium text-slate-100 truncate">{player}</p>
-                            <p className="text-xs text-slate-500 font-mono truncate mt-0.5">{key} → {remote}{port ? `:${port}` : ""}</p>
+                        <div key={key} style={{
+                          display: "flex", alignItems: "center", gap: 8, padding: "8px 10px",
+                          borderRadius: 8, background: NL.elevated, border: `1px solid ${NL.border}`,
+                        }}>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <p style={{ fontSize: 13, fontWeight: 500, color: NL.text, margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{player}</p>
+                            <p style={{ fontFamily: mono, fontSize: 10, color: NL.muted, margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                              {key} → {remote}{port ? `:${port}` : ""}
+                            </p>
                           </div>
-                          <div className="flex items-center gap-1.5 shrink-0">
-                            <button onClick={() => copyToClipboard(key)} title="Copy IP" className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/8 transition"><IconCopy /></button>
+                          <div style={{ display: "flex", alignItems: "center", gap: 2, flexShrink: 0 }}>
+                            {iconBtn(() => copyText(key), "Copy IP", <IC.Copy />)}
                             {banned
-                              ? <span className="text-xs px-2 py-1 rounded-lg bg-rose-500/15 text-rose-400 border border-rose-500/20">Banned</span>
-                              : <button onClick={() => handleBan(key, `Banned from dashboard by ${user?.email || 'admin'}`)} className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition" title="Ban"><IconBan /></button>
+                              ? <Badge color="danger">Banned</Badge>
+                              : iconBtn(() => handleBan(key, `Banned from dashboard by ${user?.email || "admin"}`), "Ban", <IC.Ban />, NL.danger)
                             }
                           </div>
                         </div>
@@ -1049,44 +1065,53 @@ export default function DashboardPage() {
                 </Card>
 
                 <Card title="Ban IP" subtitle="Manually ban an IP address">
-                  <div className="space-y-2">
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                     <input placeholder="IP address" value={banIpInput} onChange={e => setBanIpInput(e.target.value)}
                       onKeyDown={e => e.key === "Enter" && handleBan(banIpInput.trim(), banReasonInput.trim())}
-                      className="w-full px-3 py-2.5 rounded-xl border border-white/6 bg-white/3 text-slate-100 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-rose-500/40 placeholder:text-slate-600" />
+                      style={{ ...inputStyle, fontFamily: mono }}
+                    />
                     <input placeholder="Reason (optional)" value={banReasonInput} onChange={e => setBanReasonInput(e.target.value)}
                       onKeyDown={e => e.key === "Enter" && handleBan(banIpInput.trim(), banReasonInput.trim())}
-                      className="w-full px-3 py-2.5 rounded-xl border border-white/6 bg-white/3 text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500/40 placeholder:text-slate-600" />
-                    <div className="flex items-center gap-2">
-                      <Button onClick={() => handleBan(banIpInput.trim(), banReasonInput.trim())} variant="danger" className="flex-1 justify-center" disabled={!banIpInput.trim()}>
-                        <IconBan /> Ban IP
-                      </Button>
-                    </div>
-                    {banError && <p className="text-xs text-rose-400 pt-1">{banError}</p>}
+                      style={inputStyle}
+                    />
+                    <Btn onClick={() => handleBan(banIpInput.trim(), banReasonInput.trim())} variant="danger" disabled={!banIpInput.trim()} style={{ justifyContent: "center" }}>
+                      <IC.Ban /> Ban IP
+                    </Btn>
+                    {banError && <p style={{ fontSize: 11, color: NL.danger, margin: 0 }}>{banError}</p>}
                   </div>
                 </Card>
 
                 <Card
                   title="Active bans"
                   subtitle={`${bans.length} total`}
-                  action={
-                    <button onClick={loadBans} className="text-slate-500 hover:text-slate-300 transition p-1 rounded-lg hover:bg-white/5" title="Refresh"><IconRefresh /></button>
-                  }
+                  action={iconBtn(loadBans, "Refresh", <IC.Refresh />)}
                 >
                   {bansLoading ? (
-                    <div className="flex items-center gap-2 text-slate-500 text-sm py-4 justify-center"><Spinner size={14} /> Loading…</div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, color: NL.muted, fontSize: 13, padding: "16px 0", justifyContent: "center" }}>
+                      <Spinner /> Loading…
+                    </div>
                   ) : bans.length === 0 ? (
-                    <p className="text-sm text-slate-500 text-center py-4">No active bans</p>
+                    <p style={{ fontSize: 13, color: NL.muted, textAlign: "center", padding: "16px 0" }}>No active bans</p>
                   ) : (
-                    <div className="space-y-2 max-h-52 overflow-auto pr-1">
+                    <div style={{ display: "flex", flexDirection: "column", gap: 5, maxHeight: 210, overflowY: "auto" }}>
                       {bans.map(b => (
-                        <div key={b.ip} className="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-rose-500/5 border border-rose-500/10">
-                          <div className="min-w-0 flex-1">
-                            <p className="text-sm font-mono font-medium text-slate-200 truncate">{b.ip}</p>
-                            <p className="text-xs text-slate-500 truncate mt-0.5">{b.reason || "No reason"}</p>
-                            <p className="text-xs text-slate-600 mt-0.5">{b.created_at}</p>
+                        <div key={b.ip} style={{
+                          display: "flex", alignItems: "center", gap: 8, padding: "8px 10px",
+                          borderRadius: 8, background: NL.dangerDim, border: `1px solid ${NL.dangerBorder}`,
+                        }}>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <p style={{ fontFamily: mono, fontSize: 12, fontWeight: 600, color: NL.text, margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{b.ip}</p>
+                            <p style={{ fontSize: 10, color: NL.muted, margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{b.reason || "No reason"}</p>
                           </div>
-                          <button onClick={() => handleUnban(b.ip)}
-                            className="text-xs px-2.5 py-1.5 rounded-lg bg-white/6 text-slate-300 hover:bg-white/10 hover:text-white transition shrink-0">
+                          <button onClick={() => handleUnban(b.ip)} style={{
+                            fontSize: 11, padding: "4px 8px", borderRadius: 6,
+                            background: NL.elevated, border: `1px solid ${NL.border}`,
+                            color: NL.secondary, cursor: "pointer", fontFamily: font, flexShrink: 0,
+                            transition: "color 0.15s",
+                          }}
+                            onMouseEnter={e => e.currentTarget.style.color = NL.text}
+                            onMouseLeave={e => e.currentTarget.style.color = NL.secondary}
+                          >
                             Unban
                           </button>
                         </div>
@@ -1096,18 +1121,26 @@ export default function DashboardPage() {
                 </Card>
 
                 <Card title="Quick actions">
-                  <div className="grid grid-cols-2 gap-2">
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
                     {[
-                      { label: "Metrics", action: () => window.open('/metrics', '_blank') },
-                      { label: "Panel", action: () => window.open('https://panel.netherlink.net', '_blank') },
+                      { label: "Metrics", action: () => window.open("/metrics", "_blank") },
+                      { label: "Panel", action: () => window.open("https://panel.netherlink.net", "_blank") },
                     ].map(a => (
-                      <button key={a.label} onClick={a.action}
-                        className="px-3 py-2.5 rounded-xl bg-white/4 border border-white/6 text-sm text-slate-300 hover:bg-white/8 hover:text-white transition text-center">
+                      <button key={a.label} onClick={a.action} style={{
+                        padding: "10px", borderRadius: 8,
+                        background: NL.elevated, border: `1px solid ${NL.border}`,
+                        fontSize: 12, fontWeight: 500, color: NL.secondary, cursor: "pointer", fontFamily: font,
+                        transition: "color 0.15s, border-color 0.15s",
+                      }}
+                        onMouseEnter={e => { e.currentTarget.style.color = NL.text; e.currentTarget.style.borderColor = NL.borderMid; }}
+                        onMouseLeave={e => { e.currentTarget.style.color = NL.secondary; e.currentTarget.style.borderColor = NL.border; }}
+                      >
                         {a.label} ↗
                       </button>
                     ))}
                   </div>
                 </Card>
+
               </div>
             </div>
           </>)}

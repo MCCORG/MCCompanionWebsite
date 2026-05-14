@@ -12,7 +12,7 @@ body::before {
   z-index: -1;
   width: 100vw;
   height: 100vh;
-  background-color: #1f2833;
+  background-color: #111318;
 }
 
 header#navbar .flex a,
