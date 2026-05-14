@@ -3,6 +3,7 @@ import { FaWindows, FaApple, FaAndroid } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import FeaturedServersCarousel from "../components/FeaturedServersCarousel";
 import ChangelogSection from "../components/ChangelogSection";
+import AppShowcase from "../components/AppShowcase";
 import Layout from "@theme/Layout";
 
 const NL = {
@@ -61,14 +62,30 @@ function RotatingWords({ prefix = "No bullshit. Just", words = ["add your server
   );
 }
 
+function SectionLabel({ children }) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
+      <span style={{
+        fontFamily: "'JetBrains Mono', monospace",
+        fontSize: 10, letterSpacing: "0.12em",
+        textTransform: "uppercase", color: NL.muted,
+        flexShrink: 0,
+      }}>{children}</span>
+      <div style={{ flex: 1, height: 1, background: NL.border }} />
+    </div>
+  );
+}
+
 export default function Home() {
   return (
     <Layout>
-      <div style={{ minHeight: "100vh", background: NL.bg, fontFamily: "'Inter', system-ui, sans-serif" }}>
+      <div style={{ background: NL.bg, fontFamily: "'Inter', system-ui, sans-serif" }}>
+
         <main style={{
-          flex: 1, width: "100%",
+          width: "100%",
           display: "flex", flexDirection: "column", alignItems: "center",
-          padding: "72px 20px 64px",
+          padding: "72px 20px 56px",
+          boxSizing: "border-box",
         }}>
           <div style={{ width: "100%", maxWidth: 1100, display: "flex", flexDirection: "column", gap: 32 }}>
 
@@ -78,88 +95,82 @@ export default function Home() {
             >
               <h1 style={{
                 fontSize: "clamp(28px, 5vw, 46px)",
-                fontWeight: 700,
-                color: NL.text,
-                letterSpacing: "-0.03em",
-                lineHeight: 1.15,
-                margin: 0,
+                fontWeight: 700, color: NL.text,
+                letterSpacing: "-0.03em", lineHeight: 1.15, margin: 0,
               }}>
                 Connect to any{" "}
                 <span style={{ color: NL.accent }}>Minecraft</span>{" "}
                 server
               </h1>
-
               <p style={{ fontSize: 15, color: NL.secondary, marginTop: 4 }}>
                 <RotatingWords words={["add your server", "start mode", "connect", "play"]} interval={2200} />
               </p>
             </motion.div>
 
-            <div style={{
-              display: "flex", flexDirection: "row",
-              gap: 24, alignItems: "flex-start",
-              flexWrap: "wrap",
-            }}>
-              <div style={{ flex: 1, minWidth: 280, display: "flex", flexDirection: "column", gap: 16 }}>
-
-                <motion.div
-                  style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8 }}
-                  variants={fadeUp} custom={1} initial="hidden" animate="visible"
+            <motion.div
+              style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8 }}
+              variants={fadeUp} custom={1} initial="hidden" animate="visible"
+            >
+              {platforms.map(p => (
+                <motion.a
+                  key={p.label}
+                  href={p.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  whileHover={{ scale: 1.02, y: -2 }}
+                  whileTap={{ scale: 0.97 }}
+                  style={{
+                    display: "flex", flexDirection: "column",
+                    alignItems: "center", justifyContent: "center",
+                    gap: 8, padding: "20px 8px",
+                    borderRadius: 12,
+                    background: NL.surface,
+                    border: `1px solid ${NL.border}`,
+                    textDecoration: "none",
+                    transition: "border-color 0.2s, background 0.2s",
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.borderColor = p.color + "44";
+                    e.currentTarget.style.background = NL.elevated;
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.borderColor = NL.border;
+                    e.currentTarget.style.background = NL.surface;
+                  }}
                 >
-                  {platforms.map(p => (
-                    <motion.a
-                      key={p.label}
-                      href={p.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      whileHover={{ scale: 1.02, y: -2 }}
-                      whileTap={{ scale: 0.97 }}
-                      style={{
-                        display: "flex", flexDirection: "column",
-                        alignItems: "center", justifyContent: "center",
-                        gap: 8, padding: "20px 8px",
-                        borderRadius: 12,
-                        background: NL.surface,
-                        border: `1px solid ${NL.border}`,
-                        textDecoration: "none",
-                        transition: "border-color 0.2s, background 0.2s",
-                      }}
-                      onMouseEnter={e => {
-                        e.currentTarget.style.borderColor = p.color + "44";
-                        e.currentTarget.style.background = NL.elevated;
-                      }}
-                      onMouseLeave={e => {
-                        e.currentTarget.style.borderColor = NL.border;
-                        e.currentTarget.style.background = NL.surface;
-                      }}
-                    >
-                      <span style={{ color: p.color }}>{p.icon}</span>
-                      <span style={{ fontSize: 11, fontWeight: 600, color: NL.secondary, letterSpacing: "0.01em" }}>
-                        {p.label}
-                      </span>
-                    </motion.a>
-                  ))}
-                </motion.div>
-
-                <motion.div
-                  style={{ width: "100%" }}
-                  variants={fadeUp} custom={2} initial="hidden" animate="visible"
-                >
-                  <FeaturedServersCarousel />
-                </motion.div>
-              </div>
-
-              <motion.div
-                style={{ width: "100%", maxWidth: 360, flexShrink: 0 }}
-                initial={{ opacity: 0, y: 14 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.22, duration: 0.45, ease: "easeOut" }}
-              >
-                <ChangelogSection />
-              </motion.div>
-            </div>
+                  <span style={{ color: p.color }}>{p.icon}</span>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: NL.secondary, letterSpacing: "0.01em" }}>
+                    {p.label}
+                  </span>
+                </motion.a>
+              ))}
+            </motion.div>
 
           </div>
         </main>
+
+        <AppShowcase />
+
+        <div style={{
+          width: "100%", boxSizing: "border-box",
+          padding: "0 20px 80px",
+          display: "flex", justifyContent: "center",
+        }}>
+          <div style={{ width: "100%", maxWidth: 1100, display: "flex", flexDirection: "column", gap: 48 }}>
+
+            <div>
+              <SectionLabel>Featured servers</SectionLabel>
+              <FeaturedServersCarousel />
+            </div>
+
+            <div>
+              <SectionLabel>Recent changes</SectionLabel>
+              <ChangelogSection />
+            </div>
+
+          </div>
+        </div>
+
       </div>
     </Layout>
   );
