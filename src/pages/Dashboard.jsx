@@ -135,6 +135,8 @@ const IC = {
   Trash: () => <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><polyline points="3 6 5 6 21 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /><path d="M19 6l-1 14H6L5 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /><path d="M10 11v6M14 11v6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /><path d="M9 6V4h6v2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>,
   Plus: () => <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /><line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>,
   Users: () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /><circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="1.6" /><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>,
+  Eye: () => <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /><circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.6" /></svg>,
+  EyeOff: () => <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /><line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>,
 };
 
 const iconBtn = (onClick, title, children, hoverColor = NL.text) => (
@@ -213,7 +215,11 @@ function SlotEditor({ uid, current, apiBase, onUpdate }) {
     setSaving(true);
     try {
       const token = await fetchIdToken();
-      const res = await fetch(`${apiBase}/api/admin/members/${encodeURIComponent(uid)}/slots`, { method: "PATCH", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify({ slots: n }) });
+      const res = await fetch(`${apiBase}/api/admin/members/${encodeURIComponent(uid)}/slots`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ slots: n }),
+      });
       if (!res.ok) throw new Error(`${res.status}`);
       onUpdate(n); setEditing(false);
     } catch (e) { alert("Failed: " + e.message); }
@@ -221,15 +227,46 @@ function SlotEditor({ uid, current, apiBase, onUpdate }) {
   }
 
   if (!editing) return (
-    <button onClick={() => { setValue(String(current)); setEditing(true); }} style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 10px", borderRadius: 7, border: `1px solid ${NL.border}`, background: NL.elevated, color: NL.secondary, fontSize: 12, fontFamily: mono, cursor: "pointer", flexShrink: 0 }} title="Edit slots">
+    <button onClick={() => { setValue(String(current)); setEditing(true); }}
+      style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 10px", borderRadius: 7, border: `1px solid ${NL.border}`, background: NL.elevated, color: NL.secondary, fontSize: 12, fontFamily: mono, cursor: "pointer", flexShrink: 0 }}
+      title="Edit slots">
       {current} <span style={{ color: NL.muted, fontFamily: font, fontSize: 11 }}>slot{current !== 1 ? "s" : ""}</span> <span style={{ color: NL.muted, fontSize: 10 }}>✏</span>
     </button>
   );
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 4, flexShrink: 0 }}>
-      <input type="number" min="0" max="100" value={value} onChange={e => setValue(e.target.value)} onKeyDown={e => { if (e.key === "Enter") save(); if (e.key === "Escape") setEditing(false); }} autoFocus style={{ width: 52, padding: "5px 8px", borderRadius: 7, textAlign: "center", border: `1px solid ${NL.accentBorder}`, background: NL.subtle, color: NL.text, fontSize: 12, fontFamily: mono, outline: "none" }} />
+      <input type="number" min="0" max="100" value={value}
+        onChange={e => setValue(e.target.value)}
+        onKeyDown={e => { if (e.key === "Enter") save(); if (e.key === "Escape") setEditing(false); }}
+        autoFocus
+        style={{ width: 52, padding: "5px 8px", borderRadius: 7, textAlign: "center", border: `1px solid ${NL.accentBorder}`, background: NL.subtle, color: NL.text, fontSize: 12, fontFamily: mono, outline: "none" }} />
       <button onClick={save} disabled={saving} style={{ padding: "5px 8px", borderRadius: 7, border: "none", background: NL.successDim, color: NL.success, fontSize: 12, cursor: "pointer" }}>{saving ? "…" : "✓"}</button>
       <button onClick={() => setEditing(false)} style={{ padding: "5px 8px", borderRadius: 7, border: `1px solid ${NL.border}`, background: NL.elevated, color: NL.secondary, fontSize: 12, cursor: "pointer" }}>✕</button>
+    </div>
+  );
+}
+
+function PasswordInput({ value, onChange, placeholder, style: extra }) {
+  const [show, setShow] = useState(false);
+  return (
+    <div style={{ position: "relative" }}>
+      <input
+        type={show ? "text" : "password"}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        required
+        minLength={6}
+        style={{ ...extra, paddingRight: 34 }}
+      />
+      <button
+        type="button"
+        onClick={() => setShow(s => !s)}
+        style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: NL.muted, display: "flex", alignItems: "center", padding: 2 }}
+        title={show ? "Hide password" : "Show password"}
+      >
+        {show ? <IC.EyeOff /> : <IC.Eye />}
+      </button>
     </div>
   );
 }
@@ -240,9 +277,10 @@ function PartnersPanel({ apiBase }) {
   const [error, setError] = useState(null);
   const [deleting, setDeleting] = useState(null);
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ firebaseUid: "", email: "" });
+  const [form, setForm] = useState({ email: "", password: "", serverSlots: 1 });
   const [formError, setFormError] = useState(null);
   const [creating, setCreating] = useState(false);
+  const [createdInfo, setCreatedInfo] = useState(null);
   const [expandedUid, setExpandedUid] = useState(null);
   const [memberServers, setMemberServers] = useState({});
   const [loadingServers, setLoadingServers] = useState({});
@@ -260,14 +298,34 @@ function PartnersPanel({ apiBase }) {
 
   useEffect(() => { load(); }, [load]);
 
+  function resetForm() {
+    setForm({ email: "", password: "", serverSlots: 1 });
+    setFormError(null);
+    setCreatedInfo(null);
+  }
+
   async function handleCreate(e) {
-    e.preventDefault(); setFormError(null); setCreating(true);
+    e.preventDefault();
+    setFormError(null);
+    setCreatedInfo(null);
+    setCreating(true);
     try {
       const token = await fetchIdToken();
-      const res = await fetch(`${apiBase}/api/admin/members`, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify({ firebaseUid: form.firebaseUid.trim(), email: form.email.trim() }) });
+      const res = await fetch(`${apiBase}/api/admin/members/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          email: form.email.trim(),
+          password: form.password,
+          serverSlots: Number(form.serverSlots) || 1,
+        }),
+      });
       const json = await res.json();
       if (!res.ok) throw new Error(json.message || `${res.status}`);
-      setForm({ firebaseUid: "", email: "" }); setShowForm(false); await load();
+
+      setCreatedInfo({ email: json.firebase.email, uid: json.firebase.uid });
+      setForm({ email: "", password: "", serverSlots: 1 });
+      await load();
     } catch (e) { setFormError(e.message); }
     finally { setCreating(false); }
   }
@@ -277,7 +335,9 @@ function PartnersPanel({ apiBase }) {
     setDeleting(uid);
     try {
       const token = await fetchIdToken();
-      const res = await fetch(`${apiBase}/api/admin/members/${encodeURIComponent(uid)}`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
+      const res = await fetch(`${apiBase}/api/admin/members/${encodeURIComponent(uid)}`, {
+        method: "DELETE", headers: { Authorization: `Bearer ${token}` },
+      });
       if (!res.ok) throw new Error(`${res.status}`);
       setMembers(p => p.filter(m => m.firebase_uid !== uid));
     } catch (e) { alert("Failed: " + e.message); }
@@ -300,57 +360,134 @@ function PartnersPanel({ apiBase }) {
     const newVal = !server.featured;
     try {
       const token = await fetchIdToken();
-      const res = await fetch(`${apiBase}/api/featured-servers/admin/${server.id}/featured`, { method: "PATCH", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify({ featured: newVal }) });
+      const res = await fetch(`${apiBase}/api/featured-servers/admin/${server.id}/featured`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ featured: newVal }),
+      });
       if (!res.ok) throw new Error(`${res.status}`);
-      setMemberServers(p => ({ ...p, [server.ownerUid]: (p[server.ownerUid] || []).map(s => s.id === server.id ? { ...s, featured: newVal } : s) }));
+      setMemberServers(p => ({
+        ...p,
+        [server.ownerUid]: (p[server.ownerUid] || []).map(s => s.id === server.id ? { ...s, featured: newVal } : s),
+      }));
     } catch (e) { alert("Failed: " + e.message); }
   }
 
   function toggleExpand(uid) {
     if (expandedUid === uid) { setExpandedUid(null); return; }
-    setExpandedUid(uid); loadServersForMember(uid);
+    setExpandedUid(uid);
+    loadServersForMember(uid);
   }
 
-  const inputStyle = { width: "100%", padding: "8px 10px", background: NL.subtle, border: `1px solid ${NL.borderMid}`, borderRadius: 8, color: NL.text, fontSize: 12, fontFamily: font, outline: "none", boxSizing: "border-box" };
+  const inputStyle = {
+    width: "100%", padding: "8px 10px", background: NL.subtle,
+    border: `1px solid ${NL.borderMid}`, borderRadius: 8, color: NL.text,
+    fontSize: 12, fontFamily: font, outline: "none", boxSizing: "border-box",
+  };
+  const labelStyle = {
+    display: "block", fontSize: 10, fontWeight: 600, color: NL.muted,
+    marginBottom: 4, letterSpacing: "0.06em", textTransform: "uppercase",
+  };
 
   return (
-    <Card title="Partner accounts" subtitle={`${members.length} registered`}
+    <Card
+      title="Partner accounts"
+      subtitle={`${members.length} registered`}
       action={
         <div style={{ display: "flex", gap: 8 }}>
           {iconBtn(load, "Refresh", <IC.Refresh />)}
-          <Btn size="sm" onClick={() => { setShowForm(p => !p); setFormError(null); }}><IC.Plus /> {showForm ? "Cancel" : "Add partner"}</Btn>
+          <Btn size="sm" onClick={() => { setShowForm(p => !p); resetForm(); }}>
+            <IC.Plus /> {showForm ? "Cancel" : "Add partner"}
+          </Btn>
         </div>
       }
     >
       {showForm && (
-        <form onSubmit={handleCreate} style={{ marginBottom: 16, padding: 14, background: NL.elevated, border: `1px solid ${NL.accentBorder}`, borderRadius: 10, display: "flex", flexDirection: "column", gap: 10 }}>
-          <p style={{ fontSize: 12, fontWeight: 600, color: NL.accent, margin: 0 }}>New partner account</p>
-          <p style={{ fontSize: 11, color: NL.muted, margin: 0 }}>First create the Firebase account in the <a href="https://console.firebase.google.com" target="_blank" rel="noopener noreferrer" style={{ color: NL.accent }}>Firebase console</a>, then paste the UID here.</p>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-            <div>
-              <label style={{ display: "block", fontSize: 10, fontWeight: 600, color: NL.muted, marginBottom: 4, fontFamily: mono, letterSpacing: "0.08em", textTransform: "uppercase" }}>Firebase UID</label>
-              <input value={form.firebaseUid} onChange={e => setForm(p => ({ ...p, firebaseUid: e.target.value }))} placeholder="aBcDeFgH…" required style={{ ...inputStyle, fontFamily: mono }} />
+        <div style={{ marginBottom: 16 }}>
+          {createdInfo && (
+            <div style={{ padding: 14, background: NL.successDim, border: "1px solid rgba(52,211,153,0.30)", borderRadius: 10, marginBottom: 12, display: "flex", flexDirection: "column", gap: 8 }}>
+              <p style={{ fontSize: 12, fontWeight: 700, color: NL.success, margin: 0 }}>✓ Partner aangemaakt</p>
+              <p style={{ fontSize: 11, color: NL.text, margin: 0 }}>
+                <strong>{createdInfo.email}</strong> kan nu inloggen met het ingestelde wachtwoord.
+              </p>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <span style={{ fontFamily: mono, fontSize: 10, color: NL.muted, background: "rgba(0,0,0,0.2)", padding: "3px 8px", borderRadius: 4 }}>{createdInfo.uid}</span>
+                {iconBtn(() => navigator.clipboard?.writeText(createdInfo.uid), "Copy UID", <IC.Copy />, NL.success)}
+              </div>
+              <button onClick={() => setCreatedInfo(null)} style={{ alignSelf: "flex-start", fontSize: 11, color: NL.muted, background: "none", border: "none", cursor: "pointer", padding: 0 }}>Sluiten</button>
             </div>
+          )}
+
+          <form onSubmit={handleCreate} style={{ padding: 14, background: NL.elevated, border: `1px solid ${NL.accentBorder}`, borderRadius: 10, display: "flex", flexDirection: "column", gap: 12 }}>
             <div>
-              <label style={{ display: "block", fontSize: 10, fontWeight: 600, color: NL.muted, marginBottom: 4, fontFamily: mono, letterSpacing: "0.08em", textTransform: "uppercase" }}>Email</label>
-              <input type="email" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} placeholder="partner@example.com" required style={inputStyle} />
+              <p style={{ fontSize: 12, fontWeight: 700, color: NL.accent, margin: "0 0 4px" }}>Register new partner</p>
             </div>
-          </div>
-          {formError && <p style={{ fontSize: 11, color: NL.danger, background: NL.dangerDim, border: `1px solid ${NL.dangerBorder}`, borderRadius: 6, padding: "6px 10px", margin: 0 }}>{formError}</p>}
-          <div style={{ display: "flex", justifyContent: "flex-end", gap: 6 }}>
-            <Btn type="button" variant="ghost" size="sm" onClick={() => { setShowForm(false); setFormError(null); }}>Cancel</Btn>
-            <Btn type="submit" variant="success" size="sm" disabled={creating}>{creating ? <><Spinner size={12} /> Creating…</> : <><IC.Plus /> Create partner</>}</Btn>
-          </div>
-        </form>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+              <div>
+                <label style={labelStyle}>Email *</label>
+                <input
+                  type="email"
+                  value={form.email}
+                  onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
+                  placeholder="partner@example.com"
+                  required
+                  style={inputStyle}
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>Temp password *</label>
+                <PasswordInput
+                  value={form.password}
+                  onChange={e => setForm(p => ({ ...p, password: e.target.value }))}
+                  placeholder="Min. 6 characters"
+                  style={{ ...inputStyle, fontFamily: mono }}
+                />
+              </div>
+            </div>
+
+            <div style={{ maxWidth: 160 }}>
+              <label style={labelStyle}>Server slots</label>
+              <input
+                type="number"
+                min="1"
+                max="100"
+                value={form.serverSlots}
+                onChange={e => setForm(p => ({ ...p, serverSlots: Number(e.target.value) }))}
+                style={{ ...inputStyle, fontFamily: mono }}
+              />
+              <p style={{ fontSize: 10, color: NL.muted, margin: "4px 0 0" }}>Number of servers this partner can create</p>
+            </div>
+
+            {formError && (
+              <p style={{ fontSize: 11, color: NL.danger, background: NL.dangerDim, border: `1px solid ${NL.dangerBorder}`, borderRadius: 6, padding: "8px 10px", margin: 0 }}>
+                ⚠ {formError}
+              </p>
+            )}
+
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: 6, paddingTop: 4, borderTop: `1px solid ${NL.border}` }}>
+              <Btn type="button" variant="ghost" size="sm" onClick={() => { setShowForm(false); resetForm(); }}>
+                Cancel
+              </Btn>
+              <Btn type="submit" variant="success" size="sm" disabled={creating || !form.email.trim() || form.password.length < 6}>
+                {creating ? <><Spinner size={12} /> Creating…</> : <><IC.Plus /> Create partner</>}
+              </Btn>
+            </div>
+          </form>
+        </div>
       )}
 
       {loading ? (
-        <div style={{ display: "flex", alignItems: "center", gap: 8, color: NL.muted, fontSize: 13, padding: "24px 0", justifyContent: "center" }}><Spinner /> Loading…</div>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, color: NL.muted, fontSize: 13, padding: "24px 0", justifyContent: "center" }}>
+          <Spinner /> Loading…
+        </div>
       ) : error ? (
         <p style={{ fontSize: 12, color: NL.danger, padding: "16px 0", textAlign: "center" }}>{error}</p>
       ) : members.length === 0 ? (
         <div style={{ textAlign: "center", padding: "32px 0" }}>
-          <div style={{ width: 40, height: 40, borderRadius: 10, background: NL.elevated, border: `1px solid ${NL.border}`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 10px", color: NL.muted }}><IC.Users /></div>
+          <div style={{ width: 40, height: 40, borderRadius: 10, background: NL.elevated, border: `1px solid ${NL.border}`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 10px", color: NL.muted }}>
+            <IC.Users />
+          </div>
           <p style={{ fontSize: 13, color: NL.secondary, margin: "0 0 4px" }}>No partner accounts yet.</p>
           <p style={{ fontSize: 11, color: NL.muted, margin: 0 }}>Click "Add partner" to create one.</p>
         </div>
@@ -365,40 +502,68 @@ function PartnersPanel({ apiBase }) {
                   <div style={{ width: 32, height: 32, borderRadius: "50%", flexShrink: 0, background: NL.accentDim, border: `1px solid ${NL.accentBorder}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: NL.accent }}>
                     {(m.email || "?")[0].toUpperCase()}
                   </div>
+
                   <div style={{ flex: 1, minWidth: 120 }}>
-                    <p style={{ fontSize: 13, fontWeight: 500, color: NL.text, margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{m.email}</p>
+                    <p style={{ fontSize: 13, fontWeight: 500, color: NL.text, margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      {m.email}
+                    </p>
                     <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 1 }}>
-                      <span style={{ fontFamily: mono, fontSize: 10, color: NL.muted, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 140 }}>{uid}</span>
+                      <span style={{ fontFamily: mono, fontSize: 10, color: NL.muted, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 140 }}>
+                        {uid}
+                      </span>
                       {iconBtn(() => navigator.clipboard?.writeText(uid), "Copy UID", <IC.Copy />)}
                     </div>
                   </div>
-                  <SlotEditor uid={uid} current={m.server_slots ?? 1} apiBase={apiBase} onUpdate={n => setMembers(p => p.map(x => x.firebase_uid === uid ? { ...x, server_slots: n } : x))} />
-                  <button onClick={() => toggleExpand(uid)} style={{ fontSize: 11, color: NL.secondary, padding: "5px 8px", borderRadius: 7, border: `1px solid ${NL.border}`, background: "none", cursor: "pointer", flexShrink: 0, fontFamily: font }}>
+
+                  <SlotEditor
+                    uid={uid}
+                    current={m.server_slots ?? 1}
+                    apiBase={apiBase}
+                    onUpdate={n => setMembers(p => p.map(x => x.firebase_uid === uid ? { ...x, server_slots: n } : x))}
+                  />
+
+                  <button
+                    onClick={() => toggleExpand(uid)}
+                    style={{ fontSize: 11, color: NL.secondary, padding: "5px 8px", borderRadius: 7, border: `1px solid ${NL.border}`, background: "none", cursor: "pointer", flexShrink: 0, fontFamily: font }}
+                  >
                     Servers {isExpanded ? "▲" : "▼"}
                   </button>
-                  <button onClick={() => handleDelete(uid, m.email)} disabled={deleting === uid} style={{ background: "none", border: "none", cursor: "pointer", color: NL.muted, padding: 5, borderRadius: 6, flexShrink: 0, opacity: deleting === uid ? 0.4 : 1 }}
+
+                  <button
+                    onClick={() => handleDelete(uid, m.email)}
+                    disabled={deleting === uid}
+                    style={{ background: "none", border: "none", cursor: "pointer", color: NL.muted, padding: 5, borderRadius: 6, flexShrink: 0, opacity: deleting === uid ? 0.4 : 1 }}
                     onMouseEnter={e => { e.currentTarget.style.color = NL.danger; e.currentTarget.style.background = NL.dangerDim; }}
                     onMouseLeave={e => { e.currentTarget.style.color = NL.muted; e.currentTarget.style.background = "transparent"; }}
-                    title="Remove partner">
+                    title="Remove partner"
+                  >
                     {deleting === uid ? <Spinner size={12} /> : <IC.Trash />}
                   </button>
                 </div>
+
                 {isExpanded && (
                   <div style={{ borderTop: `1px solid ${NL.border}`, background: "rgba(0,0,0,0.15)", padding: "10px 12px" }}>
                     {loadingServers[uid] ? (
-                      <div style={{ display: "flex", alignItems: "center", gap: 6, color: NL.muted, fontSize: 12 }}><Spinner size={12} /> Loading…</div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, color: NL.muted, fontSize: 12 }}>
+                        <Spinner size={12} /> Loading…
+                      </div>
                     ) : !memberServers[uid] || memberServers[uid].length === 0 ? (
-                      <p style={{ fontSize: 12, color: NL.muted }}>No servers listed by this partner.</p>
+                      <p style={{ fontSize: 12, color: NL.muted, margin: 0 }}>No servers listed by this partner.</p>
                     ) : (
                       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                         {memberServers[uid].map(s => (
                           <div key={s.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 10px", borderRadius: 8, background: NL.surface, border: `1px solid ${NL.border}` }}>
-                            {s.iconUrl && <img src={s.iconUrl} alt={s.name} style={{ width: 28, height: 28, borderRadius: 6, objectFit: "cover", flexShrink: 0 }} onError={e => e.currentTarget.style.display = "none"} />}
+                            {s.iconUrl && (
+                              <img src={s.iconUrl} alt={s.name} style={{ width: 28, height: 28, borderRadius: 6, objectFit: "cover", flexShrink: 0 }} onError={e => e.currentTarget.style.display = "none"} />
+                            )}
                             <div style={{ flex: 1, minWidth: 0 }}>
                               <span style={{ fontSize: 12, fontWeight: 600, color: NL.text }}>{s.name}</span>
                               <span style={{ display: "block", fontFamily: mono, fontSize: 10, color: NL.muted }}>{s.address}:{s.port}</span>
                             </div>
-                            <button onClick={() => toggleFeatured(s)} style={{ fontSize: 11, padding: "4px 10px", borderRadius: 7, cursor: "pointer", fontFamily: font, flexShrink: 0, background: s.featured ? "rgba(251,191,36,0.15)" : NL.elevated, border: s.featured ? "1px solid rgba(251,191,36,0.3)" : `1px solid ${NL.border}`, color: s.featured ? NL.warn : NL.muted, transition: "all 0.15s" }}>
+                            <button
+                              onClick={() => toggleFeatured(s)}
+                              style={{ fontSize: 11, padding: "4px 10px", borderRadius: 7, cursor: "pointer", fontFamily: font, flexShrink: 0, background: s.featured ? "rgba(251,191,36,0.15)" : NL.elevated, border: s.featured ? "1px solid rgba(251,191,36,0.3)" : `1px solid ${NL.border}`, color: s.featured ? NL.warn : NL.muted, transition: "all 0.15s" }}
+                            >
                               ★ {s.featured ? "Featured" : "Feature"}
                             </button>
                           </div>
@@ -733,7 +898,6 @@ export default function DashboardPage() {
   const mainColumn = (
     <>
       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 14 }}>
-
         <Card title="Notification" subtitle="Shown in-app to all users">
           <textarea
             value={editing}
@@ -854,7 +1018,6 @@ export default function DashboardPage() {
           {activeTab === "partners" && <PartnersPanel apiBase={apiBase} />}
 
           {activeTab === "overview" && (<>
-
             <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(3, 1fr)", gap: 10, marginBottom: 20 }}>
               {[
                 { label: "Live players", value: Object.keys(currentMap).length, sub: "In cache" },
@@ -875,7 +1038,6 @@ export default function DashboardPage() {
                 {rightColumn}
               </div>
             ) : (
-              /* Desktop: 2/3 + 1/3 columns */
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
                 <div style={{ gridColumn: "1 / 3", display: "flex", flexDirection: "column", gap: 16 }}>
                   {mainColumn}
