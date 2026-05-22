@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useHistory } from "@docusaurus/router";
-import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
+import { signInWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../firebaseClient";
 import Layout from "@theme/Layout";
 
@@ -31,6 +31,206 @@ function Spinner({ size = 16 }) {
     );
 }
 
+function ForgotPasswordModal({ onClose }) {
+    const [resetEmail, setResetEmail] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [sent, setSent] = useState(false);
+    const [error, setError] = useState("");
+    const inputRef = useRef(null);
+
+    useEffect(() => {
+        inputRef.current?.focus();
+        function onKey(e) { if (e.key === "Escape") onClose(); }
+        document.addEventListener("keydown", onKey);
+        return () => document.removeEventListener("keydown", onKey);
+    }, [onClose]);
+
+    async function handleSubmit(e) {
+        e.preventDefault();
+        if (!resetEmail) { setError("Please enter your email address."); return; }
+        setError(""); setLoading(true);
+        try {
+            await sendPasswordResetEmail(auth, resetEmail);
+            setSent(true);
+        } catch (err) {
+            setError(
+                err.code === "auth/user-not-found"
+                    ? "No account found with this email address."
+                    : err.message
+            );
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    return (
+        <div
+            onClick={onClose}
+            style={{
+                position: "fixed", inset: 0, zIndex: 1000,
+                background: "rgba(0,0,0,0.6)",
+                backdropFilter: "blur(4px)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                padding: "0 16px",
+                fontFamily: "'Inter', system-ui, sans-serif",
+            }}
+        >
+            <div
+                onClick={e => e.stopPropagation()}
+                style={{
+                    width: "100%", maxWidth: 380,
+                    background: NL.surface,
+                    border: `1px solid ${NL.borderMid}`,
+                    borderRadius: 18,
+                    overflow: "hidden",
+                    boxShadow: "0 24px 60px rgba(0,0,0,0.5)",
+                }}
+            >
+                {/* top accent line */}
+                <div style={{ height: 2, background: `linear-gradient(90deg, ${NL.accent}55 0%, transparent 100%)` }} />
+
+                <div style={{ padding: "24px 22px", display: "flex", flexDirection: "column", gap: 16 }}>
+                    {/* header */}
+                    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+                        <div>
+                            <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: NL.text, letterSpacing: "-0.02em" }}>
+                                Reset password
+                            </h2>
+                            <p style={{ margin: "4px 0 0", fontSize: 12, color: NL.muted, lineHeight: 1.5 }}>
+                                Enter your email and we'll send you a reset link.
+                            </p>
+                        </div>
+                        <button
+                            onClick={onClose}
+                            style={{
+                                background: "none", border: "none", padding: "2px 4px",
+                                cursor: "pointer", color: NL.muted, fontSize: 18, lineHeight: 1,
+                                flexShrink: 0,
+                            }}
+                            aria-label="Close"
+                        >
+                            ×
+                        </button>
+                    </div>
+
+                    {sent ? (
+                        <div style={{
+                            fontSize: 13, color: NL.accent,
+                            background: NL.accentDim,
+                            border: `1px solid ${NL.accentBorder}`,
+                            borderRadius: 8, padding: "12px 14px",
+                            lineHeight: 1.6,
+                        }}>
+                            ✓ Reset email sent to <strong>{resetEmail}</strong> — check your inbox (and spam folder).
+                        </div>
+                    ) : (
+                        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                            <div>
+                                <label style={{
+                                    display: "block",
+                                    fontSize: 10, fontWeight: 600, letterSpacing: "0.1em",
+                                    textTransform: "uppercase", color: NL.muted, marginBottom: 6,
+                                    fontFamily: "'JetBrains Mono', monospace",
+                                }}>
+                                    Email address
+                                </label>
+                                <input
+                                    ref={inputRef}
+                                    type="email"
+                                    value={resetEmail}
+                                    onChange={e => setResetEmail(e.target.value)}
+                                    placeholder="you@example.com"
+                                    autoComplete="email"
+                                    style={{
+                                        width: "100%", padding: "10px 12px",
+                                        background: NL.subtle,
+                                        border: `1px solid ${NL.borderMid}`,
+                                        borderRadius: 8,
+                                        color: NL.text,
+                                        fontSize: 14,
+                                        fontFamily: "'Inter', system-ui, sans-serif",
+                                        outline: "none",
+                                        boxSizing: "border-box",
+                                    }}
+                                    onFocus={e => e.target.style.borderColor = NL.accentBorder}
+                                    onBlur={e => e.target.style.borderColor = NL.borderMid}
+                                />
+                            </div>
+
+                            {error && (
+                                <div style={{
+                                    fontSize: 12, color: NL.danger,
+                                    background: NL.dangerDim,
+                                    border: `1px solid ${NL.dangerBorder}`,
+                                    borderRadius: 8, padding: "10px 12px",
+                                    lineHeight: 1.5,
+                                }}>
+                                    {error}
+                                </div>
+                            )}
+
+                            <div style={{ display: "flex", gap: 10, marginTop: 2 }}>
+                                <button
+                                    type="button"
+                                    onClick={onClose}
+                                    style={{
+                                        flex: 1, padding: "10px",
+                                        background: NL.subtle,
+                                        border: `1px solid ${NL.borderMid}`,
+                                        borderRadius: 8,
+                                        color: NL.secondary,
+                                        fontSize: 13, fontWeight: 600,
+                                        fontFamily: "'Inter', system-ui, sans-serif",
+                                        cursor: "pointer",
+                                    }}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={loading}
+                                    style={{
+                                        flex: 2, padding: "10px",
+                                        background: NL.accent,
+                                        border: "none",
+                                        borderRadius: 8,
+                                        color: "#0d1a18",
+                                        fontSize: 13, fontWeight: 700,
+                                        fontFamily: "'Inter', system-ui, sans-serif",
+                                        cursor: loading ? "not-allowed" : "pointer",
+                                        opacity: loading ? 0.6 : 1,
+                                        display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                                    }}
+                                >
+                                    {loading ? <><Spinner size={13} /> Sending…</> : "Send reset link"}
+                                </button>
+                            </div>
+                        </form>
+                    )}
+
+                    {sent && (
+                        <button
+                            onClick={onClose}
+                            style={{
+                                width: "100%", padding: "10px",
+                                background: NL.subtle,
+                                border: `1px solid ${NL.borderMid}`,
+                                borderRadius: 8,
+                                color: NL.secondary,
+                                fontSize: 13, fontWeight: 600,
+                                fontFamily: "'Inter', system-ui, sans-serif",
+                                cursor: "pointer",
+                            }}
+                        >
+                            Close
+                        </button>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+}
+
 export default function LoginPage() {
     const history = useHistory();
     const [email, setEmail] = useState("");
@@ -38,6 +238,7 @@ export default function LoginPage() {
     const [loading, setLoading] = useState(false);
     const [checking, setChecking] = useState(true);
     const [error, setError] = useState("");
+    const [showReset, setShowReset] = useState(false);
 
     useEffect(() => {
         if (!auth) { setChecking(false); return; }
@@ -102,6 +303,8 @@ export default function LoginPage() {
 
     return (
         <Layout>
+            {showReset && <ForgotPasswordModal onClose={() => setShowReset(false)} />}
+
             <div style={{
                 minHeight: "100vh",
                 display: "flex", alignItems: "center", justifyContent: "center",
@@ -178,6 +381,20 @@ export default function LoginPage() {
                                     {error}
                                 </div>
                             )}
+
+                            <div style={{ textAlign: "right", marginTop: -8 }}>
+                                <button
+                                    type="button"
+                                    onClick={() => setShowReset(true)}
+                                    style={{
+                                        background: "none", border: "none", padding: 0,
+                                        fontSize: 12, color: NL.secondary,
+                                        cursor: "pointer", textDecoration: "underline",
+                                    }}
+                                >
+                                    Forgot password?
+                                </button>
+                            </div>
 
                             <button
                                 type="submit"
