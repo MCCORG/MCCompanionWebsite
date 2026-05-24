@@ -18,63 +18,81 @@ const NL = {
 
 const sections = [
   {
-    title: "1. Use of the Application",
-    content: "You may use NetherLink for lawful purposes only. You agree not to use the app to connect to servers that violate Minecraft's Terms of Service or engage in illegal activities. You are responsible for ensuring you have permission to connect to any server you access through NetherLink.",
-  },
-  {
-    title: "2. Server Listings",
-    content: "The featured servers list is provided as a community resource. We do not endorse, verify, or control the content of third-party Minecraft servers. Server owners are solely responsible for their server's content, rules, and compliance with applicable laws. We reserve the right to remove servers from our featured list without notice.",
-  },
-  {
-    title: "3. No Warranty",
-    content: "NetherLink is provided \"as is\" without warranties of any kind. We do not guarantee:",
+    title: "1. Eligibility & Age Requirements",
+    content: "NetherLink is designed to be enjoyed by players of all ages. The following rules apply based on age:",
     list: [
-      "Uninterrupted or error-free operation",
-      "Compatibility with all network configurations",
-      "Connection stability to third-party servers",
-      "Availability of featured servers",
+      "13 and older: you may create your own account and use all features of the App.",
+      "Under 13 (or under 16 in the EU/EEA): you may use the App only if a parent or legal guardian creates an account on your behalf, actively supervises your use, and agrees to these Terms.",
+      "Parents and guardians: by creating an account for your child, you take full responsibility for their use of the App, their content, and their compliance with these Terms.",
+    ],
+    footer: "If we become aware that an account was created by a child under 13 without parental consent, we will suspend the account and delete the associated data. Parents can contact us at support@netherlink.net to manage or remove their child's account.",
+  },
+  {
+    title: "2. Your Account",
+    content: "To access certain features, you must create an account. You (or your parent/guardian) are responsible for:",
+    list: [
+      "Keeping your credentials secure and not sharing them with others",
+      "All activity that occurs under your account",
+      "Choosing a username that is between 3–20 characters, contains only letters, numbers, and underscores, and does not impersonate another person or brand",
+      "Notifying us immediately at support@netherlink.net if you suspect unauthorised access to your account",
+    ],
+    footer: "Each person may maintain only one account. Creating multiple accounts to circumvent a ban or other restriction is prohibited.",
+  },
+  {
+    title: "3. Acceptable Use",
+    content: "You agree NOT to:",
+    list: [
+      "Use the App for any unlawful purpose or in violation of any applicable laws",
+      "Harass, threaten, intimidate, or abuse other users",
+      "Send spam, unsolicited messages, or promotional content to other users",
+      "Distribute malware, viruses, or other malicious code through the App",
+      "Attempt to gain unauthorised access to our servers, databases, or other users' accounts",
+      "Reverse-engineer, decompile, or disassemble any part of the App",
+      "Use automated tools, bots, or scripts to interact with the App or its services",
+      "Abuse or attempt to circumvent rate limits or other technical safeguards",
+      "Impersonate any person, entity, or NetherLink staff member",
+      "Use the App to facilitate cheating, griefing, or other disruptive behaviour in Minecraft or on third-party servers",
     ],
   },
   {
-    title: "4. Limitation of Liability",
-    content: "We are not responsible for any damages, data loss, or issues arising from your use of NetherLink, including but not limited to connection problems, server bans, or interaction with third-party servers. Use the app at your own risk.",
-  },
-  {
-    title: "5. Intellectual Property",
-    content: "NetherLink and its source code are the intellectual property of the development team. The app is provided free of charge for personal use. You may not reverse engineer, modify, or redistribute the app without explicit permission. Server banners and data provided by third parties remain the property of their respective owners.",
-  },
-  {
-    title: "6. Minecraft and Microsoft",
-    content: "NetherLink is an independent project and is not affiliated with, endorsed by, or sponsored by Mojang Studios, Microsoft Corporation, or Minecraft. \"Minecraft\" is a trademark of Microsoft Corporation.",
-  },
-  {
-    title: "7. User Conduct",
-    content: "You agree not to:",
+    title: "4. Console Connect (Relay Service)",
+    content: "The Console Connect relay feature is provided to help you connect your console to Minecraft servers. You may not use it to:",
     list: [
-      "Use the app to attack, exploit, or disrupt servers or networks",
-      "Attempt to circumvent server bans or access restrictions",
-      "Share or distribute malicious server addresses",
-      "Violate any applicable laws or regulations",
+      "Connect to servers in violation of those servers' own rules or terms",
+      "Conduct denial-of-service attacks or other harmful network activity",
+      "Circumvent server-side bans or IP restrictions with malicious intent",
     ],
+    footer: "We do not endorse, verify, or control the content or rules of third-party Minecraft servers. Server owners are solely responsible for their server's content and compliance with applicable laws.",
   },
   {
-    title: "8. Open Source",
-    content: "NetherLink is open-source software. The source code is available on GitHub for review and contribution. By contributing code or suggestions, you grant us the right to use and distribute your contributions under the project's license.",
+    title: "5. User-Generated Content",
+    content: "You are solely responsible for any content you submit through the App, including direct messages, profile information, usernames, and linked gaming accounts. Content must not:",
+    list: [
+      "Be illegal, defamatory, or fraudulent",
+      "Contain hate speech or discrimination based on race, ethnicity, religion, gender, sexual orientation, disability, or nationality",
+      "Be sexually explicit or contain graphic violence",
+      "Violate the intellectual property rights of any third party",
+    ],
+    footer: "We reserve the right to remove content and suspend or terminate accounts that violate these Terms, at our sole discretion, without prior notice.",
   },
   {
-    title: "9. Modifications to Terms",
-    content: "We reserve the right to modify these terms at any time. Changes will be posted on this page with an updated revision date. Continued use of the app after changes constitutes acceptance of the new terms.",
+    title: "6. Reporting & Moderation",
+    content: "If you encounter content or behaviour that violates these Terms, you can report it using the in-app reporting feature. We review all reports and may take action including warnings, content removal, temporary suspension, or permanent bans. All moderation decisions are final. You may appeal a decision by contacting support@netherlink.net.",
   },
   {
-    title: "10. Contact",
-    content: "For questions, concerns, or support regarding NetherLink, please join our Discord community or open an issue on our GitHub repository.",
+    title: "7. Account Suspension & Termination",
+    content: "We may suspend or terminate your account at any time, with or without notice, if we believe you have violated these Terms or if your account poses a risk to other users or our services. In serious cases (e.g., illegal activity), we may report the matter to relevant authorities. You may delete your account at any time from within the App (Profile → Settings → Delete Account). Deletion is permanent and irreversible.",
   },
   {
-    title: "11. Featured Server Slots (Paid Service)",
-    content: "NetherLink offers the option to feature your server in the application for a monthly fee. The following conditions apply:",
+    title: "8. Server Listings & Featured Servers",
+    content: "The featured servers list is provided as a community resource. We do not endorse, verify, or control the content of third-party Minecraft servers. We reserve the right to remove servers from our featured list at any time without notice.",
+  },
+  {
+    title: "9. Featured Server Slots (Paid Service)",
+    content: "NetherLink offers the option to feature your server in the App for a monthly fee. The following conditions apply:",
     list: [
       "Payment is collected securely via Stripe on a recurring monthly basis.",
-      "You may cancel your slot at any time; simply notify us on Discord or by email. Your slot will remain active until the end of your paid period.",
+      "You may cancel your slot at any time by notifying us on Discord or by email. Your slot will remain active until the end of your paid billing period.",
       "If your payment cannot be processed, the slot will remain active until the end of your current billing month, after which your featured server will be removed.",
       "Refunds: We offer a satisfaction guarantee. If you are not satisfied, you may request a full refund for your current month, no questions asked.",
       "All agreements and custom arrangements are discussed personally via Discord (jens.co) or email (see contact page).",
@@ -82,15 +100,62 @@ const sections = [
     ],
   },
   {
-    title: "12. Server Metrics and Monitoring",
-    content: "NetherLink collects aggregate server-level metrics to improve service quality and reliability. These metrics relate to the Minecraft servers that users connect to and do not include personal user identifiers.",
+    title: "10. Server Metrics and Monitoring",
+    content: "NetherLink collects aggregate server-level metrics to improve service quality and reliability. These metrics do not contain personal user data.",
     list: [
-      "What we collect: server address (IP/hostname), server port, a server ID or name (if available), connection timestamps, and aggregated counts.",
-      "Purpose: service monitoring, troubleshooting, improving featured server lists, security analysis, and general usage statistics.",
-      "No personal data: the collected metrics are not tied to individual users or devices and do not contain PII.",
-      "Storage and retention: metrics may be stored on our backend for up to 12 months unless otherwise specified.",
-      "Backend-level collection: metrics collection occurs on our backend infrastructure and cannot be disabled by users via the app.",
-      "Contact for concerns: if you have concerns about metrics related to a server you own, contact us and we will review deletion requests on a case-by-case basis.",
+      "What we collect: server address (IP/hostname), server port, connection timestamps, and aggregated counts.",
+      "Purpose: service monitoring, troubleshooting, improving featured server lists, and general usage analytics.",
+      "No personal data: metrics are not tied to individual users or devices.",
+      "Storage and retention: metrics are stored on our backend and automatically deleted after 90 days.",
+      "Contact for concerns: if you own a server and require removal or redaction of metrics, contact us and we will review your request.",
+    ],
+  },
+  {
+    title: "11. Intellectual Property",
+    content: "All content, design, code, logos, and trademarks in the App are the property of Netherdev unless otherwise stated. You may not reproduce, distribute, or create derivative works from any part of the App without our prior written consent. NetherLink is an independent project and is not affiliated with, endorsed by, or sponsored by Mojang Studios or Microsoft Corporation. \"Minecraft\" is a trademark of Microsoft Corporation.",
+  },
+  {
+    title: "12. Third-Party Services",
+    content: "The App integrates with third-party services including Google Firebase, Microsoft/Xbox, and Mojang. Your use of those services is subject to their own terms and privacy policies. We are not responsible for the content, practices, or policies of any third-party services or Minecraft servers you connect to through the App.",
+  },
+  {
+    title: "13. Disclaimer of Warranties",
+    content: "The App is provided \"as is\" and \"as available\" without warranties of any kind. We do not guarantee:",
+    list: [
+      "Uninterrupted or error-free operation",
+      "Compatibility with all network configurations",
+      "Connection stability to third-party servers",
+      "Availability of featured servers or any specific feature",
+    ],
+    footer: "Your use of the App is at your sole risk.",
+  },
+  {
+    title: "14. Limitation of Liability",
+    content: "To the fullest extent permitted by applicable law, Netherdev shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including but not limited to:",
+    list: [
+      "Loss of data or messages",
+      "Service interruptions or downtime",
+      "Unauthorised access to your account or data",
+      "Damages arising from interaction with third-party servers or services",
+    ],
+    footer: "Our total liability to you for any claim arising out of or related to these Terms or the App shall not exceed the amount you have paid us in the past twelve (12) months.",
+  },
+  {
+    title: "15. Governing Law",
+    content: "These Terms are governed by and construed in accordance with the laws of Belgium, without regard to conflict of law principles. Any disputes arising from these Terms shall be subject to the exclusive jurisdiction of the courts of Belgium.",
+  },
+  {
+    title: "16. Changes to These Terms",
+    content: "We may update these Terms from time to time. If we make material changes, we will notify you via an in-app notice. The 'Last updated' date at the top of this document reflects the most recent version. Continued use of the App after changes constitutes your acceptance of the updated Terms.",
+  },
+  {
+    title: "17. Contact",
+    content: "For questions, concerns, or support regarding NetherLink, please contact us:",
+    list: [
+      "Email: support@netherlink.net",
+      "Privacy inquiries: privacy@netherlink.net",
+      "Discord: discord.gg/xvaNzE35Rs",
+      "Website: netherlink.net",
     ],
   },
 ];
@@ -133,6 +198,9 @@ function Section({ section, index }) {
             ))}
           </ul>
         )}
+        {section.footer && (
+          <p style={{ color: NL.secondary, fontSize: 13, lineHeight: 1.7, marginTop: 12, marginBottom: 0 }}>{section.footer}</p>
+        )}
       </div>
     </motion.section>
   );
@@ -167,7 +235,7 @@ export default function Terms() {
             }}>Terms of Service</h1>
             <p style={{ fontSize: 14, color: NL.secondary, lineHeight: 1.6, margin: 0, maxWidth: 480, marginInline: "auto" }}>
               By accessing or using <span style={{ color: NL.text, fontWeight: 500 }}>NetherLink</span>, you agree to these terms.
-              Please read them carefully.
+              Please read them carefully before using the App.
             </p>
           </motion.div>
 
@@ -178,7 +246,7 @@ export default function Terms() {
           </div>
 
           <p style={{ fontSize: 11, color: NL.muted, textAlign: "right", marginBottom: 32 }}>
-            Last updated: March 24, 2026
+            Last updated: May 24, 2026
           </p>
 
           <div style={{ textAlign: "center" }}>

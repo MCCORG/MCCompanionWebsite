@@ -18,56 +18,153 @@ const NL = {
 
 const sections = [
   {
-    title: "1. Application Data",
-    content: "NetherLink stores data locally on your device to enhance your experience:",
+    title: "1. Who We Are",
+    content: "NetherLink is developed and operated by Netherdev. If you have any questions about this Privacy Policy or your data, you can reach us at privacy@netherlink.net or via our Discord community.",
+  },
+  {
+    title: "2. Account Information",
+    content: "When you create an account, we collect the following information:",
     list: [
-      "Your saved server list (IP addresses, ports, custom names)",
-      "Bedrock profile information (usernames and display names)",
-      "App preferences and settings",
+      "Email address — used to identify your account and send important notices",
+      "Password — stored securely and encrypted by Firebase Authentication; we never have access to your plain-text password",
+      "Username — a unique name you choose (3–20 characters)",
+      "Display name — an optional name shown to other users",
+      "Profile avatar — an optional profile picture URL you provide",
+      "Biography — an optional short text you write about yourself",
     ],
-    footer: "All data is stored locally on your device. We do not collect, transmit, or store any personal information on external servers.",
   },
   {
-    title: "2. Network Activity",
-    content: "NetherLink acts as a UDP proxy between your console and remote Minecraft servers. The app only processes game traffic necessary for connectivity and does not log, monitor, or store any gameplay data, chat messages, or player information.",
-  },
-  {
-    title: "3. Featured Servers List",
-    content: "The app downloads a public list of featured servers from our GitHub repository and backend API. This list contains only server addresses, ports, and optional banner images. No personal data is transmitted when fetching this list.",
-  },
-  {
-    title: "4. Data Security",
-    content: "Since all data is stored locally on your device, you maintain full control over your information. We recommend securing your device with a password or biometric authentication to protect your saved servers and profiles.",
-  },
-  {
-    title: "5. Third-Party Services",
-    content: "NetherLink does not integrate third-party analytics, advertising, or tracking services. App Store and Google Play may collect standard installation and usage metrics according to their own privacy policies.",
-  },
-  {
-    title: "6. Children's Privacy",
-    content: "NetherLink does not knowingly collect any personal information from children. All data remains on the user's device and is never transmitted to external servers.",
-  },
-  {
-    title: "7. Data Removal",
-    content: "You can delete all saved data at any time by uninstalling the app or clearing app data through your device settings. Since no data is stored on our servers by default, uninstalling the app completely removes all local information.",
-  },
-  {
-    title: "8. Changes to This Policy",
-    content: "We may update this privacy policy from time to time. Any changes will be posted on this page with an updated revision date.",
-  },
-  {
-    title: "9. Server Metrics and Aggregated Usage Statistics",
-    content: "NetherLink collects aggregate, server-level metrics to help improve the service and monitor reliability. These metrics do not contain personal user data.",
+    title: "3. Linked Gaming Accounts",
+    content: "If you choose to link gaming accounts, we collect the following. Linking is entirely optional and you can unlink accounts at any time.",
     list: [
-      "What we collect: server address (IP/hostname), server port, server name or ID (if available), connection timestamps, and aggregated counts such as total connections and connections per server.",
-      "How we use it: to detect connection issues, improve featured server lists, capacity planning, and general service analytics.",
-      "No PII: metrics are not tied to individual users or devices and do not contain personally identifiable information.",
-      "Storage and retention: metrics may be stored on our backend and are retained by default for up to 12 months.",
-      "Security: we protect metrics with appropriate technical and organizational measures.",
-      "Backend collection and disabling: metrics collection is performed at our backend infrastructure level and cannot be disabled by users from the app.",
-      "Requests and remediation: if you are the owner of a server and require removal or redaction of metrics, contact us via Discord or email.",
-      "Third parties: we do not provide raw metrics that link server addresses to individual users to third parties.",
+      "Xbox / Bedrock: Xbox Gamertag and Xbox User ID (XUID)",
+      "Java Edition: Minecraft Java username and UUID",
     ],
+  },
+  {
+    title: "4. Social & Activity Data",
+    content: "To provide social features, we collect and store:",
+    list: [
+      "Friends list — the users you have added, accepted, blocked, or been blocked by",
+      "Online presence — your last seen timestamp and, when actively playing, the server IP and port you are connected to (only visible to accepted friends, unless you enable Appear Offline)",
+      "Direct messages — the full content of messages sent between you and your friends",
+    ],
+  },
+  {
+    title: "5. Device & Notification Data",
+    content: "When you enable push notifications, we store a Firebase Cloud Messaging (FCM) token linked to your account. This token is a device identifier used solely to deliver push notifications (new messages, friend requests, friends coming online) to your device. It is removed when you delete your account or uninstall the app.",
+  },
+  {
+    title: "6. Connection & Usage Data",
+    content: "When you use the relay feature to connect to a Minecraft server, we log aggregate data for service analytics:",
+    list: [
+      "Destination server IP address and port",
+      "Connection timestamp and duration",
+      "Total connection counts per server",
+    ],
+    footer: "This data is not linked to your user account and is automatically deleted after 90 days. It is used to monitor service reliability and generate aggregated usage statistics.",
+  },
+  {
+    title: "7. Report Data",
+    content: "If you submit a report about another user, we store the reporter's user ID, the reported user's ID, the reason, any optional context you provided, and the date of the report. This information is retained to protect the integrity of our community.",
+  },
+  {
+    title: "8. How We Use Your Information",
+    content: "We use your information exclusively to:",
+    list: [
+      "Provide and operate the App — account management, relay connections, skin viewer, wiki, player lookup",
+      "Enable social features — friend requests, direct messaging, online presence, push notifications",
+      "Ensure security — detecting abuse, rate-limit violations, and enforcing our Terms of Service",
+      "Improve the App — aggregated, anonymised analytics on relay usage and popular servers",
+      "Respond to reports — moderating content and enforcing community rules",
+    ],
+    footer: "We do not use your data for advertising purposes, and we do not sell your data to third parties.",
+  },
+  {
+    title: "9. Information Visible to Other Users",
+    content: "The following information is visible to other users within the App:",
+    list: [
+      "Your username, display name, and avatar",
+      "Your online status and, if applicable, the Minecraft server you are currently connected to — visible only to accepted friends unless Appear Offline is enabled",
+      "Your linked Gamertag and Java username (shown on your public profile)",
+    ],
+  },
+  {
+    title: "10. Third-Party Service Providers",
+    content: "We use the following third-party services that may process your data. These providers act as data processors and are bound by their own privacy policies.",
+    list: [
+      "Google Firebase — authentication and push notifications (firebase.google.com/support/privacy)",
+      "Microsoft / Xbox — Bedrock account linking via device code flow (privacy.microsoft.com)",
+      "Mojang / Microsoft — Java account linking and player lookup (privacy.microsoft.com)",
+    ],
+    footer: "We do not share your data with any other third parties.",
+  },
+  {
+    title: "11. Data Retention",
+    content: "We retain your data for the following periods:",
+    list: [
+      "Account and profile data — until you delete your account",
+      "Direct messages — until you delete your account",
+      "Linked gaming accounts — until you unlink them or delete your account",
+      "Friends and social data — until you delete your account",
+      "FCM device tokens — until the app is uninstalled or you delete your account",
+      "Connection logs — automatically deleted after 90 days",
+      "Abuse and report records — retained indefinitely for moderation integrity",
+    ],
+  },
+  {
+    title: "12. Account Deletion",
+    content: "You can permanently delete your account at any time from within the App (Profile → Settings → Delete Account). Upon deletion, the following data is permanently and irreversibly removed:",
+    list: [
+      "Your account and profile data",
+      "All your direct messages (sent and received)",
+      "All your friend connections and requests",
+      "All your linked gaming accounts",
+      "All your FCM device tokens",
+    ],
+    footer: "Abuse and moderation reports that involve your account may be retained to protect the integrity of our community.",
+  },
+  {
+    title: "13. Your Rights",
+    content: "Depending on your location, you may have the following rights regarding your personal data:",
+    list: [
+      "Access — request a copy of the data we hold about you",
+      "Correction — update inaccurate data via in-app profile settings",
+      "Deletion — permanently delete your account and all associated data",
+      "Portability — request your data in a portable format",
+      "Objection — object to certain uses of your data",
+    ],
+    footer: "EU/EEA users (GDPR): We process your data based on contractual necessity (to provide the services you signed up for), legitimate interests (security and analytics), and your consent (for optional features such as push notifications). To exercise any of your rights, contact us at privacy@netherlink.net.",
+  },
+  {
+    title: "14. Push Notifications",
+    content: "The App may send you push notifications for new direct messages, incoming friend requests, accepted friend requests, and friends coming online. You can disable push notifications at any time in your device's system settings without affecting your ability to use the App.",
+  },
+  {
+    title: "15. Children's Privacy & Parental Consent",
+    content: "NetherLink can be used by players of all ages. For children under 13 (or under 16 in the EU/EEA), the following rules apply:",
+    list: [
+      "A parent or legal guardian must create the account on the child's behalf.",
+      "By creating an account for a child, the parent or guardian confirms they have read this Privacy Policy and consents to the collection and use of data as described herein.",
+      "Parents and guardians are responsible for supervising their child's use of the App and any content shared through it.",
+      "Parents can view, update, or delete their child's account at any time from within the App or by contacting us at privacy@netherlink.net.",
+    ],
+    footer: "If we become aware that an account belonging to a child under 13 was created without verifiable parental consent, we will suspend the account and promptly delete all associated data. If you believe this has occurred, please contact us at privacy@netherlink.net.",
+  },
+  {
+    title: "16. Security",
+    content: "We take appropriate technical and organisational measures to protect your data, including:",
+    list: [
+      "Encrypted authentication tokens via Firebase Auth",
+      "HTTPS/TLS for all API communication",
+      "Token-based authentication for WebSocket connections",
+      "Rate limiting and IP-based abuse detection",
+    ],
+    footer: "No method of transmission over the Internet is 100% secure. While we strive to protect your data, we cannot guarantee absolute security.",
+  },
+  {
+    title: "17. Changes to This Policy",
+    content: "We may update this Privacy Policy from time to time. If we make material changes, we will notify you via an in-app notice or push notification. The 'Last updated' date at the top of this document reflects the most recent version. Continued use of the App after changes constitutes acceptance of the updated policy.",
   },
 ];
 
@@ -146,7 +243,7 @@ export default function Privacy() {
             }}>Privacy Policy</h1>
             <p style={{ fontSize: 14, color: NL.secondary, lineHeight: 1.6, margin: 0, maxWidth: 480, marginInline: "auto" }}>
               At <span style={{ color: NL.text, fontWeight: 500 }}>NetherLink</span>, we are committed to protecting your privacy.
-              This policy outlines what information we collect and how we use it.
+              This policy explains what data we collect, why we collect it, and how we protect it.
             </p>
           </motion.div>
 
@@ -157,7 +254,7 @@ export default function Privacy() {
           </div>
 
           <p style={{ fontSize: 11, color: NL.muted, textAlign: "right", marginBottom: 32 }}>
-            Last updated: March 24, 2026
+            Last updated: May 24, 2026
           </p>
 
           <div style={{ textAlign: "center" }}>
