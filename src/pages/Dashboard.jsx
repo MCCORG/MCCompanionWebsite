@@ -34,7 +34,8 @@ const REGION_BASES = {
   US: "https://usbackend.netherlink.net",
 };
 const EVENTS_CAP = 1500;
-const TABS = [{ id: "overview", label: "Overview" }, { id: "partners", label: "Partners" }];
+const TABS = [{ id: "overview", label: "Overview" }, { id: "partners", label: "Partners" }, { id: "moderation", label: "Moderation" }];
+const REPORT_STATUSES = ['pending', 'reviewed', 'dismissed', 'actioned'];
 
 async function dbFetch(path, options = {}) {
   for (const base of [REGION_BASES.EU, REGION_BASES.US]) {
@@ -581,6 +582,373 @@ function PartnersPanel({ apiBase }) {
   );
 }
 
+function ReportExpanded({ report, apiBase, onStatusChange }) {
+  const [conv, setConv] = useState(null);
+  const [convLoading, setConvLoading] = useState(false);
+  const [convError, setConvError] = useState(null);
+  const [modStatus, setModStatus] = useState(null);
+  const [modLoading, setModLoading] = useState(true);
+  const [banReason, setBanReason] = useState("");
+  const [acting, setActing] = useState(null);
+
+  const reportedUid = report.reported_uid;
+  const reportedName = report.reported_username || reportedUid;
+
+  useEffect(() => {
+    async function loadMod() {
+      setModLoading(true);
+      try {
+        const token = await fetchIdToken();
+        const res = await fetch(`${apiBase}/api/admin/users/${reportedUid}/moderation`, { headers: { Authorization: `Bearer ${token}` } });
+        if (!res.ok) throw new Error(`${res.status}`);
+        setModStatus(await res.json());
+      } catch (_) { setModStatus({}); }
+      finally { setModLoading(false); }
+    }
+    loadMod();
+  }, [apiBase, reportedUid]);
+
+  async function loadConversation() {
+    setConvLoading(true); setConvError(null);
+    try {
+      const token = await fetchIdToken();
+      const res = await fetch(`${apiBase}/api/admin/users/${report.reporter_uid}/conversation/${reportedUid}?limit=50`, { headers: { Authorization: `Bearer ${token}` } });
+      if (!res.ok) throw new Error(`${res.status}`);
+      setConv((await res.json()).messages || []);
+    } catch (e) { setConvError("Failed: " + e.message); }
+    finally { setConvLoading(false); }
+  }
+
+  async function restrictChat(hours) {
+    if (!confirm(`Chat restrict ${reportedName} for ${hours}h?`)) return;
+    setActing("restrict");
+    try {
+      const token = await fetchIdToken();
+      const res = await fetch(`${apiBase}/api/admin/users/${reportedUid}/chat-restrict`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ hours }),
+      });
+      if (!res.ok) throw new Error(`${res.status}`);
+      const { until } = await res.json();
+      setModStatus(p => ({ ...p, chatRestrictedUntil: until }));
+    } catch (e) { alert("Failed: " + e.message); }
+    finally { setActing(null); }
+  }
+
+  async function liftRestriction() {
+    setActing("lift");
+    try {
+      const token = await fetchIdToken();
+      const res = await fetch(`${apiBase}/api/admin/users/${reportedUid}/chat-restrict`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
+      if (!res.ok) throw new Error(`${res.status}`);
+      setModStatus(p => ({ ...p, chatRestrictedUntil: null }));
+    } catch (e) { alert("Failed: " + e.message); }
+    finally { setActing(null); }
+  }
+
+  async function banAccount() {
+    if (!confirm(`Ban account for ${reportedName}? This disables their Firebase login.`)) return;
+    setActing("ban");
+    try {
+      const token = await fetchIdToken();
+      const res = await fetch(`${apiBase}/api/admin/users/${reportedUid}/ban`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ reason: banReason.trim() || `Actioned from report #${report.id}` }),
+      });
+      if (!res.ok) throw new Error(`${res.status}`);
+      setModStatus(p => ({ ...p, bannedAt: new Date().toISOString(), banReason: banReason.trim() }));
+      onStatusChange(report.id, "actioned");
+    } catch (e) { alert("Failed: " + e.message); }
+    finally { setActing(null); }
+  }
+
+  async function unbanAccount() {
+    if (!confirm(`Unban account for ${reportedName}?`)) return;
+    setActing("unban");
+    try {
+      const token = await fetchIdToken();
+      const res = await fetch(`${apiBase}/api/admin/users/${reportedUid}/ban`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
+      if (!res.ok) throw new Error(`${res.status}`);
+      setModStatus(p => ({ ...p, bannedAt: null, banReason: null }));
+    } catch (e) { alert("Failed: " + e.message); }
+    finally { setActing(null); }
+  }
+
+  const isBanned = !!modStatus?.bannedAt;
+  const isRestricted = modStatus?.chatRestrictedUntil && new Date(modStatus.chatRestrictedUntil) > new Date();
+
+  return (
+    <div style={{ borderTop: `1px solid ${NL.border}`, background: "rgba(0,0,0,0.12)", padding: "12px 14px", display: "flex", flexDirection: "column", gap: 12 }}>
+      <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+        <div style={{ flex: 1, minWidth: 200, display: "flex", flexDirection: "column", gap: 5, fontSize: 12 }}>
+          <div><span style={{ color: NL.muted }}>Reporter: </span><span style={{ fontFamily: mono, color: NL.secondary }}>{report.reporter_username || report.reporter_uid}</span></div>
+          <div><span style={{ color: NL.muted }}>Reported: </span><span style={{ fontFamily: mono, color: NL.secondary }}>{report.reported_username || report.reported_uid}</span></div>
+          {report.message_id && <div><span style={{ color: NL.muted }}>Message ID: </span><span style={{ fontFamily: mono, color: NL.secondary }}>#{report.message_id}</span></div>}
+          {report.additional_info && <div><span style={{ color: NL.muted }}>Info: </span><span style={{ color: NL.text }}>{report.additional_info}</span></div>}
+        </div>
+
+        <div style={{ flex: 1, minWidth: 220, display: "flex", flexDirection: "column", gap: 8 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color: NL.muted, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+              Actions · {reportedName}
+            </span>
+            {modLoading ? <Spinner size={10} /> : (
+              isBanned ? <Badge color="danger">Banned</Badge>
+              : isRestricted ? <Badge color="warn">Chat restricted</Badge>
+              : <Badge color="success">Clean</Badge>
+            )}
+          </div>
+
+          {isRestricted && (
+            <p style={{ fontSize: 10, color: NL.warn, margin: 0 }}>
+              Restricted until {new Date(modStatus.chatRestrictedUntil).toLocaleString()}
+            </p>
+          )}
+          {isBanned && modStatus?.banReason && (
+            <p style={{ fontSize: 10, color: NL.danger, margin: 0 }}>Reason: {modStatus.banReason}</p>
+          )}
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 4, flexWrap: "wrap" }}>
+              <span style={{ fontSize: 10, color: NL.muted, flexShrink: 0 }}>Chat restrict:</span>
+              {[{ label: "1h", h: 1 }, { label: "24h", h: 24 }, { label: "7d", h: 168 }, { label: "30d", h: 720 }].map(({ label, h }) => (
+                <Btn key={label} size="sm" variant="secondary" disabled={!!acting || isBanned} onClick={() => restrictChat(h)}>{label}</Btn>
+              ))}
+              {isRestricted && (
+                <Btn size="sm" variant="ghost" disabled={!!acting} onClick={liftRestriction}>
+                  {acting === "lift" ? <Spinner size={10} /> : "Lift"}
+                </Btn>
+              )}
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <input
+                placeholder="Ban reason (optional)"
+                value={banReason}
+                onChange={e => setBanReason(e.target.value)}
+                style={{ flex: 1, padding: "5px 8px", borderRadius: 7, border: `1px solid ${NL.border}`, background: NL.subtle, color: NL.text, fontSize: 11, fontFamily: font, outline: "none" }}
+              />
+              {!isBanned ? (
+                <Btn size="sm" variant="danger" disabled={!!acting} onClick={banAccount}>
+                  {acting === "ban" ? <Spinner size={10} /> : <><IC.Ban /> Ban account</>}
+                </Btn>
+              ) : (
+                <Btn size="sm" variant="success" disabled={!!acting} onClick={unbanAccount}>
+                  {acting === "unban" ? <Spinner size={10} /> : "Unban"}
+                </Btn>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+          <span style={{ fontSize: 11, fontWeight: 700, color: NL.muted, textTransform: "uppercase", letterSpacing: "0.06em" }}>Conversation</span>
+          {conv === null && !convLoading && (
+            <Btn size="sm" variant="secondary" onClick={loadConversation}>Load chat history</Btn>
+          )}
+          {conv !== null && iconBtn(loadConversation, "Refresh", <IC.Refresh />)}
+        </div>
+        {convLoading && <div style={{ display: "flex", alignItems: "center", gap: 6, color: NL.muted, fontSize: 12 }}><Spinner size={12} /> Loading…</div>}
+        {convError && <p style={{ fontSize: 11, color: NL.danger, margin: 0 }}>{convError}</p>}
+        {conv !== null && !convLoading && (
+          conv.length === 0 ? (
+            <p style={{ fontSize: 12, color: NL.muted, margin: 0 }}>No messages between these users.</p>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: 4, maxHeight: 300, overflowY: "auto", padding: "4px 0" }}>
+              {conv.map(msg => {
+                const isByReported = msg.senderUid === reportedUid;
+                return (
+                  <div key={msg.id} style={{ display: "flex", flexDirection: "column", alignItems: isByReported ? "flex-start" : "flex-end", gap: 2 }}>
+                    <div style={{
+                      maxWidth: "80%", padding: "6px 10px", borderRadius: 10,
+                      background: isByReported ? NL.dangerDim : NL.accentDim,
+                      border: `1px solid ${isByReported ? NL.dangerBorder : NL.accentBorder}`,
+                      fontSize: 12, color: NL.text, wordBreak: "break-word",
+                    }}>
+                      {msg.content}
+                    </div>
+                    <span style={{ fontSize: 9, color: NL.muted, paddingLeft: 4, paddingRight: 4 }}>
+                      {isByReported ? reportedName : (report.reporter_username || "reporter")} · {new Date(msg.createdAt).toLocaleTimeString()}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          )
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ModerationPanel({ apiBase, bans, bansLoading, banError, loadBans, handleBan, handleUnban }) {
+  const [reports, setReports] = useState([]);
+  const [reportsLoading, setReportsLoading] = useState(true);
+  const [reportsError, setReportsError] = useState(null);
+  const [statusFilter, setStatusFilter] = useState("pending");
+  const [updatingReport, setUpdatingReport] = useState(null);
+  const [expandedReport, setExpandedReport] = useState(null);
+  const [banIpInput, setBanIpInput] = useState("");
+  const [banReasonInput, setBanReasonInput] = useState("");
+
+  const loadReports = useCallback(async () => {
+    setReportsLoading(true); setReportsError(null);
+    try {
+      const token = await fetchIdToken();
+      const qs = statusFilter !== "all" ? `?status=${statusFilter}` : "";
+      const res = await fetch(`${apiBase}/api/admin/reports${qs}`, { headers: { Authorization: `Bearer ${token}` } });
+      if (!res.ok) throw new Error(`${res.status}`);
+      setReports((await res.json()).reports || []);
+    } catch (e) { setReportsError("Failed: " + e.message); }
+    finally { setReportsLoading(false); }
+  }, [apiBase, statusFilter]);
+
+  useEffect(() => { loadReports(); }, [loadReports]);
+
+  async function setReportStatus(id, status) {
+    setUpdatingReport(id);
+    try {
+      const token = await fetchIdToken();
+      const res = await fetch(`${apiBase}/api/admin/reports/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ status }),
+      });
+      if (!res.ok) throw new Error(`${res.status}`);
+      setReports(prev => prev.map(r => r.id === id ? { ...r, status } : r));
+    } catch (e) { alert("Failed: " + e.message); }
+    finally { setUpdatingReport(null); }
+  }
+
+  const statusColors = { pending: "warn", reviewed: "blue", dismissed: "default", actioned: "danger" };
+  const reasonColors = { spam: "warn", harassment: "danger", inappropriate: "danger", other: "default" };
+
+  const inputStyle = { padding: "9px 12px", borderRadius: 9, border: `1px solid ${NL.borderMid}`, background: NL.subtle, color: NL.text, fontSize: 13, fontFamily: font, outline: "none", width: "100%", boxSizing: "border-box", transition: "border-color 0.15s" };
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+      <Card
+        title="User reports"
+        subtitle={`${reports.length} shown`}
+        action={
+          <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+            {iconBtn(loadReports, "Refresh", <IC.Refresh />)}
+            <div style={{ display: "flex", gap: 2, background: NL.subtle, borderRadius: 8, padding: 2, border: `1px solid ${NL.border}` }}>
+              {["all", ...REPORT_STATUSES].map(s => (
+                <button key={s} onClick={() => setStatusFilter(s)}
+                  style={{ padding: "4px 10px", fontSize: 11, fontWeight: 600, borderRadius: 6, border: "none", cursor: "pointer", fontFamily: font, background: statusFilter === s ? NL.accent : "transparent", color: statusFilter === s ? "#0d1a18" : NL.secondary, transition: "background 0.15s, color 0.15s" }}>
+                  {s.charAt(0).toUpperCase() + s.slice(1)}
+                </button>
+              ))}
+            </div>
+          </div>
+        }
+      >
+        {reportsLoading ? (
+          <div style={{ display: "flex", alignItems: "center", gap: 8, color: NL.muted, fontSize: 13, padding: "24px 0", justifyContent: "center" }}><Spinner /> Loading…</div>
+        ) : reportsError ? (
+          <p style={{ fontSize: 12, color: NL.danger, padding: "16px 0", textAlign: "center" }}>{reportsError}</p>
+        ) : reports.length === 0 ? (
+          <p style={{ fontSize: 13, color: NL.muted, textAlign: "center", padding: "32px 0" }}>No reports found.</p>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            {reports.map(r => {
+              const isExpanded = expandedReport === r.id;
+              return (
+                <div key={r.id} style={{ border: `1px solid ${NL.border}`, borderRadius: 10, background: NL.elevated, overflow: "hidden" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 12px", flexWrap: "wrap" }}>
+                    <span style={{ fontFamily: mono, fontSize: 11, color: NL.muted, flexShrink: 0 }}>#{r.id}</span>
+                    <Badge color={reasonColors[r.reason] || "default"}>{r.reason}</Badge>
+                    <Badge color={statusColors[r.status] || "default"}>{r.status}</Badge>
+                    <div style={{ flex: 1, minWidth: 120, display: "flex", flexDirection: "column", gap: 1 }}>
+                      <span style={{ fontSize: 12, color: NL.text }}>
+                        <span style={{ color: NL.muted }}>Reporter: </span>
+                        <span style={{ fontFamily: mono }}>{r.reporter_username || r.reporter_uid}</span>
+                        <span style={{ color: NL.muted }}> → </span>
+                        <span style={{ fontFamily: mono }}>{r.reported_username || r.reported_uid}</span>
+                      </span>
+                      <span style={{ fontSize: 10, color: NL.muted }}>{new Date(r.created_at).toLocaleString()}</span>
+                    </div>
+                    <div style={{ display: "flex", gap: 4, alignItems: "center", flexShrink: 0 }}>
+                      {r.status === "pending" && (
+                        <>
+                          <Btn size="sm" variant="success" disabled={updatingReport === r.id} onClick={() => setReportStatus(r.id, "actioned")}>
+                            {updatingReport === r.id ? <Spinner size={10} /> : "Action"}
+                          </Btn>
+                          <Btn size="sm" variant="secondary" disabled={updatingReport === r.id} onClick={() => setReportStatus(r.id, "reviewed")}>
+                            Review
+                          </Btn>
+                          <Btn size="sm" variant="ghost" disabled={updatingReport === r.id} onClick={() => setReportStatus(r.id, "dismissed")}>
+                            Dismiss
+                          </Btn>
+                        </>
+                      )}
+                      {r.status !== "pending" && (
+                        <Btn size="sm" variant="ghost" disabled={updatingReport === r.id} onClick={() => setReportStatus(r.id, "pending")}>
+                          Reopen
+                        </Btn>
+                      )}
+                      <button onClick={() => setExpandedReport(isExpanded ? null : r.id)}
+                        style={{ background: "none", border: "none", cursor: "pointer", color: NL.muted, fontSize: 10, padding: "2px 4px", fontFamily: mono }}>
+                        {isExpanded ? "▲" : "▼"}
+                      </button>
+                    </div>
+                  </div>
+                  {isExpanded && (
+                    <ReportExpanded
+                      report={r}
+                      apiBase={apiBase}
+                      onStatusChange={(id, status) => setReports(prev => prev.map(x => x.id === id ? { ...x, status } : x))}
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </Card>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+        <Card title="Ban IP" subtitle="Manually ban an IP address">
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <input placeholder="IP address" value={banIpInput} onChange={e => setBanIpInput(e.target.value)} onKeyDown={e => e.key === "Enter" && handleBan(banIpInput.trim(), banReasonInput.trim()).then(() => { setBanIpInput(""); setBanReasonInput(""); })} style={{ padding: "9px 12px", borderRadius: 9, border: `1px solid ${NL.borderMid}`, background: NL.subtle, color: NL.text, fontSize: 13, fontFamily: mono, outline: "none", width: "100%", boxSizing: "border-box" }} />
+            <input placeholder="Reason (optional)" value={banReasonInput} onChange={e => setBanReasonInput(e.target.value)} onKeyDown={e => e.key === "Enter" && handleBan(banIpInput.trim(), banReasonInput.trim()).then(() => { setBanIpInput(""); setBanReasonInput(""); })} style={{ padding: "9px 12px", borderRadius: 9, border: `1px solid ${NL.borderMid}`, background: NL.subtle, color: NL.text, fontSize: 13, fontFamily: font, outline: "none", width: "100%", boxSizing: "border-box" }} />
+            <Btn onClick={() => handleBan(banIpInput.trim(), banReasonInput.trim()).then(() => { setBanIpInput(""); setBanReasonInput(""); })} variant="danger" disabled={!banIpInput.trim()} style={{ justifyContent: "center" }}><IC.Ban /> Ban IP</Btn>
+            {banError && <p style={{ fontSize: 11, color: NL.danger, margin: 0 }}>{banError}</p>}
+          </div>
+        </Card>
+
+        <Card title="Active IP bans" subtitle={`${bans.length} total`} action={iconBtn(loadBans, "Refresh", <IC.Refresh />)}>
+          {bansLoading ? (
+            <div style={{ display: "flex", alignItems: "center", gap: 8, color: NL.muted, fontSize: 13, padding: "16px 0", justifyContent: "center" }}><Spinner /> Loading…</div>
+          ) : bans.length === 0 ? (
+            <p style={{ fontSize: 13, color: NL.muted, textAlign: "center", padding: "16px 0" }}>No active bans</p>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: 5, maxHeight: 280, overflowY: "auto" }}>
+              {bans.map(b => (
+                <div key={b.ip} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 10px", borderRadius: 8, background: NL.dangerDim, border: `1px solid ${NL.dangerBorder}` }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p style={{ fontFamily: mono, fontSize: 12, fontWeight: 600, color: NL.text, margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{b.ip}</p>
+                    <p style={{ fontSize: 10, color: NL.muted, margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{b.reason || "No reason"}</p>
+                  </div>
+                  <button onClick={() => handleUnban(b.ip)} style={{ fontSize: 11, padding: "4px 8px", borderRadius: 6, background: NL.elevated, border: `1px solid ${NL.border}`, color: NL.secondary, cursor: "pointer", fontFamily: font, flexShrink: 0, transition: "color 0.15s" }}
+                    onMouseEnter={e => e.currentTarget.style.color = NL.text}
+                    onMouseLeave={e => e.currentTarget.style.color = NL.secondary}
+                  >Unban</button>
+                </div>
+              ))}
+            </div>
+          )}
+        </Card>
+      </div>
+    </div>
+  );
+}
+
 export default function DashboardPage() {
   const history = useHistory();
 
@@ -617,8 +985,6 @@ export default function DashboardPage() {
 
   const [bans, setBans] = useState([]);
   const [bansLoading, setBansLoading] = useState(false);
-  const [banIpInput, setBanIpInput] = useState("");
-  const [banReasonInput, setBanReasonInput] = useState("");
   const [banError, setBanError] = useState(null);
 
   useEffect(() => {
@@ -786,7 +1152,6 @@ export default function DashboardPage() {
       if (!ok) { setBanError(`Failed: ${status}`); return; }
       await loadBans();
       setCurrentMap(prev => { const n = { ...prev }; delete n[ip]; return n; });
-      setBanIpInput(""); setBanReasonInput("");
     } catch (err) { setBanError(String(err)); }
   }
 
@@ -850,16 +1215,7 @@ export default function DashboardPage() {
         </div>
       </Card>
 
-      <Card title="Ban IP" subtitle="Manually ban an IP address">
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <input placeholder="IP address" value={banIpInput} onChange={e => setBanIpInput(e.target.value)} onKeyDown={e => e.key === "Enter" && handleBan(banIpInput.trim(), banReasonInput.trim())} style={{ ...inputStyle, fontFamily: mono }} />
-          <input placeholder="Reason (optional)" value={banReasonInput} onChange={e => setBanReasonInput(e.target.value)} onKeyDown={e => e.key === "Enter" && handleBan(banIpInput.trim(), banReasonInput.trim())} style={inputStyle} />
-          <Btn onClick={() => handleBan(banIpInput.trim(), banReasonInput.trim())} variant="danger" disabled={!banIpInput.trim()} style={{ justifyContent: "center" }}><IC.Ban /> Ban IP</Btn>
-          {banError && <p style={{ fontSize: 11, color: NL.danger, margin: 0 }}>{banError}</p>}
-        </div>
-      </Card>
-
-      <Card title="Active bans" subtitle={`${bans.length} total`} action={iconBtn(loadBans, "Refresh", <IC.Refresh />)}>
+      <Card title="Active bans" subtitle={`${bans.length} total`}>
         {bansLoading ? (
           <div style={{ display: "flex", alignItems: "center", gap: 8, color: NL.muted, fontSize: 13, padding: "16px 0", justifyContent: "center" }}><Spinner /> Loading…</div>
         ) : bans.length === 0 ? (
@@ -872,10 +1228,6 @@ export default function DashboardPage() {
                   <p style={{ fontFamily: mono, fontSize: 12, fontWeight: 600, color: NL.text, margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{b.ip}</p>
                   <p style={{ fontSize: 10, color: NL.muted, margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{b.reason || "No reason"}</p>
                 </div>
-                <button onClick={() => handleUnban(b.ip)} style={{ fontSize: 11, padding: "4px 8px", borderRadius: 6, background: NL.elevated, border: `1px solid ${NL.border}`, color: NL.secondary, cursor: "pointer", fontFamily: font, flexShrink: 0, transition: "color 0.15s" }}
-                  onMouseEnter={e => e.currentTarget.style.color = NL.text}
-                  onMouseLeave={e => e.currentTarget.style.color = NL.secondary}
-                >Unban</button>
               </div>
             ))}
           </div>
@@ -1016,6 +1368,18 @@ export default function DashboardPage() {
           </header>
 
           {activeTab === "partners" && <PartnersPanel apiBase={apiBase} />}
+
+          {activeTab === "moderation" && (
+            <ModerationPanel
+              apiBase={apiBase}
+              bans={bans}
+              bansLoading={bansLoading}
+              banError={banError}
+              loadBans={loadBans}
+              handleBan={handleBan}
+              handleUnban={handleUnban}
+            />
+          )}
 
           {activeTab === "overview" && (<>
             <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(3, 1fr)", gap: 10, marginBottom: 20 }}>
