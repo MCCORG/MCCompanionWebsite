@@ -253,7 +253,7 @@ export default function LoginPage() {
         try {
             const token = await u.getIdToken();
             const res = await fetch(
-                `${process.env.REACT_APP_API_BASE || "https://eubackend.netherlink.net"}/api/admin/members`,
+                `${process.env.REACT_APP_API_BASE || "https://eubackend.mccompanion.net"}/api/admin/members`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             history.replace(res.status === 200 ? "/dashboard" : "/partner");
@@ -329,7 +329,7 @@ export default function LoginPage() {
                             }}>NL</span>
                         </div>
                         <h1 style={{ fontSize: 20, fontWeight: 700, color: NL.text, margin: "0 0 4px", letterSpacing: "-0.02em" }}>
-                            NetherLink
+                            MCCompanion
                         </h1>
                         <p style={{ fontSize: 13, color: NL.muted, margin: 0 }}>Sign in to your account</p>
                     </div>

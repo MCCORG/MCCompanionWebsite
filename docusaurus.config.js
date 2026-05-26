@@ -4,9 +4,9 @@ import {themes as prismThemes} from 'prism-react-renderer';
 /** @type {import('@docusaurus/types').Config} */
 
 const config = {
-  title: 'NetherLink — Connect Any Minecraft Bedrock Server to Console',
-  tagline: 'NetherLink Documentation',
-  favicon: 'img/favicon.ico',
+  title: 'MCCompanion — Connect Any Minecraft Bedrock Server to Console',
+  tagline: 'MCCompanion Documentation',
+  favicon: 'img/logo.png',
 
   plugins: ["./src/plugins/tailwind-config.js"],
 
@@ -18,7 +18,7 @@ const config = {
   baseUrl: '/',
 
   organizationName: 'NetherDevMc',
-  projectName: 'NetherLinkWebsite',
+  projectName: 'MCCompanionWebsite',
 
   onBrokenLinks: 'warn',
 
@@ -34,7 +34,7 @@ const config = {
         docs: {
           sidebarPath: './sidebars.js',
           routeBasePath: 'docs',
-          editUrl: 'https://github.com/NetherDevMc/NetherLinkWebsite/tree/main/docs/',
+          editUrl: 'https://github.com/NetherDevMc/MCCompanionWebsite/tree/main/docs/',
         },
         blog: false,
         theme: {
@@ -53,7 +53,11 @@ const config = {
         respectPrefersColorScheme: false,
       },
       navbar: {
-        title: 'NetherLink Docs',
+        logo: {
+          alt: 'MCCompanion Logo',
+          src: 'img/logo.png',
+        },
+        title: 'MCCompanion Docs',
         items: [
           {
             type: 'docSidebar',
@@ -62,7 +66,7 @@ const config = {
             label: 'Docs',
           },
           {
-            href: 'https://github.com/NetherDevMc/NetherLinkWebsite',
+            href: 'https://github.com/NetherDevMc/MCCompanionWebsite',
             label: 'GitHub',
             position: 'right',
           },
@@ -70,21 +74,21 @@ const config = {
       },
       footer: {
         style: 'dark',
-        copyright: `Copyright © ${new Date().getFullYear()} NetherLink. Built with Docusaurus.`,
+        copyright: `Copyright © ${new Date().getFullYear()} MCCompanion. Built with Docusaurus.`,
       },
       prism: {
         theme: prismThemes.dracula,
         darkTheme: prismThemes.dracula,
       },
       metadata: [
-        { name: "description", content: "NetherLink lets you connect any Minecraft Bedrock server to PlayStation, Xbox, and Nintendo Switch via LAN — no port forwarding needed. Available on Windows, macOS, Android and iOS." },
-        { name: "keywords", content: "NetherLink, Minecraft Bedrock, console server, PlayStation Minecraft, Xbox Minecraft, Nintendo Switch Minecraft, LAN proxy, no port forwarding" },
+        { name: "description", content: "MCCompanion lets you connect any Minecraft Bedrock server to PlayStation, Xbox, and Nintendo Switch via LAN — no port forwarding needed. Available on Windows, macOS, Android and iOS." },
+        { name: "keywords", content: "MCCompanion, Minecraft Bedrock, console server, PlayStation Minecraft, Xbox Minecraft, Nintendo Switch Minecraft, LAN proxy, no port forwarding" },
         { name: "author", content: "Jens-Co" },
         { name: "theme-color", content: "#0a0a0f" },
         { property: "og:type", content: "website" },
-        { property: "og:url", content: "https://netherlink.net" },
-        { property: "og:site_name", content: "NetherLink" },
-        { property: "og:title", content: "NetherLink — Connect Any Minecraft Bedrock Server to Console" },
+        { property: "og:url", content: "https://mccompanion.net" },
+        { property: "og:site_name", content: "MCCompanion" },
+        { property: "og:title", content: "MCCompanion — Connect Any Minecraft Bedrock Server to Console" },
         { property: "og:description", content: "One-tap connection to any Bedrock server on PlayStation, Xbox and Nintendo Switch. No port forwarding, zero config. Just play." },
         { property: "og:locale", content: "en_US" }
       ],

@@ -19,7 +19,7 @@ const NL = {
 const sections = [
   {
     title: "1. Who We Are",
-    content: "NetherLink is developed and operated by Netherdev. If you have any questions about this Privacy Policy or your data, you can reach us at privacy@netherlink.net or via our Discord community.",
+    content: "MCCompanion is developed and operated by Netherdev. If you have any questions about this Privacy Policy or your data, you can reach us at privacy@mccompanion.net or via our Discord community.",
   },
   {
     title: "2. Account Information",
@@ -134,7 +134,7 @@ const sections = [
       "Portability — request your data in a portable format",
       "Objection — object to certain uses of your data",
     ],
-    footer: "EU/EEA users (GDPR): We process your data based on contractual necessity (to provide the services you signed up for), legitimate interests (security and analytics), and your consent (for optional features such as push notifications). To exercise any of your rights, contact us at privacy@netherlink.net.",
+    footer: "EU/EEA users (GDPR): We process your data based on contractual necessity (to provide the services you signed up for), legitimate interests (security and analytics), and your consent (for optional features such as push notifications). To exercise any of your rights, contact us at privacy@mccompanion.net.",
   },
   {
     title: "14. Push Notifications",
@@ -142,14 +142,14 @@ const sections = [
   },
   {
     title: "15. Children's Privacy & Parental Consent",
-    content: "NetherLink can be used by players of all ages. For children under 13 (or under 16 in the EU/EEA), the following rules apply:",
+    content: "MCCompanion can be used by players of all ages. For children under 13 (or under 16 in the EU/EEA), the following rules apply:",
     list: [
       "A parent or legal guardian must create the account on the child's behalf.",
       "By creating an account for a child, the parent or guardian confirms they have read this Privacy Policy and consents to the collection and use of data as described herein.",
       "Parents and guardians are responsible for supervising their child's use of the App and any content shared through it.",
-      "Parents can view, update, or delete their child's account at any time from within the App or by contacting us at privacy@netherlink.net.",
+      "Parents can view, update, or delete their child's account at any time from within the App or by contacting us at privacy@mccompanion.net.",
     ],
-    footer: "If we become aware that an account belonging to a child under 13 was created without verifiable parental consent, we will suspend the account and promptly delete all associated data. If you believe this has occurred, please contact us at privacy@netherlink.net.",
+    footer: "If we become aware that an account belonging to a child under 13 was created without verifiable parental consent, we will suspend the account and promptly delete all associated data. If you believe this has occurred, please contact us at privacy@mccompanion.net.",
   },
   {
     title: "16. Security",
@@ -242,7 +242,7 @@ export default function Privacy() {
               letterSpacing: "-0.025em", margin: "0 0 10px",
             }}>Privacy Policy</h1>
             <p style={{ fontSize: 14, color: NL.secondary, lineHeight: 1.6, margin: 0, maxWidth: 480, marginInline: "auto" }}>
-              At <span style={{ color: NL.text, fontWeight: 500 }}>NetherLink</span>, we are committed to protecting your privacy.
+              At <span style={{ color: NL.text, fontWeight: 500 }}>MCCompanion</span>, we are committed to protecting your privacy.
               This policy explains what data we collect, why we collect it, and how we protect it.
             </p>
           </motion.div>

@@ -159,9 +159,8 @@ export default function Navbar() {
         boxSizing: "border-box",
       }}>
 
-        <div onClick={() => history.push("/")} style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", userSelect: "none", flexShrink: 0 }}>
-          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 16, color: NL.accent, letterSpacing: "-0.02em" }}>NL</span>
-          <span style={{ fontWeight: 600, fontSize: 14, color: NL.text, letterSpacing: "-0.01em" }}>NetherLink</span>
+        <div onClick={() => history.push("/")} style={{ display: "flex", alignItems: "center", cursor: "pointer", userSelect: "none", flexShrink: 0 }}>
+          <img src="/img/logo.png" alt="MCCompanion" style={{ height: 180, width: "auto" }} />
         </div>
 
         {!isMobile && (

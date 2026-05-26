@@ -3,7 +3,7 @@ import { FaChevronLeft, FaChevronRight, FaExternalLinkAlt } from "react-icons/fa
 import { motion, AnimatePresence } from "framer-motion";
 
 const DATA_URL =
-  "https://raw.githubusercontent.com/NetherDevMc/NetherLinkData/main/featured/featured-servers";
+  "https://raw.githubusercontent.com/NetherDevMc/MCCompanionData/main/featured/featured-servers";
 
 export default function FeaturedServersCarousel() {
   const [servers, setServers] = useState([]);

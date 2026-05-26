@@ -86,7 +86,7 @@ export default function FeaturedSlot() {
                 color: NL.secondary, fontSize: 13, lineHeight: 1.65, margin: "0 0 22px",
               }}>
                 Appear in the <span style={{ color: NL.text, fontWeight: 500 }}>Featured</span> section
-                of NetherLink — instantly visible to thousands of console players on PlayStation, Xbox, and Switch.
+                of MCCompanion — instantly visible to thousands of console players on PlayStation, Xbox, and Switch.
               </p>
 
               <div style={{
@@ -108,7 +108,7 @@ export default function FeaturedSlot() {
 
               <div style={{ marginBottom: 20 }}>
                 <FeatureLine>Listed in the Featured section of the app</FeatureLine>
-                <FeatureLine>Shown on the NetherLink website</FeatureLine>
+                <FeatureLine>Shown on the MCCompanion website</FeatureLine>
                 <FeatureLine>Discord Server of the Day rotation</FeatureLine>
                 <FeatureLine>Cancel anytime · Full refund guarantee</FeatureLine>
               </div>
@@ -156,7 +156,7 @@ export default function FeaturedSlot() {
             textAlign: "center", color: NL.muted,
             fontSize: 12, marginTop: 18, lineHeight: 1.5,
           }}>
-            Your slot keeps NetherLink running for all players.
+            Your slot keeps MCCompanion running for all players.
           </p>
         </motion.div>
       </div>

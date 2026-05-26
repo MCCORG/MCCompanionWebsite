@@ -27,7 +27,7 @@ const sidebars = {
       collapsed: false,
       items: [
         { type: 'doc', id: 'issues/dns-issue', label: 'Nintendo DNS Not Working' },
-        { type: 'doc', id: 'issues/does-not-appear-issue', label: 'NetherLink Not Appearing' },
+        { type: 'doc', id: 'issues/does-not-appear-issue', label: 'MCCompanion Not Appearing' },
         { type: 'doc', id: 'issues/friend-issue', label: 'Friends Mode Not Working' },
         { type: 'doc', id: 'issues/mcf-issue', label: 'Multiplayer Connection Failed' },
       ],

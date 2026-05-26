@@ -19,13 +19,13 @@ const NL = {
 const sections = [
   {
     title: "1. Eligibility & Age Requirements",
-    content: "NetherLink is designed to be enjoyed by players of all ages. The following rules apply based on age:",
+    content: "MCCompanion is designed to be enjoyed by players of all ages. The following rules apply based on age:",
     list: [
       "13 and older: you may create your own account and use all features of the App.",
       "Under 13 (or under 16 in the EU/EEA): you may use the App only if a parent or legal guardian creates an account on your behalf, actively supervises your use, and agrees to these Terms.",
       "Parents and guardians: by creating an account for your child, you take full responsibility for their use of the App, their content, and their compliance with these Terms.",
     ],
-    footer: "If we become aware that an account was created by a child under 13 without parental consent, we will suspend the account and delete the associated data. Parents can contact us at support@netherlink.net to manage or remove their child's account.",
+    footer: "If we become aware that an account was created by a child under 13 without parental consent, we will suspend the account and delete the associated data. Parents can contact us at support@mccompanion.net to manage or remove their child's account.",
   },
   {
     title: "2. Your Account",
@@ -34,7 +34,7 @@ const sections = [
       "Keeping your credentials secure and not sharing them with others",
       "All activity that occurs under your account",
       "Choosing a username that is between 3–20 characters, contains only letters, numbers, and underscores, and does not impersonate another person or brand",
-      "Notifying us immediately at support@netherlink.net if you suspect unauthorised access to your account",
+      "Notifying us immediately at support@mccompanion.net if you suspect unauthorised access to your account",
     ],
     footer: "Each person may maintain only one account. Creating multiple accounts to circumvent a ban or other restriction is prohibited.",
   },
@@ -50,7 +50,7 @@ const sections = [
       "Reverse-engineer, decompile, or disassemble any part of the App",
       "Use automated tools, bots, or scripts to interact with the App or its services",
       "Abuse or attempt to circumvent rate limits or other technical safeguards",
-      "Impersonate any person, entity, or NetherLink staff member",
+      "Impersonate any person, entity, or MCCompanion staff member",
       "Use the App to facilitate cheating, griefing, or other disruptive behaviour in Minecraft or on third-party servers",
     ],
   },
@@ -77,7 +77,7 @@ const sections = [
   },
   {
     title: "6. Reporting & Moderation",
-    content: "If you encounter content or behaviour that violates these Terms, you can report it using the in-app reporting feature. We review all reports and may take action including warnings, content removal, temporary suspension, or permanent bans. All moderation decisions are final. You may appeal a decision by contacting support@netherlink.net.",
+    content: "If you encounter content or behaviour that violates these Terms, you can report it using the in-app reporting feature. We review all reports and may take action including warnings, content removal, temporary suspension, or permanent bans. All moderation decisions are final. You may appeal a decision by contacting support@mccompanion.net.",
   },
   {
     title: "7. Account Suspension & Termination",
@@ -89,19 +89,19 @@ const sections = [
   },
   {
     title: "9. Featured Server Slots (Paid Service)",
-    content: "NetherLink offers the option to feature your server in the App for a monthly fee. The following conditions apply:",
+    content: "MCCompanion offers the option to feature your server in the App for a monthly fee. The following conditions apply:",
     list: [
       "Payment is collected securely via Stripe on a recurring monthly basis.",
       "You may cancel your slot at any time by notifying us on Discord or by email. Your slot will remain active until the end of your paid billing period.",
       "If your payment cannot be processed, the slot will remain active until the end of your current billing month, after which your featured server will be removed.",
       "Refunds: We offer a satisfaction guarantee. If you are not satisfied, you may request a full refund for your current month, no questions asked.",
       "All agreements and custom arrangements are discussed personally via Discord (jens.co) or email (see contact page).",
-      "Pricing Changes: NetherLink reserves the right to change the price for Featured Server Slots. Price changes will be announced in advance, and new pricing will apply from your next billing period.",
+      "Pricing Changes: MCCompanion reserves the right to change the price for Featured Server Slots. Price changes will be announced in advance, and new pricing will apply from your next billing period.",
     ],
   },
   {
     title: "10. Server Metrics and Monitoring",
-    content: "NetherLink collects aggregate server-level metrics to improve service quality and reliability. These metrics do not contain personal user data.",
+    content: "MCCompanion collects aggregate server-level metrics to improve service quality and reliability. These metrics do not contain personal user data.",
     list: [
       "What we collect: server address (IP/hostname), server port, connection timestamps, and aggregated counts.",
       "Purpose: service monitoring, troubleshooting, improving featured server lists, and general usage analytics.",
@@ -112,7 +112,7 @@ const sections = [
   },
   {
     title: "11. Intellectual Property",
-    content: "All content, design, code, logos, and trademarks in the App are the property of Netherdev unless otherwise stated. You may not reproduce, distribute, or create derivative works from any part of the App without our prior written consent. NetherLink is an independent project and is not affiliated with, endorsed by, or sponsored by Mojang Studios or Microsoft Corporation. \"Minecraft\" is a trademark of Microsoft Corporation.",
+    content: "All content, design, code, logos, and trademarks in the App are the property of Netherdev unless otherwise stated. You may not reproduce, distribute, or create derivative works from any part of the App without our prior written consent. MCCompanion is an independent project and is not affiliated with, endorsed by, or sponsored by Mojang Studios or Microsoft Corporation. \"Minecraft\" is a trademark of Microsoft Corporation.",
   },
   {
     title: "12. Third-Party Services",
@@ -150,12 +150,12 @@ const sections = [
   },
   {
     title: "17. Contact",
-    content: "For questions, concerns, or support regarding NetherLink, please contact us:",
+    content: "For questions, concerns, or support regarding MCCompanion, please contact us:",
     list: [
-      "Email: support@netherlink.net",
-      "Privacy inquiries: privacy@netherlink.net",
+      "Email: support@mccompanion.net",
+      "Privacy inquiries: privacy@mccompanion.net",
       "Discord: discord.gg/xvaNzE35Rs",
-      "Website: netherlink.net",
+      "Website: mccompanion.net",
     ],
   },
 ];
@@ -234,7 +234,7 @@ export default function Terms() {
               letterSpacing: "-0.025em", margin: "0 0 10px",
             }}>Terms of Service</h1>
             <p style={{ fontSize: 14, color: NL.secondary, lineHeight: 1.6, margin: 0, maxWidth: 480, marginInline: "auto" }}>
-              By accessing or using <span style={{ color: NL.text, fontWeight: 500 }}>NetherLink</span>, you agree to these terms.
+              By accessing or using <span style={{ color: NL.text, fontWeight: 500 }}>MCCompanion</span>, you agree to these terms.
               Please read them carefully before using the App.
             </p>
           </motion.div>

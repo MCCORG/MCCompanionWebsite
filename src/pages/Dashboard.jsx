@@ -30,8 +30,8 @@ const font = "'Inter', system-ui, sans-serif";
 const mono = "'JetBrains Mono', 'Fira Code', monospace";
 
 const REGION_BASES = {
-  EU: "https://eubackend.netherlink.net",
-  US: "https://usbackend.netherlink.net",
+  EU: "https://eubackend.mccompanion.net",
+  US: "https://usbackend.mccompanion.net",
 };
 const EVENTS_CAP = 1500;
 const TABS = [{ id: "overview", label: "Overview" }, { id: "partners", label: "Partners" }, { id: "moderation", label: "Moderation" }];
@@ -1001,7 +1001,7 @@ export default function DashboardPage() {
       setUser(u);
       try {
         const token = await u.getIdToken();
-        const res = await fetch("https://eubackend.netherlink.net/api/admin/members", { headers: { Authorization: `Bearer ${token}` } });
+        const res = await fetch("https://eubackend.mccompanion.net/api/admin/members", { headers: { Authorization: `Bearer ${token}` } });
         if (res.status !== 200) { history.replace("/partner"); return; }
       } catch (_) { history.replace("/login"); return; }
       setChecking(false);
@@ -1236,7 +1236,7 @@ export default function DashboardPage() {
 
       <Card title="Quick actions">
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-          {[{ label: "Metrics", action: () => window.open("/metrics", "_blank") }, { label: "Panel", action: () => window.open("https://panel.netherlink.net", "_blank") }].map(a => (
+          {[{ label: "Metrics", action: () => window.open("/metrics", "_blank") }, { label: "Panel", action: () => window.open("https://panel.mccompanion.net", "_blank") }].map(a => (
             <button key={a.label} onClick={a.action} style={{ padding: "10px", borderRadius: 8, background: NL.elevated, border: `1px solid ${NL.border}`, fontSize: 12, fontWeight: 500, color: NL.secondary, cursor: "pointer", fontFamily: font, transition: "color 0.15s, border-color 0.15s" }}
               onMouseEnter={e => { e.currentTarget.style.color = NL.text; e.currentTarget.style.borderColor = NL.borderMid; }}
               onMouseLeave={e => { e.currentTarget.style.color = NL.secondary; e.currentTarget.style.borderColor = NL.border; }}
@@ -1355,7 +1355,7 @@ export default function DashboardPage() {
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
               <div style={{ width: 36, height: 36, borderRadius: 10, background: NL.accentDim, border: `1px solid ${NL.accentBorder}`, display: "flex", alignItems: "center", justifyContent: "center", color: NL.accent, fontSize: 18 }}>⚡</div>
               <div>
-                <h1 style={{ fontSize: 16, fontWeight: 700, color: NL.text, margin: 0, letterSpacing: "-0.01em" }}>NetherLink Admin</h1>
+                <h1 style={{ fontSize: 16, fontWeight: 700, color: NL.text, margin: 0, letterSpacing: "-0.01em" }}>MCCompanion Admin</h1>
                 <p style={{ fontSize: 11, color: NL.muted, margin: 0 }}>{user?.email}</p>
               </div>
             </div>

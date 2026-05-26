@@ -82,7 +82,7 @@ export default function Contact() {
             }}>Contact</h1>
             <p style={{ fontSize: 14, color: NL.secondary, lineHeight: 1.6, margin: 0 }}>
               Need help or want to get in touch with{" "}
-              <span style={{ color: NL.text, fontWeight: 500 }}>NetherLink</span>?
+              <span style={{ color: NL.text, fontWeight: 500 }}>MCCompanion</span>?
               We're happy to assist with support, business inquiries, or feedback.
             </p>
           </motion.div>

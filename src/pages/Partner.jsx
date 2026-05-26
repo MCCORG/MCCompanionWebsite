@@ -30,8 +30,8 @@ const font = "'Inter', system-ui, sans-serif";
 const mono = "'JetBrains Mono', 'Fira Code', monospace";
 
 const REGION_BASES = {
-  EU: "https://eubackend.netherlink.net",
-  US: "https://usbackend.netherlink.net",
+  EU: "https://eubackend.mccompanion.net",
+  US: "https://usbackend.mccompanion.net",
 };
 
 async function apiFetch(path, options = {}) {
@@ -160,7 +160,7 @@ function InvoiceList() {
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
         <span style={{ color: NL.accent, fontSize: 16 }}><FaFileInvoiceDollar /></span>
         <span style={{ fontWeight: 700, color: NL.text, fontSize: 16 }}>Invoices</span>
-        <span style={{ fontSize: 12, color: NL.muted }}>Your NetherLink purchases</span>
+        <span style={{ fontSize: 12, color: NL.muted }}>Your MCCompanion purchases</span>
       </div>
 
       {loading ? (
@@ -461,7 +461,7 @@ function Dashboard({ user }) {
           <div>
             <h1 style={{ fontSize: 22, fontWeight: 700, color: NL.text, margin: "0 0 4px", letterSpacing: "-0.02em" }}>Your Servers</h1>
             <p style={{ fontSize: 13, color: NL.secondary, margin: 0 }}>
-              Servers you add here will be visible in the NetherLink app for all players.
+              Servers you add here will be visible in the MCCompanion app for all players.
             </p>
           </div>
           {mode === "list" && !slotFull && (
@@ -489,7 +489,7 @@ function Dashboard({ user }) {
                   width: `${slotPct}%`, transition: "width 0.4s",
                 }} />
               </div>
-              {slotFull && <p style={{ fontSize: 11, color: NL.danger, margin: "6px 0 0" }}>Slot limit reached — contact NetherLink for more.</p>}
+              {slotFull && <p style={{ fontSize: 11, color: NL.danger, margin: "6px 0 0" }}>Slot limit reached — contact MCCompanion for more.</p>}
             </div>
           </div>
         )}
@@ -524,7 +524,7 @@ function Dashboard({ user }) {
               <div>
                 <p style={{ fontSize: 15, fontWeight: 700, color: NL.text, margin: "0 0 4px" }}>No servers yet</p>
                 <p style={{ fontSize: 13, color: NL.secondary, margin: 0, maxWidth: 300 }}>
-                  Add your first server to get listed in the NetherLink app for PlayStation, Xbox and Nintendo players.
+                  Add your first server to get listed in the MCCompanion app for PlayStation, Xbox and Nintendo players.
                 </p>
               </div>
               <Btn onClick={() => setMode("add")}>+ Add your first server</Btn>
@@ -564,8 +564,8 @@ function Dashboard({ user }) {
             <p style={{ fontSize: 13, fontWeight: 600, color: NL.accent, margin: "0 0 6px" }}>How it works</p>
             <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 4 }}>
               {[
-                <>Your servers appear in the <strong style={{ color: NL.text }}>Partner Servers</strong> section of the NetherLink app.</>,
-                <><strong style={{ color: NL.text }}>Featured</strong> status is managed by the NetherLink team — contact us to get featured.</>,
+                <>Your servers appear in the <strong style={{ color: NL.text }}>Partner Servers</strong> section of the MCCompanion app.</>,
+                <><strong style={{ color: NL.text }}>Featured</strong> status is managed by the MCCompanion team — contact us to get featured.</>,
                 <>Use a square icon image (min 128×128px) for the best look in the app.</>,
               ].map((item, i) => (
                 <li key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8, fontSize: 12, color: NL.secondary }}>
@@ -593,7 +593,7 @@ export default function PartnerDashboardPage() {
       if (!u) { window.location.replace("/login"); return; }
       try {
         const token = await u.getIdToken();
-        const res = await fetch("https://eubackend.netherlink.net/api/admin/members", { headers: { Authorization: `Bearer ${token}` } });
+        const res = await fetch("https://eubackend.mccompanion.net/api/admin/members", { headers: { Authorization: `Bearer ${token}` } });
         if (res.status === 200) { window.location.replace("/dashboard"); return; }
       } catch (_) { }
       setUser(u); setChecking(false);

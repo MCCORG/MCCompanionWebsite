@@ -17,8 +17,8 @@ const NL = {
 };
 
 const REGION_BASES = {
-  EU: "https://eubackend.netherlink.net",
-  US: "https://usbackend.netherlink.net",
+  EU: "https://eubackend.mccompanion.net",
+  US: "https://usbackend.mccompanion.net",
 };
 
 async function dbFetch(path, options = {}) {
@@ -106,7 +106,7 @@ export default function MetricsPage() {
               letterSpacing: "-0.025em", margin: "0 0 8px",
             }}>Server Metrics</h1>
             <p style={{ fontSize: 13, color: NL.secondary, maxWidth: 360, margin: "0 auto" }}>
-              Rankings based on connections through the NetherLink app.
+              Rankings based on connections through the MCCompanion app.
             </p>
           </div>
 

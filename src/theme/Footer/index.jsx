@@ -20,7 +20,7 @@ const footerLinks = [
 
 const socialLinks = [
   { href: "https://discord.gg/xvaNzE35Rs", label: "Discord", icon: <FaDiscord size={15} />, color: "#7289da" },
-  { href: "https://github.com/NetherDevMc/NetherLinkWebsite", label: "GitHub", icon: <FaGithub size={15} />, color: NL.secondary },
+  { href: "https://github.com/NetherDevMc/MCCompanionWebsite", label: "GitHub", icon: <FaGithub size={15} />, color: NL.secondary },
 ];
 
 function SocialBtn({ href, label, icon, color }) {
@@ -72,7 +72,7 @@ export default function Footer() {
             fontWeight: 700, fontSize: 14, color: NL.accent, letterSpacing: "-0.02em",
           }}>NL</span>
           <span style={{ color: NL.text, fontWeight: 600, fontSize: 14, letterSpacing: "-0.01em" }}>
-            NetherLink
+            MCCompanion
           </span>
           <span style={{ width: 1, height: 12, background: NL.border, margin: "0 2px" }} />
           <span style={{
@@ -121,7 +121,7 @@ export default function Footer() {
         }} />
 
         <p style={{ color: NL.muted, fontSize: 11, textAlign: "center", margin: 0, lineHeight: 1.5 }}>
-          © {new Date().getFullYear()} NetherLink ·{" "}
+          © {new Date().getFullYear()} MCCompanion ·{" "}
           Built by <span style={{ color: NL.secondary, fontWeight: 500 }}>Jens-Co</span>
         </p>
 
