@@ -6,7 +6,7 @@ import {themes as prismThemes} from 'prism-react-renderer';
 const config = {
   title: 'MCCompanion — Connect Any Minecraft Bedrock Server to Console',
   tagline: 'MCCompanion Documentation',
-  favicon: 'img/logo.png',
+  favicon: 'img/icon.png',
 
   plugins: ["./src/plugins/tailwind-config.js"],
 
