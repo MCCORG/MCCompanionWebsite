@@ -23,9 +23,9 @@ const NL = {
 
 const platforms = [
   { icon: <FaWindows size={20} />, label: "Windows", url: "https://apps.microsoft.com/detail/9NSFPT6D8PTR", color: "#60a5fa" },
-  { icon: <FaApple size={20} />, label: "macOS", url: "https://github.com/NetherDevMc/MCCompanionWebsite/raw/refs/heads/main/downloads/apple/MCCompanion.dmg", color: "#9299a6" },
-  { icon: <FaAndroid size={20} />, label: "Android", url: "https://play.google.com/store/apps/details?id=net.netherdev.mccompanion", color: "#34d399" },
-  { icon: <FaApple size={20} />, label: "iOS", url: "https://apps.apple.com/be/app/mccompanion/id6747323142?l=en", color: "#9299a6" },
+  { icon: <FaApple size={20} />, label: "macOS", url: "https://github.com/NetherLinkMC/NetherLinkWebsite/raw/refs/heads/main/downloads/apple/NetherLink.dmg", color: "#9299a6" },
+  { icon: <FaAndroid size={20} />, label: "Android", url: "https://play.google.com/store/apps/details?id=net.netherdev.netherLink", color: "#34d399" },
+  { icon: <FaApple size={20} />, label: "iOS", url: "https://apps.apple.com/be/app/netherlink/id6747323142?l=en", color: "#9299a6" },
 ];
 
 const fadeUp = {
