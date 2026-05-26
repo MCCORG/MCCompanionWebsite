@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 
 const REPOS = [
-  { id: "app",     owner: "NetherDevMc", repo: "MCCompanion",           label: "App",        color: "violet" },
-  { id: "website", owner: "NetherDevMc", repo: "MCCompanionWebsite",    label: "Website",    color: "blue"   },
-  { id: "geyser",  owner: "NetherDevMc", repo: "MCCompanionGeyser",     label: "Geyser",     color: "emerald"},
-  { id: "bot",     owner: "NetherDevMc", repo: "MCCompanionDiscordBot",  label: "Discord Bot",color: "indigo" },
+  { id: "app",     owner: "NetherDevMc", repo: "NetherLink",           label: "App",        color: "violet" },
+  { id: "website", owner: "NetherDevMc", repo: "NetherLinkWebsite",    label: "Website",    color: "blue"   },
+  { id: "geyser",  owner: "NetherDevMc", repo: "NetherLinkGeyser",     label: "Geyser",     color: "emerald"},
+  { id: "bot",     owner: "NetherDevMc", repo: "NetherLinkDiscordBot",  label: "Discord Bot",color: "indigo" },
 ];
 
 const IGNORE_PATTERNS = [
