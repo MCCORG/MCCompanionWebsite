@@ -14,11 +14,11 @@ const config = {
     v4: true,
   },
 
-  url: 'https://netherdevmc.github.io',
+  url: 'https://mccompanion.net',
   baseUrl: '/',
 
   organizationName: 'NetherDevMc',
-  projectName: 'MCCompanionWebsite',
+  projectName: 'NetherLinkWebsite',
 
   onBrokenLinks: 'warn',
 
