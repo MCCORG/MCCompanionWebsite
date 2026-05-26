@@ -18,7 +18,7 @@ const config = {
   baseUrl: '/',
 
   organizationName: 'NetherDevMc',
-  projectName: 'NetherLinkWebsite',
+  projectName: 'MCCompanionWebsite',
 
   onBrokenLinks: 'warn',
 
