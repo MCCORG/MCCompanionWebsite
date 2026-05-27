@@ -98,12 +98,16 @@ export default function Home() {
                 fontWeight: 700, color: NL.text,
                 letterSpacing: "-0.03em", lineHeight: 1.15, margin: 0,
               }}>
-                Connect to any{" "}
+                The complete{" "}
                 <span style={{ color: NL.accent }}>Minecraft</span>{" "}
-                server
+                companion
               </h1>
               <p style={{ fontSize: 15, color: NL.secondary, marginTop: 4 }}>
-                <RotatingWords words={["add your server", "start mode", "connect", "play"]} interval={2200} />
+                <RotatingWords
+                  prefix="Everything you need to"
+                  words={["connect to any server", "edit your skin", "look up players", "play with friends"]}
+                  interval={2200}
+                />
               </p>
             </motion.div>
 
