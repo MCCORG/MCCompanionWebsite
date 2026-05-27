@@ -2,8 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { FaChevronLeft, FaChevronRight, FaExternalLinkAlt } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 
-const DATA_URL =
-  "https://raw.githubusercontent.com/NetherDevMc/MCCompanionData/main/featured/featured-servers";
+const API_URL = "https://eubackend.netherlink.net/api/featured-servers";
 
 export default function FeaturedServersCarousel() {
   const [servers, setServers] = useState([]);
@@ -13,11 +12,12 @@ export default function FeaturedServersCarousel() {
   const intervalRef = useRef(null);
 
   useEffect(() => {
-    fetch(DATA_URL)
+    fetch(API_URL)
       .then((r) => r.json())
       .then((data) => {
-        setServers(data || []);
-        if (data && data.length) setActive(Math.floor(Math.random() * data.length));
+        const list = data?.servers || [];
+        setServers(list);
+        if (list.length) setActive(Math.floor(Math.random() * list.length));
       })
       .catch(() => setServers([]));
   }, []);
@@ -200,6 +200,25 @@ export default function FeaturedServersCarousel() {
               </div>
             )}
 
+            {current.featured ? (
+              <span style={{
+                display: "inline-block", marginBottom: 8,
+                fontFamily: "'JetBrains Mono', monospace",
+                fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase",
+                color: "#f59e0b", background: "rgba(245,158,11,0.12)",
+                border: "1px solid rgba(245,158,11,0.30)",
+                borderRadius: 4, padding: "3px 8px",
+              }}>⭐ Featured</span>
+            ) : (
+              <span style={{
+                display: "inline-block", marginBottom: 8,
+                fontFamily: "'JetBrains Mono', monospace",
+                fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase",
+                color: "#4fd1c5", background: "rgba(79,209,197,0.10)",
+                border: "1px solid rgba(79,209,197,0.22)",
+                borderRadius: 4, padding: "3px 8px",
+              }}>Partner</span>
+            )}
             <h3 className="text-xl font-extrabold mb-1" style={{ color: "#e7f6ff" }}>
               {current.name}
             </h3>
