@@ -67,10 +67,7 @@ export default function Footer() {
       }}>
 
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <span style={{
-            fontFamily: "'JetBrains Mono', monospace",
-            fontWeight: 700, fontSize: 14, color: NL.accent, letterSpacing: "-0.02em",
-          }}>NL</span>
+          <img src="/img/icon.png" alt="MCCompanion" style={{ height: 28, width: "auto" }} />
           <span style={{ color: NL.text, fontWeight: 600, fontSize: 14, letterSpacing: "-0.01em" }}>
             MCCompanion
           </span>
@@ -79,7 +76,7 @@ export default function Footer() {
             fontFamily: "'JetBrains Mono', monospace",
             fontSize: 10, color: NL.muted, letterSpacing: "0.05em",
           }}>
-            Minecraft proxy
+            Minecraft companion app
           </span>
         </div>
 
@@ -123,6 +120,10 @@ export default function Footer() {
         <p style={{ color: NL.muted, fontSize: 11, textAlign: "center", margin: 0, lineHeight: 1.5 }}>
           © {new Date().getFullYear()} MCCompanion ·{" "}
           Built by <span style={{ color: NL.secondary, fontWeight: 500 }}>Jens-Co</span>
+        </p>
+
+        <p style={{ color: NL.muted, fontSize: 10, textAlign: "center", margin: 0, lineHeight: 1.6, maxWidth: 480, opacity: 0.7 }}>
+          Not affiliated with Mojang Studios or Microsoft. Minecraft is a trademark of Mojang AB.
         </p>
 
       </div>

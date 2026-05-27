@@ -55,7 +55,7 @@ const config = {
       navbar: {
         logo: {
           alt: 'MCCompanion Logo',
-          src: 'img/logo.png',
+          src: 'img/icon.png',
         },
         title: 'MCCompanion Docs',
         items: [

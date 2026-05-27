@@ -160,7 +160,7 @@ export default function Navbar() {
       }}>
 
         <div onClick={() => history.push("/")} style={{ display: "flex", alignItems: "center", cursor: "pointer", userSelect: "none", flexShrink: 0 }}>
-          <img src="/img/logo.png" alt="MCCompanion" style={{ height: 180, width: "auto" }} />
+          <img src="/img/logo_big.png" alt="MCCompanion" style={{ height: 160, width: "auto" }} />
         </div>
 
         {!isMobile && (
