@@ -3,7 +3,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebaseClient";
 import { fetchIdToken } from "./firebaseAuthHelpers";
 
-const API_BASE = "https://eubackend.mccompanion.net";
+const API_BASE = "https://api.mccompanion.net";
 
 async function resolveRole(user) {
   if (!user) return "none";

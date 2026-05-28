@@ -4,6 +4,8 @@ import { signInWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail 
 import { auth } from "../firebaseClient";
 import Layout from "@theme/Layout";
 
+const API_BASE = "https://api.mccompanion.net";
+
 const NL = {
     bg: "#111318",
     surface: "#191c23",
@@ -253,7 +255,7 @@ export default function LoginPage() {
         try {
             const token = await u.getIdToken();
             const res = await fetch(
-                `${process.env.REACT_APP_API_BASE || "https://eubackend.mccompanion.net"}/api/admin/members`,
+                `${API_BASE}/api/admin/members`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             history.replace(res.status === 200 ? "/dashboard" : "/partner");

@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 
+const API_BASE = "https://api.mccompanion.net";
 const ENDPOINTS = {
-  EU: "https://eubackend.mccompanion.net/api/metrics",
-  US: "https://usbackend.mccompanion.net/api/metrics",
+  EU: `${API_BASE}/api/metrics`,
+  US: `${API_BASE}/api/metrics`,
 };
 
 async function fetchMetrics(endpoint) {

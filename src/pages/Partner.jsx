@@ -29,10 +29,7 @@ const NL = {
 const font = "'Inter', system-ui, sans-serif";
 const mono = "'JetBrains Mono', 'Fira Code', monospace";
 
-const REGION_BASES = {
-  EU: "https://eubackend.mccompanion.net",
-  US: "https://usbackend.mccompanion.net",
-};
+const API_BASE = "https://api.mccompanion.net";
 
 async function apiFetch(path, options = {}) {
   const token = await fetchIdToken();
@@ -41,13 +38,7 @@ async function apiFetch(path, options = {}) {
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...options.headers,
   };
-  try {
-    const res = await fetch(`${REGION_BASES.EU}${path}`, { ...options, headers });
-    const data = await res.json().catch(() => ({}));
-    if (res.ok) return data;
-    if (res.status < 500) throw Object.assign(new Error(data.message || res.statusText), { data, status: res.status });
-  } catch (e) { }
-  const res = await fetch(`${REGION_BASES.US}${path}`, { ...options, headers });
+  const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
   const data = await res.json().catch(() => ({}));
   if (res.ok) return data;
   throw Object.assign(new Error(data.message || res.statusText), { data, status: res.status });
@@ -593,7 +584,7 @@ export default function PartnerDashboardPage() {
       if (!u) { window.location.replace("/login"); return; }
       try {
         const token = await u.getIdToken();
-        const res = await fetch("https://eubackend.mccompanion.net/api/admin/members", { headers: { Authorization: `Bearer ${token}` } });
+        const res = await fetch(`${API_BASE}/api/admin/members`, { headers: { Authorization: `Bearer ${token}` } });
         if (res.status === 200) { window.location.replace("/dashboard"); return; }
       } catch (_) { }
       setUser(u); setChecking(false);

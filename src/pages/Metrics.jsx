@@ -16,22 +16,12 @@ const NL = {
   accentBorder: "rgba(79,209,197,0.22)",
 };
 
-const REGION_BASES = {
-  EU: "https://eubackend.mccompanion.net",
-  US: "https://usbackend.mccompanion.net",
-};
+const API_BASE = "https://api.mccompanion.net";
 
 async function dbFetch(path, options = {}) {
-  for (const base of [REGION_BASES.EU, REGION_BASES.US]) {
-    try {
-      const res = await fetch(`${base}${path}`, options);
-      if (res.ok || res.status < 500) {
-        const data = await res.json().catch(() => ({}));
-        return { ok: res.ok, status: res.status, data };
-      }
-    } catch (_) { }
-  }
-  throw new Error("Both regions unreachable");
+  const res = await fetch(`${API_BASE}${path}`, options);
+  const data = await res.json().catch(() => ({}));
+  return { ok: res.ok, status: res.status, data };
 }
 
 function Spinner({ size = 20 }) {

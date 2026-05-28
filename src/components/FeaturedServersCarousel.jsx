@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { FaChevronLeft, FaChevronRight, FaExternalLinkAlt } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 
-const API_URL = "https://eubackend.netherlink.net/api/featured-servers";
+const API_URL = "https://api.mccompanion.net/api/featured-servers";
 
 export default function FeaturedServersCarousel() {
   const [servers, setServers] = useState([]);

@@ -29,25 +29,20 @@ const NL = {
 const font = "'Inter', system-ui, sans-serif";
 const mono = "'JetBrains Mono', 'Fira Code', monospace";
 
+const API_BASE = "https://api.mccompanion.net";
 const REGION_BASES = {
-  EU: "https://eubackend.mccompanion.net",
-  US: "https://usbackend.mccompanion.net",
+  EU: API_BASE,
+  US: API_BASE,
 };
+const REGION_PARAMS = { EU: "eu", US: "us" };
 const EVENTS_CAP = 1500;
 const TABS = [{ id: "overview", label: "Overview" }, { id: "partners", label: "Partners" }, { id: "moderation", label: "Moderation" }];
 const REPORT_STATUSES = ['pending', 'reviewed', 'dismissed', 'actioned'];
 
 async function dbFetch(path, options = {}) {
-  for (const base of [REGION_BASES.EU, REGION_BASES.US]) {
-    try {
-      const res = await fetch(`${base}${path}`, options);
-      if (res.ok || res.status < 500) {
-        const data = await res.json().catch(() => ({}));
-        return { ok: res.ok, status: res.status, data };
-      }
-    } catch (_) { }
-  }
-  throw new Error("Both regions unreachable");
+  const res = await fetch(`${API_BASE}${path}`, options);
+  const data = await res.json().catch(() => ({}));
+  return { ok: res.ok, status: res.status, data };
 }
 
 function Spinner({ size = 16, color = NL.secondary }) {
@@ -205,7 +200,7 @@ function FeedEventRow({ ev, onBan, isBanned }) {
   );
 }
 
-function SlotEditor({ uid, current, apiBase, onUpdate }) {
+function SlotEditor({ uid, current, onUpdate }) {
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState(String(current));
   const [saving, setSaving] = useState(false);
@@ -216,7 +211,7 @@ function SlotEditor({ uid, current, apiBase, onUpdate }) {
     setSaving(true);
     try {
       const token = await fetchIdToken();
-      const res = await fetch(`${apiBase}/api/admin/members/${encodeURIComponent(uid)}/slots`, {
+      const res = await fetch(`${API_BASE}/api/admin/members/${encodeURIComponent(uid)}/slots`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ slots: n }),
@@ -272,7 +267,7 @@ function PasswordInput({ value, onChange, placeholder, style: extra }) {
   );
 }
 
-function PartnersPanel({ apiBase }) {
+function PartnersPanel() {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -290,12 +285,12 @@ function PartnersPanel({ apiBase }) {
     setLoading(true); setError(null);
     try {
       const token = await fetchIdToken();
-      const res = await fetch(`${apiBase}/api/admin/members`, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await fetch(`${API_BASE}/api/admin/members`, { headers: { Authorization: `Bearer ${token}` } });
       if (!res.ok) throw new Error(`${res.status}`);
       setMembers((await res.json()).members || []);
     } catch (e) { setError("Failed: " + e.message); }
     finally { setLoading(false); }
-  }, [apiBase]);
+  }, []);
 
   useEffect(() => { load(); }, [load]);
 
@@ -312,7 +307,7 @@ function PartnersPanel({ apiBase }) {
     setCreating(true);
     try {
       const token = await fetchIdToken();
-      const res = await fetch(`${apiBase}/api/admin/members/register`, {
+      const res = await fetch(`${API_BASE}/api/admin/members/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({
@@ -336,7 +331,7 @@ function PartnersPanel({ apiBase }) {
     setDeleting(uid);
     try {
       const token = await fetchIdToken();
-      const res = await fetch(`${apiBase}/api/admin/members/${encodeURIComponent(uid)}`, {
+      const res = await fetch(`${API_BASE}/api/admin/members/${encodeURIComponent(uid)}`, {
         method: "DELETE", headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error(`${res.status}`);
@@ -349,7 +344,7 @@ function PartnersPanel({ apiBase }) {
     setLoadingServers(p => ({ ...p, [uid]: true }));
     try {
       const token = await fetchIdToken();
-      const res = await fetch(`${apiBase}/api/featured-servers/admin`, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await fetch(`${API_BASE}/api/featured-servers/admin`, { headers: { Authorization: `Bearer ${token}` } });
       if (!res.ok) throw new Error(`${res.status}`);
       const json = await res.json();
       setMemberServers(p => ({ ...p, [uid]: (json.servers || []).filter(s => s.ownerUid === uid) }));
@@ -361,7 +356,7 @@ function PartnersPanel({ apiBase }) {
     const newVal = !server.featured;
     try {
       const token = await fetchIdToken();
-      const res = await fetch(`${apiBase}/api/featured-servers/admin/${server.id}/featured`, {
+      const res = await fetch(`${API_BASE}/api/featured-servers/admin/${server.id}/featured`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ featured: newVal }),
@@ -519,7 +514,6 @@ function PartnersPanel({ apiBase }) {
                   <SlotEditor
                     uid={uid}
                     current={m.server_slots ?? 1}
-                    apiBase={apiBase}
                     onUpdate={n => setMembers(p => p.map(x => x.firebase_uid === uid ? { ...x, server_slots: n } : x))}
                   />
 
@@ -582,7 +576,7 @@ function PartnersPanel({ apiBase }) {
   );
 }
 
-function ReportExpanded({ report, apiBase, onStatusChange }) {
+function ReportExpanded({ report, onStatusChange }) {
   const [conv, setConv] = useState(null);
   const [convLoading, setConvLoading] = useState(false);
   const [convError, setConvError] = useState(null);
@@ -599,20 +593,20 @@ function ReportExpanded({ report, apiBase, onStatusChange }) {
       setModLoading(true);
       try {
         const token = await fetchIdToken();
-        const res = await fetch(`${apiBase}/api/admin/users/${reportedUid}/moderation`, { headers: { Authorization: `Bearer ${token}` } });
+        const res = await fetch(`${API_BASE}/api/admin/users/${reportedUid}/moderation`, { headers: { Authorization: `Bearer ${token}` } });
         if (!res.ok) throw new Error(`${res.status}`);
         setModStatus(await res.json());
       } catch (_) { setModStatus({}); }
       finally { setModLoading(false); }
     }
     loadMod();
-  }, [apiBase, reportedUid]);
+  }, [reportedUid]);
 
   async function loadConversation() {
     setConvLoading(true); setConvError(null);
     try {
       const token = await fetchIdToken();
-      const res = await fetch(`${apiBase}/api/admin/users/${report.reporter_uid}/conversation/${reportedUid}?limit=50`, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await fetch(`${API_BASE}/api/admin/users/${report.reporter_uid}/conversation/${reportedUid}?limit=50`, { headers: { Authorization: `Bearer ${token}` } });
       if (!res.ok) throw new Error(`${res.status}`);
       setConv((await res.json()).messages || []);
     } catch (e) { setConvError("Failed: " + e.message); }
@@ -624,7 +618,7 @@ function ReportExpanded({ report, apiBase, onStatusChange }) {
     setActing("restrict");
     try {
       const token = await fetchIdToken();
-      const res = await fetch(`${apiBase}/api/admin/users/${reportedUid}/chat-restrict`, {
+      const res = await fetch(`${API_BASE}/api/admin/users/${reportedUid}/chat-restrict`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ hours }),
@@ -640,7 +634,7 @@ function ReportExpanded({ report, apiBase, onStatusChange }) {
     setActing("lift");
     try {
       const token = await fetchIdToken();
-      const res = await fetch(`${apiBase}/api/admin/users/${reportedUid}/chat-restrict`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
+      const res = await fetch(`${API_BASE}/api/admin/users/${reportedUid}/chat-restrict`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
       if (!res.ok) throw new Error(`${res.status}`);
       setModStatus(p => ({ ...p, chatRestrictedUntil: null }));
     } catch (e) { alert("Failed: " + e.message); }
@@ -652,7 +646,7 @@ function ReportExpanded({ report, apiBase, onStatusChange }) {
     setActing("ban");
     try {
       const token = await fetchIdToken();
-      const res = await fetch(`${apiBase}/api/admin/users/${reportedUid}/ban`, {
+      const res = await fetch(`${API_BASE}/api/admin/users/${reportedUid}/ban`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ reason: banReason.trim() || `Actioned from report #${report.id}` }),
@@ -669,7 +663,7 @@ function ReportExpanded({ report, apiBase, onStatusChange }) {
     setActing("unban");
     try {
       const token = await fetchIdToken();
-      const res = await fetch(`${apiBase}/api/admin/users/${reportedUid}/ban`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
+      const res = await fetch(`${API_BASE}/api/admin/users/${reportedUid}/ban`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
       if (!res.ok) throw new Error(`${res.status}`);
       setModStatus(p => ({ ...p, bannedAt: null, banReason: null }));
     } catch (e) { alert("Failed: " + e.message); }
@@ -785,7 +779,7 @@ function ReportExpanded({ report, apiBase, onStatusChange }) {
   );
 }
 
-function ModerationPanel({ apiBase, bans, bansLoading, banError, loadBans, handleBan, handleUnban }) {
+function ModerationPanel({ bans, bansLoading, banError, loadBans, handleBan, handleUnban }) {
   const [reports, setReports] = useState([]);
   const [reportsLoading, setReportsLoading] = useState(true);
   const [reportsError, setReportsError] = useState(null);
@@ -800,12 +794,12 @@ function ModerationPanel({ apiBase, bans, bansLoading, banError, loadBans, handl
     try {
       const token = await fetchIdToken();
       const qs = statusFilter !== "all" ? `?status=${statusFilter}` : "";
-      const res = await fetch(`${apiBase}/api/admin/reports${qs}`, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await fetch(`${API_BASE}/api/admin/reports${qs}`, { headers: { Authorization: `Bearer ${token}` } });
       if (!res.ok) throw new Error(`${res.status}`);
       setReports((await res.json()).reports || []);
     } catch (e) { setReportsError("Failed: " + e.message); }
     finally { setReportsLoading(false); }
-  }, [apiBase, statusFilter]);
+  }, [statusFilter]);
 
   useEffect(() => { loadReports(); }, [loadReports]);
 
@@ -813,7 +807,7 @@ function ModerationPanel({ apiBase, bans, bansLoading, banError, loadBans, handl
     setUpdatingReport(id);
     try {
       const token = await fetchIdToken();
-      const res = await fetch(`${apiBase}/api/admin/reports/${id}`, {
+      const res = await fetch(`${API_BASE}/api/admin/reports/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ status }),
@@ -901,7 +895,6 @@ function ModerationPanel({ apiBase, bans, bansLoading, banError, loadBans, handl
                   {isExpanded && (
                     <ReportExpanded
                       report={r}
-                      apiBase={apiBase}
                       onStatusChange={(id, status) => setReports(prev => prev.map(x => x.id === id ? { ...x, status } : x))}
                     />
                   )}
@@ -954,6 +947,7 @@ export default function DashboardPage() {
 
   const [region, setRegion] = useState("EU");
   const apiBase = REGION_BASES[region];
+  const regionParam = REGION_PARAMS[region];
   const [user, setUser] = useState(null);
   const [checking, setChecking] = useState(true);
   const [activeTab, setActiveTab] = useState("overview");
@@ -1001,7 +995,7 @@ export default function DashboardPage() {
       setUser(u);
       try {
         const token = await u.getIdToken();
-        const res = await fetch("https://eubackend.mccompanion.net/api/admin/members", { headers: { Authorization: `Bearer ${token}` } });
+        const res = await fetch(`${API_BASE}/api/admin/members`, { headers: { Authorization: `Bearer ${token}` } });
         if (res.status !== 200) { history.replace("/partner"); return; }
       } catch (_) { history.replace("/login"); return; }
       setChecking(false);
@@ -1042,7 +1036,7 @@ export default function DashboardPage() {
     finally { setBansLoading(false); }
   }
 
-  useEffect(() => { if (user) { loadBans(); loadCurrentNotification(); loadCurrentVersion(); } }, [user, apiBase]);
+  useEffect(() => { if (user) { loadBans(); loadCurrentNotification(); loadCurrentVersion(); } }, [user]);
 
   useEffect(() => {
     if (filterTimer.current) clearTimeout(filterTimer.current);
@@ -1059,10 +1053,10 @@ export default function DashboardPage() {
     setSseStatus("connecting");
     try {
       const token = await fetchIdToken(); if (!token) throw new Error("Not authenticated");
-      const r = await fetch(`${apiBase}/cache/admin/cache/stream-token`, { method: "POST", headers: { Authorization: `Bearer ${token}` } });
+      const r = await fetch(`${apiBase}/cache/admin/cache/stream-token?region=${regionParam}`, { method: "POST", headers: { Authorization: `Bearer ${token}` } });
       if (!r.ok) throw new Error("stream-token failed");
       const { streamToken } = await r.json();
-      const es = new EventSource(`${apiBase}/cache/admin/cache/stream?streamToken=${encodeURIComponent(streamToken)}`);
+      const es = new EventSource(`${apiBase}/cache/admin/cache/stream?streamToken=${encodeURIComponent(streamToken)}&region=${regionParam}`);
       esRef.current = es;
       es.onopen = () => setSseStatus("open");
       es.onerror = () => setSseStatus("error");
@@ -1098,7 +1092,7 @@ export default function DashboardPage() {
         } catch (_) { }
       });
     } catch (err) { setSseStatus("closed"); console.warn(err); }
-  }, [apiBase]);
+  }, [regionParam]);
 
   const stopStream = useCallback(() => {
     if (esRef.current) { try { esRef.current.close(); } catch (_) { } esRef.current = null; }
@@ -1367,11 +1361,10 @@ export default function DashboardPage() {
             </div>
           </header>
 
-          {activeTab === "partners" && <PartnersPanel apiBase={apiBase} />}
+          {activeTab === "partners" && <PartnersPanel />}
 
           {activeTab === "moderation" && (
             <ModerationPanel
-              apiBase={apiBase}
               bans={bans}
               bansLoading={bansLoading}
               banError={banError}

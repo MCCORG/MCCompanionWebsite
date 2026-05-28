@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { FaDiscord, FaStar, FaBook, FaChevronDown } from "react-icons/fa";
+import { FaDiscord, FaStar, FaBook, FaChevronDown, FaSearch, FaCode, FaTachometerAlt, FaHandshake } from "react-icons/fa";
 import { useHistory, useLocation } from "@docusaurus/router";
 import sidebars from "../../../sidebars.js";
 import { signOut } from "firebase/auth";
@@ -119,9 +119,9 @@ export default function Navbar() {
   }
 
   const portalLink = role === "admin"
-    ? { label: "Dashboard", path: "/dashboard" }
+    ? { label: "Dashboard", path: "/dashboard", icon: <FaTachometerAlt size={13} /> }
     : role === "member"
-      ? { label: "Partner Portal", path: "/partner" }
+      ? { label: "Partner Portal", path: "/partner", icon: <FaHandshake size={13} /> }
       : null;
 
   const drawerBtn = (color = NL.secondary) => ({
@@ -193,6 +193,20 @@ export default function Navbar() {
               )}
             </div>
 
+            <button onClick={() => navigate("/lookup")} style={{ ...btnReset, display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 10px", borderRadius: 7, fontSize: 13, fontWeight: 500, color: NL.secondary }}
+              onMouseEnter={e => { e.currentTarget.style.color = NL.text; e.currentTarget.style.background = NL.elevated; }}
+              onMouseLeave={e => { e.currentTarget.style.color = NL.secondary; e.currentTarget.style.background = "none"; }}
+            >
+              <FaSearch size={12} /> Lookup
+            </button>
+
+            <button onClick={() => navigate("/api-docs")} style={{ ...btnReset, display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 10px", borderRadius: 7, fontSize: 13, fontWeight: 500, color: NL.secondary }}
+              onMouseEnter={e => { e.currentTarget.style.color = NL.text; e.currentTarget.style.background = NL.elevated; }}
+              onMouseLeave={e => { e.currentTarget.style.color = NL.secondary; e.currentTarget.style.background = "none"; }}
+            >
+              <FaCode size={12} /> API
+            </button>
+
             <button onClick={() => navigate("/slot")} style={{ ...btnReset, display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 10px", borderRadius: 7, fontSize: 13, fontWeight: 500, color: NL.secondary }}
               onMouseEnter={e => { e.currentTarget.style.color = NL.text; e.currentTarget.style.background = NL.elevated; }}
               onMouseLeave={e => { e.currentTarget.style.color = NL.secondary; e.currentTarget.style.background = "none"; }}
@@ -205,7 +219,7 @@ export default function Navbar() {
                 onMouseEnter={e => { e.currentTarget.style.color = NL.text; e.currentTarget.style.background = NL.elevated; }}
                 onMouseLeave={e => { e.currentTarget.style.color = NL.secondary; e.currentTarget.style.background = "none"; }}
               >
-                {portalLink.label}
+                {portalLink.icon} {portalLink.label}
               </button>
             )}
 
@@ -280,6 +294,14 @@ export default function Navbar() {
               </div>
             )}
 
+            <button onClick={() => navigate("/lookup")} style={drawerBtn()}
+              onMouseEnter={drawerEnter} onMouseLeave={drawerLeave()}
+            ><FaSearch size={13} /> Lookup</button>
+
+            <button onClick={() => navigate("/api-docs")} style={drawerBtn()}
+              onMouseEnter={drawerEnter} onMouseLeave={drawerLeave()}
+            ><FaCode size={13} /> API</button>
+
             <button onClick={() => navigate("/slot")} style={drawerBtn()}
               onMouseEnter={drawerEnter} onMouseLeave={drawerLeave()}
             ><FaStar size={14} /> Featured Slot</button>
@@ -287,7 +309,7 @@ export default function Navbar() {
             {portalLink && (
               <button onClick={() => navigate(portalLink.path)} style={drawerBtn()}
                 onMouseEnter={drawerEnter} onMouseLeave={drawerLeave()}
-              >{portalLink.label}</button>
+              >{portalLink.icon} {portalLink.label}</button>
             )}
 
             <a href="https://discord.gg/xvaNzE35Rs" target="_blank" rel="noopener noreferrer"

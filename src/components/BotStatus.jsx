@@ -20,8 +20,8 @@ const NL = {
 };
 
 const REGIONS = [
-  { key: "EU", label: "Europe", flag: "🇪🇺", url: "https://eubackend.netherlink.net/api/bots" },
-  { key: "US", label: "United States", flag: "🇺🇸", url: "https://usbackend.netherlink.net/api/bots" },
+  { key: "EU", label: "Europe", flag: "🇪🇺", url: "https://api.mccompanion.net/api/bots?region=eu" },
+  { key: "US", label: "United States", flag: "🇺🇸", url: "https://api.mccompanion.net/api/bots?region=us" },
 ];
 
 function IconRefresh({ spinning }) {
