@@ -17,6 +17,9 @@ const NL = {
   success: "#34d399",
   successDim: "rgba(52,211,153,0.10)",
   successBorder: "rgba(52,211,153,0.22)",
+  warning: "#fbbf24",
+  warningDim: "rgba(251,191,36,0.10)",
+  warningBorder: "rgba(251,191,36,0.22)",
 };
 const font = "'Inter', system-ui, sans-serif";
 const mono = "'JetBrains Mono', 'Fira Code', monospace";
@@ -29,6 +32,7 @@ const ENDPOINTS = [
     method: "GET",
     path: "/api/lookup/bedrock-java/:identifier",
     title: "Player Lookup",
+    rateLimit: "60 req / min",
     description:
       "Resolve a Minecraft player by Xbox gamertag, Java username, or XUID. Automatically detects the account type and cross-links Bedrock ↔ Java profiles where available.",
     params: [
@@ -86,6 +90,7 @@ const ENDPOINTS = [
     method: "GET",
     path: "/api/metrics",
     title: "Server Metrics",
+    rateLimit: "60 req / min",
     description:
       "Top 30 Minecraft servers ranked by connection count through the MCCompanion app, plus global totals.",
     params: [],
@@ -108,6 +113,7 @@ const ENDPOINTS = [
     method: "GET",
     path: "/api/bots",
     title: "Bot Status",
+    rateLimit: "60 req / min",
     description:
       "Xbox relay bot accounts with their current friend counts and limits. Both EU and US bots are returned by default.",
     params: [
@@ -143,6 +149,7 @@ const ENDPOINTS = [
     method: "GET",
     path: "/api/featured-servers",
     title: "Featured Servers",
+    rateLimit: "60 req / min",
     description:
       "The list of featured and partner Minecraft servers shown in the MCCompanion app.",
     params: [],
@@ -171,6 +178,7 @@ const ENDPOINTS = [
     method: "GET",
     path: "/notification",
     title: "App Notification",
+    rateLimit: "60 req / min",
     description:
       "Current in-app notification shown to all MCCompanion users. Returns the active announcement title, message, and severity type.",
     params: [],
@@ -193,6 +201,7 @@ const ENDPOINTS = [
     method: "GET",
     path: "/api/version",
     title: "App Version",
+    rateLimit: "60 req / min",
     description: "Current recommended version of the MCCompanion app.",
     params: [],
     example: {
@@ -208,6 +217,7 @@ const ENDPOINTS = [
     method: "GET",
     path: "/api/health",
     title: "Health Check",
+    rateLimit: "60 req / min",
     description:
       "Server health status, uptime, and cache size. Useful for monitoring whether the API is reachable.",
     params: [],
@@ -247,6 +257,20 @@ function MethodBadge({ method }) {
       flexShrink: 0,
     }}>
       {method}
+    </span>
+  );
+}
+
+function RateBadge({ limit }) {
+  return (
+    <span style={{
+      fontFamily: mono, fontSize: 10, fontWeight: 600,
+      padding: "2px 7px", borderRadius: 5, flexShrink: 0,
+      background: NL.subtle,
+      border: `1px solid ${NL.border}`,
+      color: NL.muted,
+    }}>
+      {limit}
     </span>
   );
 }
@@ -333,6 +357,7 @@ function EndpointCard({ ep }) {
           {ep.path}
         </code>
         <span style={{ fontSize: 13, fontWeight: 600, color: NL.secondary, flexShrink: 0, marginLeft: 4 }}>{ep.title}</span>
+        {ep.rateLimit && <RateBadge limit={ep.rateLimit} />}
         <svg
           width="14" height="14" viewBox="0 0 24 24" fill="none"
           style={{ flexShrink: 0, transition: "transform 0.2s", transform: open ? "rotate(180deg)" : "none", color: NL.muted }}
@@ -439,6 +464,35 @@ export default function ApiDocsPage() {
             </div>
           </div>
 
+          <div style={{
+            padding: "14px 16px", borderRadius: 12, marginBottom: 24,
+            background: NL.warningDim, border: `1px solid ${NL.warningBorder}`,
+            display: "flex", flexDirection: "column", gap: 10,
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
+                <circle cx="12" cy="12" r="10" stroke={NL.warning} strokeWidth="2" />
+                <path d="M12 8v4M12 16h.01" stroke={NL.warning} strokeWidth="2" strokeLinecap="round" />
+              </svg>
+              <span style={{ fontSize: 12, fontWeight: 700, color: NL.warning, fontFamily: mono, textTransform: "uppercase", letterSpacing: "0.06em" }}>Rate limits</span>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+              {[
+                { label: "Global (all endpoints)", value: "60 req / min per IP" },
+                { label: "Player Lookup", value: "60 req / min per IP" },
+                { label: "Featured Servers", value: "60 req / min per IP" },
+              ].map(row => (
+                <div key={row.label} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 12, color: NL.secondary }}>
+                  <span style={{ minWidth: 160, color: NL.muted, fontFamily: mono, fontSize: 11 }}>{row.label}</span>
+                  <span style={{ color: NL.text, fontWeight: 600 }}>{row.value}</span>
+                </div>
+              ))}
+            </div>
+            <p style={{ fontSize: 11, color: NL.muted, margin: 0, lineHeight: 1.5 }}>
+              Exceeding the limit returns <code style={{ fontFamily: mono, color: NL.warning }}>429 Too Many Requests</code>. After 3 violations within 10 minutes your IP is permanently banned. To appeal, join our <a href="https://discord.gg/xvaNzE35Rs" target="_blank" rel="noreferrer" style={{ color: NL.accent }}>Discord</a>.
+            </p>
+          </div>
+
           {/* Quick nav */}
           <div style={{
             display: "flex", gap: 6, flexWrap: "wrap",
@@ -473,7 +527,7 @@ export default function ApiDocsPage() {
           </div>
 
           <p style={{ fontSize: 11, color: NL.muted, marginTop: 32, textAlign: "center" }}>
-            All responses are JSON · HTTPS only · No rate limiting on public endpoints
+            All responses are JSON · HTTPS only · 60 req/min per IP
           </p>
         </div>
       </div>
