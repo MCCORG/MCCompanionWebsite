@@ -11,9 +11,9 @@ const NL = {
   text: "#e8e9ec",
   secondary: "#9299a6",
   muted: "#5a6070",
-  accent: "#4fd1c5",
-  accentDim: "rgba(79,209,197,0.10)",
-  accentBorder: "rgba(79,209,197,0.22)",
+  accent: "#67e404",
+  accentDim: "rgba(103,228,4,0.10)",
+  accentBorder: "rgba(103,228,4,0.22)",
   success: "#34d399",
   successDim: "rgba(52,211,153,0.10)",
   successBorder: "rgba(52,211,153,0.22)",
@@ -233,7 +233,7 @@ const ENDPOINTS = [
 
 function MethodBadge({ method }) {
   const colors = {
-    GET: { bg: "rgba(79,209,197,0.12)", border: "rgba(79,209,197,0.28)", color: "#4fd1c5" },
+    GET: { bg: "rgba(103,228,4,0.12)", border: "rgba(103,228,4,0.28)", color: "#67e404" },
     POST: { bg: "rgba(96,165,250,0.12)", border: "rgba(96,165,250,0.28)", color: "#60a5fa" },
     DELETE: { bg: "rgba(248,113,113,0.12)", border: "rgba(248,113,113,0.28)", color: "#f87171" },
     PATCH: { bg: "rgba(251,191,36,0.12)", border: "rgba(251,191,36,0.28)", color: "#fbbf24" },
@@ -383,7 +383,7 @@ function EndpointCard({ ep }) {
           {ep.note && (
             <div style={{
               padding: "10px 14px", borderRadius: 8,
-              background: "rgba(79,209,197,0.06)", border: `1px solid ${NL.accentBorder}`,
+              background: "rgba(103,228,4,0.06)", border: `1px solid ${NL.accentBorder}`,
               fontSize: 12, color: NL.secondary, lineHeight: 1.6,
             }}>
               <span style={{ color: NL.accent, fontWeight: 600 }}>Note · </span>{ep.note}

@@ -169,6 +169,57 @@ export default function Home() {
             </div>
 
             <div>
+              <SectionLabel>Player lookup</SectionLabel>
+              <a href="/lookup" style={{ textDecoration: "none", display: "block" }}>
+                <div style={{
+                  display: "flex", alignItems: "center", justifyContent: "space-between",
+                  gap: 20, padding: "22px 28px",
+                  background: NL.surface,
+                  border: `1px solid ${NL.border}`,
+                  borderRadius: 16,
+                  transition: "border-color 0.2s, background 0.2s",
+                  flexWrap: "wrap",
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = NL.borderMid; e.currentTarget.style.background = NL.elevated; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = NL.border; e.currentTarget.style.background = NL.surface; }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: 16, minWidth: 0 }}>
+                    <div style={{
+                      width: 44, height: 44, borderRadius: 12, flexShrink: 0,
+                      background: NL.accentDim, border: `1px solid ${NL.accentBorder}`,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      fontSize: 20,
+                    }}>🔍</div>
+                    <div>
+                      <p style={{ fontSize: 14, fontWeight: 600, color: NL.text, margin: 0 }}>
+                        Look up any Minecraft player
+                      </p>
+                      <p style={{ fontSize: 12, color: NL.secondary, margin: "3px 0 0" }}>
+                        Search by Xbox gamertag, Java username, or XUID — see skin, UUID, and linked accounts
+                      </p>
+                    </div>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+                    <div style={{ display: "flex", gap: 6 }}>
+                      {["Gamertag", "Java username", "XUID"].map(tag => (
+                        <span key={tag} style={{
+                          fontSize: 10, fontWeight: 600, padding: "3px 8px", borderRadius: 5,
+                          background: NL.subtle, border: `1px solid ${NL.border}`,
+                          color: NL.muted, fontFamily: "'JetBrains Mono', monospace",
+                          whiteSpace: "nowrap",
+                        }}>{tag}</span>
+                      ))}
+                    </div>
+                    <span style={{
+                      fontSize: 13, fontWeight: 600, color: NL.accent,
+                      display: "flex", alignItems: "center", gap: 4,
+                    }}>Try it →</span>
+                  </div>
+                </div>
+              </a>
+            </div>
+
+            <div>
               <BotStatus />
             </div>
 

@@ -11,9 +11,9 @@ const NL = {
   text: "#e8e9ec",
   secondary: "#9299a6",
   muted: "#5a6070",
-  accent: "#4fd1c5",
-  accentDim: "rgba(79,209,197,0.10)",
-  accentBorder: "rgba(79,209,197,0.22)",
+  accent: "#67e404",
+  accentDim: "rgba(103,228,4,0.10)",
+  accentBorder: "rgba(103,228,4,0.22)",
 };
 
 const API_BASE = "https://api.mccompanion.net";
@@ -180,7 +180,7 @@ export default function MetricsPage() {
                       display: "flex", alignItems: "center", gap: 10,
                       padding: "10px 10px",
                       borderRadius: 10,
-                      background: idx === 0 ? "rgba(79,209,197,0.06)" : "transparent",
+                      background: idx === 0 ? "rgba(103,228,4,0.06)" : "transparent",
                       border: `1px solid ${idx === 0 ? NL.accentBorder : "transparent"}`,
                       transition: "background 0.15s",
                     }}
