@@ -4,8 +4,8 @@ import {themes as prismThemes} from 'prism-react-renderer';
 /** @type {import('@docusaurus/types').Config} */
 
 const config = {
-  title: 'MCCompanion — Connect Any Minecraft Bedrock Server to Console',
-  tagline: 'MCCompanion Documentation',
+  title: 'MCCompanion — The Complete Minecraft Companion App',
+  tagline: 'Console relay, player lookup, skin editor, Minecraft wiki, friends & chat — all in one free app.',
   favicon: 'img/icon.png',
 
   plugins: ["./src/plugins/tailwind-config.js"],
@@ -17,8 +17,8 @@ const config = {
   url: 'https://mccompanion.net',
   baseUrl: '/',
 
-  organizationName: 'NetherDevMc',
-  projectName: 'NetherLinkWebsite',
+  organizationName: 'MCCompanion',
+  projectName: 'MCCompanionWebsite',
 
   onBrokenLinks: 'warn',
 
@@ -81,15 +81,15 @@ const config = {
         darkTheme: prismThemes.dracula,
       },
       metadata: [
-        { name: "description", content: "MCCompanion lets you connect any Minecraft Bedrock server to PlayStation, Xbox, and Nintendo Switch via LAN — no port forwarding needed. Available on Windows, macOS, Android and iOS." },
-        { name: "keywords", content: "MCCompanion, Minecraft Bedrock, console server, PlayStation Minecraft, Xbox Minecraft, Nintendo Switch Minecraft, LAN proxy, no port forwarding" },
+        { name: "description", content: "Console relay for PlayStation, Xbox & Switch, player lookup, skin editor, Minecraft wiki, friends & chat. The all-in-one Minecraft companion app. Free on Windows, macOS, Android and iOS." },
+        { name: "keywords", content: "MCCompanion, Minecraft companion app, Minecraft Bedrock console, PlayStation Minecraft, Xbox Minecraft, Nintendo Switch Minecraft, Minecraft player lookup, Minecraft skin editor, Minecraft wiki, no port forwarding" },
         { name: "author", content: "Jens-Co" },
         { name: "theme-color", content: "#0a0a0f" },
         { property: "og:type", content: "website" },
         { property: "og:url", content: "https://mccompanion.net" },
         { property: "og:site_name", content: "MCCompanion" },
-        { property: "og:title", content: "MCCompanion — Connect Any Minecraft Bedrock Server to Console" },
-        { property: "og:description", content: "One-tap connection to any Bedrock server on PlayStation, Xbox and Nintendo Switch. No port forwarding, zero config. Just play." },
+        { property: "og:title", content: "MCCompanion — The Complete Minecraft Companion App" },
+        { property: "og:description", content: "Console relay, player lookup, skin editor, Minecraft wiki and friends & chat — all in one free app. Available on Windows, macOS, Android and iOS." },
         { property: "og:locale", content: "en_US" }
       ],
     }),

@@ -186,7 +186,7 @@ const ENDPOINTS = [
       request: `GET ${API_BASE}/notification`,
       response: `{
   "title": "Relay Server Information",
-  "message": "We're rebranding NetherLink to MCCompanion, and the new version will launch this week.",
+  "message": "MCCompanion 4.0 is live — check out the new features in the app!",
   "type": "warning"
 }`,
     },
