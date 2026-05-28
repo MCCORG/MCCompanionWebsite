@@ -16,9 +16,9 @@ const NL = {
   text: "#e8e9ec",
   secondary: "#9299a6",
   muted: "#5a6070",
-  accent: "#4fd1c5",
-  accentDim: "rgba(79,209,197,0.10)",
-  accentBorder: "rgba(79,209,197,0.22)",
+  accent: "#67e404",
+  accentDim: "rgba(103,228,4,0.10)",
+  accentBorder: "rgba(103,228,4,0.22)",
   danger: "#f87171",
   dangerDim: "rgba(248,113,113,0.10)",
   dangerBorder: "rgba(248,113,113,0.22)",
@@ -201,7 +201,7 @@ function InvoiceList() {
                       border: `1px solid ${NL.accentBorder}`, borderRadius: 6,
                       background: NL.accentDim, transition: "background 0.15s",
                     }}
-                    onMouseEnter={e => e.currentTarget.style.background = "rgba(79,209,197,0.18)"}
+                    onMouseEnter={e => e.currentTarget.style.background = "rgba(103,228,4,0.18)"}
                     onMouseLeave={e => e.currentTarget.style.background = NL.accentDim}
                   >
                     Download PDF

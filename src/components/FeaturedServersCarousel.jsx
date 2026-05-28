@@ -63,7 +63,7 @@ export default function FeaturedServersCarousel() {
           className="rounded-2xl px-7 py-8 flex justify-center items-center min-h-[160px]"
           style={{
             background: "linear-gradient(180deg, rgba(26,34,46,0.88), rgba(23,30,40,0.86))",
-            border: "1px solid rgba(80,180,255,0.06)",
+            border: "1px solid rgba(103,228,4,0.06)",
             boxShadow: "0 6px 24px rgba(20,30,40,0.25)",
             backdropFilter: "blur(6px)",
           }}
@@ -83,7 +83,7 @@ export default function FeaturedServersCarousel() {
         onMouseLeave={() => setPaused(false)}
         className="rounded-2xl py-7 px-6 relative overflow-hidden min-h-[230px] flex flex-col items-center"
         style={{
-          border: "1px solid rgba(80,180,255,0.08)",
+          border: "1px solid rgba(103,228,4,0.08)",
           boxShadow: "0 8px 36px rgba(20,30,50,0.20)",
           backdropFilter: "blur(8px)",
         }}
@@ -129,8 +129,8 @@ export default function FeaturedServersCarousel() {
             backdropFilter: "blur(6px)",
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.background = "rgba(34,150,220,0.13)";
-            e.currentTarget.style.boxShadow = "0 6px 18px rgba(34,150,220,0.07)";
+            e.currentTarget.style.background = "rgba(103,228,4,0.13)";
+            e.currentTarget.style.boxShadow = "0 6px 18px rgba(103,228,4,0.07)";
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.background = "rgba(20,26,34,0.45)";
@@ -151,8 +151,8 @@ export default function FeaturedServersCarousel() {
             backdropFilter: "blur(6px)",
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.background = "rgba(34,150,220,0.13)";
-            e.currentTarget.style.boxShadow = "0 6px 18px rgba(34,150,220,0.07)";
+            e.currentTarget.style.background = "rgba(103,228,4,0.13)";
+            e.currentTarget.style.boxShadow = "0 6px 18px rgba(103,228,4,0.07)";
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.background = "rgba(20,26,34,0.45)";
@@ -182,9 +182,9 @@ export default function FeaturedServersCarousel() {
                 alt={`${current.name} icon`}
                 className="w-20 h-20 rounded-xl mb-4 object-cover"
                 style={{
-                  border: "2px solid rgba(85,234,252,0.14)",
-                  background: "rgba(80,180,255,0.04)",
-                  boxShadow: "0 6px 18px rgba(34,150,220,0.06)",
+                  border: "2px solid rgba(103,228,4,0.18)",
+                  background: "rgba(103,228,4,0.04)",
+                  boxShadow: "0 6px 18px rgba(103,228,4,0.06)",
                 }}
                 loading="lazy"
               />
@@ -214,8 +214,8 @@ export default function FeaturedServersCarousel() {
                 display: "inline-block", marginBottom: 8,
                 fontFamily: "'JetBrains Mono', monospace",
                 fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase",
-                color: "#4fd1c5", background: "rgba(79,209,197,0.10)",
-                border: "1px solid rgba(79,209,197,0.22)",
+                color: "#67e404", background: "rgba(103,228,4,0.10)",
+                border: "1px solid rgba(103,228,4,0.22)",
                 borderRadius: 4, padding: "3px 8px",
               }}>Partner</span>
             )}
@@ -223,7 +223,7 @@ export default function FeaturedServersCarousel() {
               {current.name}
             </h3>
 
-            <div className="text-blue-300 font-mono mb-2 select-all">
+            <div style={{ color: "#67e404", fontFamily: "'JetBrains Mono', monospace", marginBottom: 8, userSelect: "all", fontSize: 13 }}>
               {current.address}:{current.port}
             </div>
 
@@ -239,9 +239,9 @@ export default function FeaturedServersCarousel() {
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-full transition-all"
                   style={{
-                    color: "#05202a",
-                    background: "linear-gradient(180deg,#55eafc,#22c6fb)",
-                    boxShadow: "0 6px 24px rgba(34,198,251,0.14)",
+                    color: "#0d1a00",
+                    background: "linear-gradient(180deg,#80f505,#67e404)",
+                    boxShadow: "0 6px 24px rgba(103,228,4,0.22)",
                     textDecoration: "none",
                     border: "1px solid rgba(255,255,255,0.06)",
                   }}
@@ -277,8 +277,8 @@ export default function FeaturedServersCarousel() {
                 ? {
                   width: "22px",
                   height: "8px",
-                  background: "linear-gradient(90deg,#55eafc,#22c6fb)",
-                  boxShadow: "0 6px 18px rgba(34,198,251,0.12)",
+                  background: "linear-gradient(90deg,#80f505,#67e404)",
+                  boxShadow: "0 6px 18px rgba(103,228,4,0.18)",
                   borderRadius: "12px",
                   border: "none",
                   cursor: "pointer",

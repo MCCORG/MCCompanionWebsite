@@ -14,7 +14,7 @@ const NL = {
   text: "#e8e9ec",
   secondary: "#9299a6",
   muted: "#5a6070",
-  accent: "#4fd1c5",
+  accent: "#67e404",
 };
 
 const DOC_SIDEBAR = sidebars.tutorialSidebar || sidebars.geyserSidebar || [];
