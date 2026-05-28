@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import FeaturedServersCarousel from "../components/FeaturedServersCarousel";
 import ChangelogSection from "../components/ChangelogSection";
 import AppShowcase from "../components/AppShowcase";
+import BotStatus from "../components/BotStatus";
 import Layout from "@theme/Layout";
 
 const NL = {
@@ -165,6 +166,10 @@ export default function Home() {
             <div>
               <SectionLabel>Featured servers</SectionLabel>
               <FeaturedServersCarousel />
+            </div>
+
+            <div>
+              <BotStatus />
             </div>
 
             <div>
