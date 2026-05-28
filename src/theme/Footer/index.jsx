@@ -20,7 +20,7 @@ const footerLinks = [
 
 const socialLinks = [
   { href: "https://discord.gg/xvaNzE35Rs", label: "Discord", icon: <FaDiscord size={15} />, color: "#7289da" },
-  { href: "https://github.com/NetherDevMc/MCCompanionWebsite", label: "GitHub", icon: <FaGithub size={15} />, color: NL.secondary },
+  { href: "https://github.com/MCCORG/", label: "GitHub", icon: <FaGithub size={15} />, color: NL.secondary },
 ];
 
 function SocialBtn({ href, label, icon, color }) {

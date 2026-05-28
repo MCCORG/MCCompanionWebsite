@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { FaDiscord, FaStar, FaBook, FaChevronDown, FaSearch, FaCode, FaTachometerAlt, FaHandshake } from "react-icons/fa";
+import { FaDiscord, FaStar, FaBook, FaChevronDown, FaSearch, FaCode, FaTachometerAlt, FaHandshake, FaHeart } from "react-icons/fa";
 import { useHistory, useLocation } from "@docusaurus/router";
 import sidebars from "../../../sidebars.js";
 import { signOut } from "firebase/auth";
@@ -231,6 +231,14 @@ export default function Navbar() {
               <FaDiscord size={14} /> Discord
             </a>
 
+            <a href="https://github.com/sponsors/MCCORG" target="_blank" rel="noopener noreferrer"
+              style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 12px", borderRadius: 7, fontSize: 13, fontWeight: 600, color: NL.accent, textDecoration: "none", background: "rgba(103,228,4,0.08)", border: "1px solid rgba(103,228,4,0.20)" }}
+              onMouseEnter={e => { e.currentTarget.style.background = "rgba(103,228,4,0.15)"; e.currentTarget.style.borderColor = "rgba(103,228,4,0.35)"; }}
+              onMouseLeave={e => { e.currentTarget.style.background = "rgba(103,228,4,0.08)"; e.currentTarget.style.borderColor = "rgba(103,228,4,0.20)"; }}
+            >
+              <FaHeart size={12} /> Sponsor
+            </a>
+
             <span style={{ width: 1, height: 18, background: NL.border, margin: "0 4px" }} />
 
             {user ? (
@@ -317,6 +325,12 @@ export default function Navbar() {
               style={{ ...drawerBtn("#7289da"), textDecoration: "none" }}
               onMouseEnter={drawerEnter} onMouseLeave={drawerLeave("#7289da")}
             ><FaDiscord size={14} /> Discord</a>
+
+            <a href="https://github.com/sponsors/MCCORG" target="_blank" rel="noopener noreferrer"
+              onClick={() => setDrawerOpen(false)}
+              style={{ ...drawerBtn(NL.accent), textDecoration: "none" }}
+              onMouseEnter={drawerEnter} onMouseLeave={drawerLeave(NL.accent)}
+            ><FaHeart size={13} /> Sponsor</a>
 
             <div style={{ height: 1, background: NL.border, margin: "4px 0" }} />
 
