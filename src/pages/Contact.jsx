@@ -24,10 +24,10 @@ const contactDetails = [
   {
     icon: <FaEnvelope />, label: "Email",
     value: (
-      <a href="mailto:jenscollaert@icloud.com" style={{ color: NL.accent, textDecoration: "none" }}
+      <a href="mailto:jens@mccompanion.net" style={{ color: NL.accent, textDecoration: "none" }}
         onMouseEnter={e => e.currentTarget.style.textDecoration = "underline"}
         onMouseLeave={e => e.currentTarget.style.textDecoration = "none"}>
-        jenscollaert@icloud.com
+        jens@mccompanion.net
       </a>
     ),
   },
@@ -49,7 +49,7 @@ const contactDetails = [
 ];
 
 const quickContacts = [
-  { icon: <FaEnvelope />, label: "Email Support", value: "jenscollaert@icloud.com", href: "mailto:jenscollaert@icloud.com" },
+  { icon: <FaEnvelope />, label: "Email Support", value: "jens@mccompanion.net", href: "mailto:jens@mccompanion.net" },
   { icon: <FaDiscord />, label: "Community Discord", value: "discord.gg/xvaNzE35Rs", href: "https://discord.gg/xvaNzE35Rs", external: true },
 ];
 
