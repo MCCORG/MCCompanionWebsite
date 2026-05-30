@@ -4,6 +4,7 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../firebaseClient";
 import { fetchIdToken } from "../firebaseAuthHelpers";
 import Layout from "@theme/Layout";
+import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 
 const NL = {
   bg: "#111318",
@@ -981,6 +982,9 @@ export default function DashboardPage() {
   const [bansLoading, setBansLoading] = useState(false);
   const [banError, setBanError] = useState(null);
 
+  const [connStats, setConnStats] = useState(null);
+  const [connStatsLoading, setConnStatsLoading] = useState(false);
+
   useEffect(() => {
     function check() { setIsMobile(window.innerWidth < 1024); }
     check();
@@ -1025,6 +1029,17 @@ export default function DashboardPage() {
     } catch (err) { console.warn(err); setVersionError(String(err)); }
   }
 
+  async function loadConnStats() {
+    setConnStatsLoading(true);
+    try {
+      const token = await fetchIdToken();
+      const res = await fetch(`${API_BASE}/api/admin/stats/connections`, { headers: { Authorization: `Bearer ${token}` } });
+      if (!res.ok) throw new Error(`${res.status}`);
+      setConnStats(await res.json());
+    } catch (e) { console.warn("connStats failed", e); }
+    finally { setConnStatsLoading(false); }
+  }
+
   async function loadBans() {
     setBansLoading(true); setBanError(null);
     try {
@@ -1036,7 +1051,7 @@ export default function DashboardPage() {
     finally { setBansLoading(false); }
   }
 
-  useEffect(() => { if (user) { loadBans(); loadCurrentNotification(); loadCurrentVersion(); } }, [user]);
+  useEffect(() => { if (user) { loadBans(); loadCurrentNotification(); loadCurrentVersion(); loadConnStats(); } }, [user]);
 
   useEffect(() => {
     if (filterTimer.current) clearTimeout(filterTimer.current);
@@ -1387,6 +1402,51 @@ export default function DashboardPage() {
                   <p style={{ fontSize: 11, color: NL.muted, margin: 0 }}>{s.sub}</p>
                 </div>
               ))}
+            </div>
+
+            <div style={{ background: NL.surface, border: `1px solid ${NL.border}`, borderRadius: 16, padding: "16px 18px", marginBottom: 20 }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+                <div>
+                  <h3 style={{ fontSize: 13, fontWeight: 600, color: NL.text, margin: 0 }}>Relay connections</h3>
+                  <p style={{ fontSize: 11, color: NL.muted, margin: "2px 0 0" }}>All servers combined — last 30 days</p>
+                </div>
+                {iconBtn(loadConnStats, "Refresh", <IC.Refresh />)}
+              </div>
+
+              {connStatsLoading ? (
+                <div style={{ display: "flex", alignItems: "center", gap: 8, color: NL.muted, fontSize: 13, padding: "24px 0", justifyContent: "center" }}><Spinner /> Loading…</div>
+              ) : connStats ? (<>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, marginBottom: 18 }}>
+                  {[
+                    { label: "Today", value: connStats.today },
+                    { label: "This week", value: connStats.thisWeek },
+                    { label: "This month", value: connStats.thisMonth },
+                  ].map(s => (
+                    <div key={s.label} style={{ background: NL.elevated, border: `1px solid ${NL.border}`, borderRadius: 10, padding: "12px 14px" }}>
+                      <p style={{ fontSize: 11, color: NL.muted, margin: "0 0 4px" }}>{s.label}</p>
+                      <p style={{ fontFamily: mono, fontSize: 22, fontWeight: 700, color: NL.accent, lineHeight: 1, margin: 0 }}>
+                        {s.value.toLocaleString()}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+                <ResponsiveContainer width="100%" height={160}>
+                  <LineChart data={connStats.daily} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={NL.border} />
+                    <XAxis dataKey="day" tick={{ fontSize: 10, fill: NL.muted, fontFamily: mono }} tickFormatter={d => d.slice(5)} interval="preserveStartEnd" />
+                    <YAxis tick={{ fontSize: 10, fill: NL.muted, fontFamily: mono }} allowDecimals={false} />
+                    <Tooltip
+                      contentStyle={{ background: NL.elevated, border: `1px solid ${NL.borderMid}`, borderRadius: 8, fontSize: 12, fontFamily: mono }}
+                      labelStyle={{ color: NL.secondary }}
+                      itemStyle={{ color: NL.accent }}
+                      formatter={v => [v.toLocaleString(), "connections"]}
+                    />
+                    <Line type="monotone" dataKey="count" stroke={NL.accent} strokeWidth={2} dot={false} activeDot={{ r: 4, fill: NL.accent }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </>) : (
+                <p style={{ fontSize: 13, color: NL.muted, textAlign: "center", padding: "24px 0" }}>No data available.</p>
+              )}
             </div>
 
             {isMobile ? (
