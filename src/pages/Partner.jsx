@@ -584,9 +584,15 @@ export default function PartnerDashboardPage() {
       if (!u) { window.location.replace("/login"); return; }
       try {
         const token = await u.getIdToken();
-        const res = await fetch(`${API_BASE}/api/admin/members`, { headers: { Authorization: `Bearer ${token}` } });
-        if (res.status === 200) { window.location.replace("/dashboard"); return; }
-      } catch (_) { }
+
+        const adminRes = await fetch(`${API_BASE}/api/admin/members`, { headers: { Authorization: `Bearer ${token}` } });
+        if (adminRes.status === 200) { window.location.replace("/dashboard"); return; }
+
+        const memberRes = await fetch(`${API_BASE}/api/partner/me`, { headers: { Authorization: `Bearer ${token}` } });
+        if (memberRes.status !== 200) { window.location.replace("/login"); return; }
+      } catch (_) {
+        window.location.replace("/login"); return;
+      }
       setUser(u); setChecking(false);
     });
     return () => unsub();

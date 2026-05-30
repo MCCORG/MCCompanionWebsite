@@ -254,13 +254,28 @@ export default function LoginPage() {
     async function redirectForUser(u) {
         try {
             const token = await u.getIdToken();
-            const res = await fetch(
-                `${API_BASE}/api/admin/members`,
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
-            history.replace(res.status === 200 ? "/dashboard" : "/partner");
+
+            const adminRes = await fetch(`${API_BASE}/api/admin/members`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (adminRes.status === 200) {
+                history.replace("/dashboard");
+                return;
+            }
+
+            const memberRes = await fetch(`${API_BASE}/api/partner/me`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (memberRes.status === 200) {
+                history.replace("/partner");
+                return;
+            }
+
+            await import("firebase/auth").then(({ signOut }) => signOut(auth));
+            setError("This account does not have partner access. Please contact us on Discord if you think this is a mistake.");
+            setChecking(false);
         } catch {
-            history.replace("/partner");
+            history.replace("/login");
         }
     }
 
