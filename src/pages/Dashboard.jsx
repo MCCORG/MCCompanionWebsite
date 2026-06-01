@@ -1419,8 +1419,8 @@ export default function DashboardPage() {
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, marginBottom: 18 }}>
                   {[
                     { label: "Today", value: connStats.today },
-                    { label: "This week", value: connStats.thisWeek },
-                    { label: "This month", value: connStats.thisMonth },
+                    { label: "Last 7 days", value: connStats.thisWeek },
+                    { label: "Last 30 days", value: connStats.thisMonth },
                   ].map(s => (
                     <div key={s.label} style={{ background: NL.elevated, border: `1px solid ${NL.border}`, borderRadius: 10, padding: "12px 14px" }}>
                       <p style={{ fontSize: 11, color: NL.muted, margin: "0 0 4px" }}>{s.label}</p>
